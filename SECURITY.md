@@ -1,18 +1,20 @@
 # Security Policy
 
-Thanks for taking the time to look. Agency Agents writes files into developer-tool configuration directories, so security reports are welcome.
+Thanks for taking the time to look. Hivework writes files into developer-tool configuration directories, so security reports are welcome.
 
 ## Supported Versions
 
 | Version | Supported |
 |---------|-----------|
-| `0.1.x` | Yes       |
+| `0.3.x` | Yes       |
 
 This is a pre-1.0 project. Support windows may change as release packaging stabilizes.
 
 ## Reporting A Vulnerability
 
-Email **msitarzewski@gmail.com** with:
+Please report security vulnerabilities responsibly via GitHub Security Advisories at [GitHub Security](https://github.com/hivework/hivework-app/security/advisories) or privately through GitHub.
+
+Please include:
 
 - a clear description of the issue
 - impact
@@ -52,7 +54,7 @@ Out of scope:
 - vulnerabilities in macOS, Windows, Linux, WebKit, or system components
 - social-engineering attacks
 - attacks requiring an already-compromised local account
-- bugs in the upstream `agency-agents` repo that do not affect app install/write behavior
+- bugs in the upstream `hivework` catalog that do not affect app install/write behavior
 
 ## Disclosure Policy
 

@@ -1,13 +1,13 @@
 [package]
-name = "agency-agents-app"
+name = "hivework-app"
 version = "0.3.2"
-description = "Agency Agents — a native macOS app store for AI agents."
-authors = ["Michael Sitarzewski"]
+description = "Hivework — a native macOS app store for AI agents."
+authors = ["Hivework Contributors"]
 edition = "2021"
 license = "MIT"
 
 [lib]
-name = "agency_agents_lib"
+name = "hivework_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

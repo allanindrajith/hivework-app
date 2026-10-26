@@ -78,9 +78,9 @@ const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 const API_BASE: &str = "https://api.github.com";
 
 const USER_AGENT: &str = concat!(
-    "agency-agents-app/",
+    "hivework-app/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://github.com/msitarzewski/agency-agents-app)"
+    " (+https://github.com/hivework/hivework-app)"
 );
 
 // ---------- DTOs ----------

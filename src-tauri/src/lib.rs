@@ -29,15 +29,15 @@ use commands::*;
 // **Placeholder.** Replace before cutting a release. The real key is
 // generated per `BUILD.md` instructions:
 //
-//     tauri signer generate -w ~/.config/agency-agents-app/updater.key
+//     tauri signer generate -w ~/.config/hivework-app/updater.key
 //
 // The matching public key the command prints is what goes here.
 // Keep the private key chmod 600 outside the repo — it's the only
-// thing standing between a compromised agencyagents.app and a
+// thing standing between a compromised update host and a
 // malicious binary push.
 //
 // Real minisign public key. The matching private key lives at
-// `~/.config/agency-agents-app/updater.key` (chmod 600,
+// `~/.config/hivework-app/updater.key` (chmod 600,
 // outside the repo). The signature verification at install time
 // validates every downloaded `.app.tar.gz` against this pubkey; any
 // mismatch aborts the install with no on-disk side effects.
@@ -69,7 +69,7 @@ pub fn run() {
     let _ = tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn,agency_agents_app=info")),
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn,hivework_app=info")),
         )
         .try_init();
 
@@ -205,8 +205,8 @@ pub fn run() {
 // `ui.openSettings()`). This keeps the menu definition Rust-side and the
 // modal rendering entirely in Svelte.
 
-const MENU_EVENT_ABOUT: &str = "agency-agents/menu/about";
-const MENU_EVENT_SETTINGS: &str = "agency-agents/menu/settings";
+const MENU_EVENT_ABOUT: &str = "hivework/menu/about";
+const MENU_EVENT_SETTINGS: &str = "hivework/menu/settings";
 
 fn build_app_menu<R: tauri::Runtime>(
     app: &tauri::AppHandle<R>,

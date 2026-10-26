@@ -1,13 +1,13 @@
-# Agency Agents
+# Hivework
 
-> A native installer for AI agents.
+> A native app store for AI agents.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Built with Tauri 2](https://img.shields.io/badge/Built%20with-Tauri%202-orange)](https://tauri.app)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-lightgrey)](https://www.apple.com/macos)
-[![Sponsor](https://img.shields.io/badge/♥-Sponsor-EC4899?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/msitarzewski)
+[![Sponsor](https://img.shields.io/badge/♥-Sponsor-EC4899?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hivework)
 
-Agency Agents is a small, native app for browsing, installing, and tracking the agent personas from [`msitarzewski/agency-agents`](https://github.com/msitarzewski/agency-agents) across the AI coding tools you actually use.
+Hivework is a small, native app for browsing, installing, and tracking the agent personas from [`hivework/hivework`](https://github.com/hivework/hivework) across the AI coding tools you actually use.
 
 It is full source, MIT-licensed, local-first, and does not run telemetry.
 
@@ -18,9 +18,9 @@ It is full source, MIT-licensed, local-first, and does not run telemetry.
 
 ## Why This Exists
 
-The `agency-agents` repo is a useful catalog of specialist AI agent personas, but every coding tool has its own agent format and install path. Claude Code, Codex, Cursor, Gemini CLI, Qwen, opencode, Copilot, and Osaurus all want similar content in slightly different places.
+The `hivework` repo is a useful catalog of specialist AI agent personas, but every coding tool has its own agent format and install path. Claude Code, Codex, Cursor, Gemini CLI, Qwen, opencode, Copilot, and Osaurus all want similar content in slightly different places.
 
-Agency Agents gives that catalog a native control surface:
+Hivework gives that catalog a native control surface:
 
 - browse the agent catalog by division and role
 - inspect the source persona before installing it
@@ -76,7 +76,7 @@ The upstream AA repo also contains integrations for Antigravity, Aider, Windsurf
 
 ## Install
 
-Grab the build for your platform from the [latest release](https://github.com/msitarzewski/agency-agents-app/releases/latest):
+Grab the build for your platform from the [latest release](https://github.com/hivework/hivework-app/releases/latest):
 
 - **macOS** (Apple Silicon & Intel) — signed + notarized `.dmg`, macOS 13+.
 - **Linux** (x86_64) — `.deb`, `.rpm`, or the portable `.AppImage`.
@@ -85,9 +85,8 @@ Grab the build for your platform from the [latest release](https://github.com/ms
 Or on macOS via Homebrew:
 
 ```sh
-brew tap msitarzewski/agency-agents
-brew trust --cask msitarzewski/agency-agents/agency-agents
-brew install --cask agency-agents
+brew tap hivework/hivework
+brew install --cask hivework
 ```
 
 For local review, use the development app:
@@ -111,8 +110,8 @@ Prerequisites:
 Then:
 
 ```sh
-git clone https://github.com/msitarzewski/agency-agents-app
-cd agency-agents-app
+git clone https://github.com/hivework/hivework-app
+cd hivework-app
 npm install
 npm run tauri dev
 npm run check
@@ -136,11 +135,11 @@ npm run build:phase-c:full
 
 A Tauri 2 shell hosts a SvelteKit + Svelte 5 frontend in the system WebView. The Rust backend owns the catalog, renderer, install ledger, reconciliation, GitHub integration, settings, and updater boundary.
 
-The catalog comes from `agency-agents`, either as:
+The catalog comes from `hivework`, either as:
 
 - a bundled baseline inside the app
-- a managed local clone at `~/.agency-agents`
-- a user-selected clone, such as `/Users/michael/Software/AgentLand/agency-agents`
+- a managed local clone at `~/.hivework`
+- a user-selected clone, such as `../Hivework`
 
 Rendering is native Rust, deterministic, and tested against the upstream `scripts/convert.sh` outputs for the supported transform tools. The app does not shell out to converter scripts at runtime.
 
@@ -191,10 +190,10 @@ The highest-value areas before 1.0 are:
 
 ## Acknowledgments
 
-- [Agency Agents](https://github.com/msitarzewski/agency-agents) — the source catalog and upstream converter/install scripts. The app contributes its transforms back upstream: v0.2.0's Osaurus integration and the shared `tools.json` tool manifest (the twin of `divisions.json`) landed there first.
+- [Hivework](https://github.com/hivework/hivework) — the source catalog and upstream converter/install scripts. The app contributes its transforms back upstream: v0.2.0's Osaurus integration and the shared `tools.json` tool manifest (the twin of `divisions.json`) landed there first.
 - [Tauri](https://tauri.app) — native app shell without the Electron footprint.
 - [Svelte](https://svelte.dev) — the frontend runtime.
 
 ## Support The Project
 
-If Agency Agents saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/msitarzewski). Sponsorship is optional and does not unlock a paid tier.
+If Hivework saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/hivework). Sponsorship is optional and does not unlock a paid tier.

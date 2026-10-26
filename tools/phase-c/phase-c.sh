@@ -23,7 +23,7 @@ SCREEN_DIR="$OUT_DIR/screenshots"
 REPORT_MD="$OUT_DIR/phase-c-report.md"
 REPORT_JSONL="$OUT_DIR/phase-c-results.jsonl"
 
-PARITY_ROOT="${AGENCY_AGENTS_PARITY_ROOT:-/Users/michael/Software/AgentLand/agency-agents}"
+PARITY_ROOT="${AGENCY_AGENTS_PARITY_ROOT:-$ROOT/../Hivework}"
 INCLUDE_VMS="${PHASE_C_INCLUDE_VMS:-0}"
 SKIP_MAC_BUILD="${PHASE_C_SKIP_MAC_BUILD:-0}"
 STRICT_TAURI="${PHASE_C_STRICT_TAURI:-0}"

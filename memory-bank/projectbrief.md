@@ -10,7 +10,7 @@
 
 A native macOS app store for AI agents. Browse, search, install, and **track** the
 **210** specialized agent personas (across 16 categories) from
-[`msitarzewski/agency-agents`](https://github.com/msitarzewski/agency-agents)
+[`hivework/hivework`](https://github.com/hivework/hivework)
 across every AI coding tool you use (Claude Code, Cursor, Codex, Gemini CLI, Copilot,
 Windsurf, Aider, opencode, qwen, openclaw, antigravity).
 (The repo also ships NEXUS playbooks + workflow examples — docs, not agents — a candidate
@@ -38,7 +38,7 @@ database*. That state-tracking layer is the app's core differentiator:
 ## Source of truth (the corpus-copy model)
 
 The app maintains its **own local working copy** of the agency-agents repo in
-`~/Library/Application Support/com.zerologic.agency-agents-app/corpus/`, seeded from a
+`~/Library/Application Support/com.hivework.app/corpus/`, seeded from a
 bundled baseline and refreshed from the GitHub tarball. From that copy it derives a
 hash index (`corpus-index.json`) and renders/install agents into each tool. See
 `systemPatterns.md`.

@@ -1,14 +1,14 @@
-# Agency Agents App Plan
+# Hivework App Plan
 
-**Product:** Agency Agents  
-**Repo:** `github:msitarzewski/agency-agents-app`  
-**Catalog:** `github:msitarzewski/agency-agents`  
+**Product:** Hivework  
+**Repo:** `github:hivework/hivework-app`  
+**Catalog:** `github:hivework/hivework`  
 **Stack:** Tauri 2, Rust, SvelteKit, Svelte 5, TypeScript  
 **License:** MIT
 
 ## Vision
 
-Ship a native app for browsing, installing, and tracking the `agency-agents` catalog across AI coding tools.
+Ship a native app for browsing, installing, and tracking the `hivework` catalog across AI coding tools.
 
 The app should answer three questions clearly:
 
@@ -134,7 +134,7 @@ Tracked inventory for the release after v0.2.0. Grouped by what unblocks each it
 
 The updater UI, store, plugin, dedicated signing key, and publish tooling all ship.
 
-1. **Endpoint — activated at the v0.2.0 release cut** (no longer post-0.2.0): host is `agencyagents.app`
+1. **Endpoint — activated at the v0.2.0 release cut** (no longer post-0.2.0): host is `hivework.app`
    (Caddy on umbp from `~/Sites/agency-agents/`), the v0.2.0 build runs without `SKIP_UPDATER`, and
    `publish-manifest.sh` rsyncs the signed manifest there. Resolved in `decisions.md` (2026-06-22).
 2. **Opt-in automatic install** *(remaining)* — today the live path is check → notify → one-click Install;

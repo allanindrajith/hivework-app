@@ -15,7 +15,7 @@
 //!   (`resources/corpus-baseline/<category>/<slug>.md`). On first run it is
 //!   copied to `<app_data_dir>/corpus/` so the app works offline.
 //! - **Refresh** ([`corpus_refresh`]): fetch the GitHub tarball
-//!   `https://codeload.github.com/msitarzewski/agency-agents/tar.gz/refs/heads/main`,
+//!   `https://codeload.github.com/hivework/hivework/tar.gz/refs/heads/main`,
 //!   extract the category dirs over the working copy, and rebuild
 //!   `corpus-index.json`. No runtime git dependency.
 //!
@@ -103,17 +103,17 @@ fn parse_agent_dirs(script: &str) -> Option<Vec<String>> {
 /// GitHub `codeload` tarball for the live corpus. Streamed, gunzipped,
 /// and unpacked on [`corpus_refresh`]. No git binary required.
 const CORPUS_TARBALL_URL: &str =
-    "https://codeload.github.com/msitarzewski/agency-agents/tar.gz/refs/heads/main";
+    "https://codeload.github.com/hivework/hivework/tar.gz/refs/heads/main";
 
 /// Git remote used to clone/pull a managed catalog when `git` is available.
-const CATALOG_GIT_URL: &str = "https://github.com/msitarzewski/agency-agents.git";
+const CATALOG_GIT_URL: &str = "https://github.com/hivework/hivework.git";
 
-/// Dev-root directory names scanned (under `$HOME`) by the "Find Agency Agents"
+/// Dev-root directory names scanned (under `$HOME`) by the "Find Hivework"
 /// button when looking for an existing clone.
 const SCAN_ROOTS: [&str; 7] = ["Software", "Projects", "git", "Developer", "code", "dev", "src"];
 
 /// User-Agent for the refresh fetch. Mirrors the catalog refresh style.
-const USER_AGENT: &str = "agency-agents/0.1 (+https://github.com/msitarzewski/agency-agents)";
+const USER_AGENT: &str = "hivework/0.1 (+https://github.com/hivework/hivework)";
 
 /// Whole-request timeout for the tarball fetch. The repo is small (a few
 /// hundred small markdown files) so 60s is generous.
@@ -1185,7 +1185,7 @@ fn baseline_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
 }
 
 /// Resolve the per-app data dir via Tauri's path resolver (honors the
-/// bundle id `com.zerologic.agency-agents-app`).
+/// bundle id `com.hivework.app`).
 pub(crate) fn app_data_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
     app.path().app_data_dir().map_err(|e| AppError::Internal {
         message: format!("resolve app_data_dir: {e}"),
@@ -1865,7 +1865,7 @@ mod tests {
 
         // The baseline is agency-agents main @ d3f71c4 (2026-10-01): every
         // division's agents, flattened exactly as `corpus_refresh` extracts them.
-        assert_eq!(corpus.count(), 282, "all bundled agent personas indexed");
+        assert_eq!(corpus.count(), 283, "all bundled agent personas indexed");
 
         // Every agent parsed real frontmatter: non-empty name + slug, real category.
         for a in &corpus.agents {
@@ -1884,7 +1884,7 @@ mod tests {
         let cats = corpus.categories();
         assert_eq!(cats.len(), 18, "18 declared divisions");
         let count_of = |slug: &str| cats.iter().find(|c| c.slug == slug).map(|c| c.count).unwrap_or(0);
-        assert_eq!(count_of("engineering"), 65);
+        assert_eq!(count_of("engineering"), 66);
         assert_eq!(count_of("specialized"), 59);
         // game-development nests agents in unity/, godot/, unreal-engine/ etc.
         // upstream; a flat seeding would silently undercount these.

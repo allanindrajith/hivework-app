@@ -47,9 +47,9 @@ pub const STATS_CACHE_TTL_SECS: u64 = 24 * 60 * 60;
 const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 
 const USER_AGENT: &str = concat!(
-    "agency-agents-app/",
+    "hivework-app/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://github.com/msitarzewski/agency-agents-app)"
+    " (+https://github.com/hivework/hivework-app)"
 );
 
 /// API base — overridable in tests so we can point at a mock server.

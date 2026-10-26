@@ -17,7 +17,7 @@ export type CaskIconMode = "off" | "installed-only" | "all";
 
 /**
  * Persisted user settings (Phase 12d). Lives at
- * `~/Library/Application Support/com.zerologic.hivework-app/settings.json` and is
+ * `~/Library/Application Support/com.hivework.app/settings.json` and is
  * round-tripped via `settingsGet` / `settingsSet`.
  *
  * Bounds (enforced server-side, also re-checked client-side for snappier
@@ -180,7 +180,7 @@ export interface CreatedIssue {
 
 /**
  * A newer Hivework version surfaced by the manifest at
- * `agencyagents.app/updater.json`. Held by the updater store
+ * `hivework.app/updater.json`. Held by the updater store
  * once a check returns `available`. Matches the camelCase wire shape
  * the backend's `UpdateCheckOutcome::Available` flattens onto when
  * serde-tagged with `kind`.

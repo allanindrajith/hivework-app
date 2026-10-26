@@ -60,7 +60,7 @@ use crate::error::AppError;
 /// one-click re-sign-in on their next GitHub action.
 ///
 /// The match is enforced by `tests::service_id_matches_tauri_conf`.
-pub const KEYCHAIN_SERVICE: &str = "com.zerologic.agency-agents-app";
+pub const KEYCHAIN_SERVICE: &str = "com.hivework.app";
 
 /// Keychain account name for the access token. Keep this stable across
 /// versions — a rename would orphan tokens already in users' Keychains.
@@ -84,8 +84,8 @@ pub const KEYCHAIN_ACCOUNT_USERNAME: &str = "github_username";
 /// GitHub App's client_id (see `docs/BUILD.md` §"GitHub OAuth App").
 ///
 /// The current value is the real `client_id` for the upstream
-/// Agency Agents GitHub OAuth App under `msitarzewski`'s account.
-/// Maintained by the upstream maintainer; do not reuse from forks —
+/// GitHub OAuth App.
+/// Maintained by the maintainers; do not reuse from forks —
 /// rate-limit budget and any future revocation would tie back to
 /// upstream rather than the fork.
 pub const GITHUB_OAUTH_CLIENT_ID: &str = "Ov23liJZKbvrSBuiOPkT";
@@ -702,9 +702,9 @@ fn build_oauth_client() -> Result<reqwest::Client, AppError> {
     reqwest::Client::builder()
         .timeout(OAUTH_TIMEOUT)
         .user_agent(concat!(
-            "agency-agents-app/",
+            "hivework-app/",
             env!("CARGO_PKG_VERSION"),
-            " (+https://github.com/msitarzewski/agency-agents-app)"
+            " (+https://github.com/hivework/hivework-app)"
         ))
         .build()
         .map_err(|e| AppError::Network {
@@ -1126,9 +1126,7 @@ mod tests {
     fn keychain_constants_are_stable() {
         // Renaming these silently orphans tokens in users' Keychains.
         // Any change here needs an explicit migration plan.
-        // Renamed source-app service ID → com.zerologic.agency-agents-app
-        // on the 2026-06-05 rebrand fork; matches tauri.conf.json identifier.
-        assert_eq!(KEYCHAIN_SERVICE, "com.zerologic.agency-agents-app");
+        assert_eq!(KEYCHAIN_SERVICE, "com.hivework.app");
         assert_eq!(KEYCHAIN_ACCOUNT_TOKEN, "github_access_token");
         assert_eq!(KEYCHAIN_ACCOUNT_SCOPES, "github_access_token_scopes");
         assert_eq!(KEYCHAIN_ACCOUNT_USERNAME, "github_username");

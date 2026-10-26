@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# release.sh — signed + notarized macOS build of Agency Agents.
+# release.sh — signed + notarized macOS build of Hivework.
 #
 # Secrets live in the macOS Keychain, NOT in env files or shell history. This
 # script pulls them out at build time and hands them to Tauri (which signs with
@@ -12,37 +12,37 @@
 #    Then store it in the Keychain:
 #
 #       security add-generic-password \
-#         -a "msitarzewski@mac.com" -s "agency-agents-notary" -U -w
+#         -a "$APPLE_ID" -s "hivework-notary" -U -w
 #       # (paste the app-specific password when prompted)
 #
 #    Then save the same password as a notarytool profile (it prompts for the
 #    password, so it never lands on a command line or in shell history). The
 #    script uses this profile to notarize + staple each .dmg after Tauri builds it:
-#       xcrun notarytool store-credentials "agency-agents" \
-#         --apple-id "msitarzewski@mac.com" --team-id "7JQGQ7CRH8"
+#       xcrun notarytool store-credentials "hivework" \
+#         --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID"
 #
 # 2. Tauri updater signing key (minisign — signs the auto-update artifacts so
 #    the app trusts its own updates; separate from Apple signing). Store the
 #    PRIVATE key + its password in the Keychain too:
 #
-#       security add-generic-password -a "agency-agents" -s "agency-agents-updater-key"     -U -w   # paste private key contents
-#       security add-generic-password -a "agency-agents" -s "agency-agents-updater-key-pw"  -U -w   # paste its password
+#       security add-generic-password -a "hivework" -s "hivework-updater-key"     -U -w   # paste private key contents
+#       security add-generic-password -a "hivework" -s "hivework-updater-key-pw"  -U -w   # paste its password
 #
 # After setup, just run:  ./scripts/release.sh
 # ────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 # Non-secret identifiers (safe to keep in the script).
-export APPLE_ID="msitarzewski@mac.com"
-export APPLE_TEAM_ID="7JQGQ7CRH8"   # from "Developer ID Application: … (7JQGQ7CRH8)"
+export APPLE_ID="${APPLE_ID:-}"
+export APPLE_TEAM_ID="${APPLE_TEAM_ID:-}"
 
-NOTARY_SERVICE="agency-agents-notary"
-UPDATER_KEY_SERVICE="agency-agents-updater-key"
-UPDATER_KEY_PW_SERVICE="agency-agents-updater-key-pw"
+NOTARY_SERVICE="hivework-notary"
+UPDATER_KEY_SERVICE="hivework-updater-key"
+UPDATER_KEY_PW_SERVICE="hivework-updater-key-pw"
 
 kc() { security find-generic-password -a "$1" -s "$2" -w 2>/dev/null || true; }
 
-NOTARY_PROFILE="${NOTARY_PROFILE:-agency-agents}"   # notarytool keychain profile (SETUP step 1)
+NOTARY_PROFILE="${NOTARY_PROFILE:-hivework}"   # notarytool keychain profile (SETUP step 1)
 
 # ── Apple notarization password (from Keychain) ──
 APPLE_PASSWORD="$(kc "$APPLE_ID" "$NOTARY_SERVICE")"
@@ -69,8 +69,8 @@ if [[ "${SKIP_UPDATER:-0}" == "1" ]]; then
   echo "▸ SKIP_UPDATER=1 — building WITHOUT updater artifacts."
   BUILD_ARGS+=(--config '{"bundle":{"createUpdaterArtifacts":false}}')
 else
-  TAURI_SIGNING_PRIVATE_KEY="$(kc "agency-agents" "$UPDATER_KEY_SERVICE")"
-  TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(kc "agency-agents" "$UPDATER_KEY_PW_SERVICE")"
+  TAURI_SIGNING_PRIVATE_KEY="$(kc "hivework" "$UPDATER_KEY_SERVICE")"
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(kc "hivework" "$UPDATER_KEY_PW_SERVICE")"
   if [[ -z "$TAURI_SIGNING_PRIVATE_KEY" ]]; then
     echo "✗ No updater signing key in the Keychain (service '$UPDATER_KEY_SERVICE')." >&2
     echo "  Store it (see SETUP) or run with SKIP_UPDATER=1 to skip update artifacts." >&2
@@ -120,12 +120,12 @@ DMG_DIRS=()
 
 for target in "${TARGETS[@]}"; do
   if [[ "$target" == "$HOST_TRIPLE" ]]; then
-    echo "▸ Building signed + notarized Agency Agents for ${target} (native, Team $APPLE_TEAM_ID)…"
+    echo "▸ Building signed + notarized Hivework for ${target} (native, Team $APPLE_TEAM_ID)…"
     npm run tauri build -- ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
     DMG_DIRS+=("src-tauri/target/release/bundle/dmg/")
     notarize_dmg "src-tauri/target/release/bundle/dmg"
   else
-    echo "▸ Building signed + notarized Agency Agents for ${target} (cross, Team $APPLE_TEAM_ID)…"
+    echo "▸ Building signed + notarized Hivework for ${target} (cross, Team $APPLE_TEAM_ID)…"
     npm run tauri build -- --target "$target" ${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}
     DMG_DIRS+=("src-tauri/target/${target}/release/bundle/dmg/")
     notarize_dmg "src-tauri/target/${target}/release/bundle/dmg"

@@ -101,7 +101,7 @@ The recommended next architecture is a manifest in the AA repo that both `script
 ### Tool definitions live in the catalog, not here
 
 `src-tauri/data/tools.json` is a **verbatim mirror** of the `tools.json` the
-[`agency-agents`](https://github.com/msitarzewski/agency-agents) catalog owns, and
+[`hivework`](https://github.com/hivework/hivework) catalog owns, and
 `src-tauri/resources/corpus-baseline/scripts/convert.sh` mirrors that repo's converter.
 The Rust renderers in `src-tauri/src/render/` are ports of `convert.sh` and must stay
 byte-for-byte identical to it — that is exactly what the parity test enforces.
@@ -175,7 +175,7 @@ npm run build:phase-c
 Renderer parity:
 
 ```sh
-AGENCY_AGENTS_PARITY_ROOT=/Users/michael/Software/AgentLand/agency-agents \
+AGENCY_AGENTS_PARITY_ROOT=../Hivework \
 cargo test --manifest-path src-tauri/Cargo.toml upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored
 ```
 

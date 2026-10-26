@@ -552,7 +552,7 @@ const tr = {
   "updates.checkNow": "Şimdi kontrol et",
   "updates.lastChecked": "Son kontrol: {time}",
   "updates.offlineHint": "Çevrimdışı Mod açık — manuel güncelleme kontrolleri engellendi. Manifest'i kontrol etmek için yukarıdan kapatın.",
-  "updates.onlineHint": "agencyagents.app/updater.json dosyasını getirir ve yayınlanan sürümü çalıştırdığınızla karşılaştırır. Hiçbir sürüm numarası gönderilmez.",
+  "updates.onlineHint": "hivework.app/updater.json dosyasını getirir ve yayınlanan sürümü çalıştırdığınızla karşılaştırır. Hiçbir sürüm numarası gönderilmez.",
   "updates.autoCheck": "Günlük otomatik kontrol",
   "updates.autoCheckHint": "Açıkken Hivework manifest'i 24 saatte bir kontrol eder ve daha yeni bir sürüm varsa başlık çubuğunda bir bildirim gösterir. Çevrimdışı Mod açıkken otomatik olarak askıya alınır.",
   "updates.autoInstall": "Güncellemeleri otomatik kur",

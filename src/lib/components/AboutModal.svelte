@@ -13,9 +13,8 @@
   import appIcon from "$lib/assets/app-icon.png";
   import appIconDark from "$lib/assets/app-icon-dark.png";
 
-  const REPO_URL = "https://github.com/msitarzewski/hivework-app";
-  const LICENSE_URL = "https://github.com/msitarzewski/hivework-app/blob/main/LICENSE";
-  const AGENCY_AGENTS_URL = "https://github.com/msitarzewski/hivework";
+  const REPO_URL = "https://github.com/hivework/hivework-app";
+  const LICENSE_URL = "https://github.com/hivework/hivework-app/blob/main/LICENSE";
 
   let appVer = $state<string | null>(null);
   let modalEl: HTMLDivElement | undefined = $state();
@@ -49,7 +48,6 @@
   function openSponsor()        { void safeOpenUrl(SPONSOR_URL); }
   function openRepo()           { void safeOpenUrl(REPO_URL); }
   function openLicense()        { void safeOpenUrl(LICENSE_URL); }
-  function openAgencyAgents()   { void safeOpenUrl(AGENCY_AGENTS_URL); }
 </script>
 
 {#if ui.aboutOpen}
@@ -76,7 +74,7 @@
       <dl class="meta">
         <div><dt>{i18n.t("about.version")}</dt><dd class="mono">{appVer ?? "…"}</dd></div>
         <div><dt>{i18n.t("about.license")}</dt><dd><button class="link" onclick={openLicense}>MIT</button></dd></div>
-        <div><dt>{i18n.t("about.repo")}</dt><dd><button class="link" onclick={openRepo}>github.com/msitarzewski/hivework-app</button></dd></div>
+        <div><dt>{i18n.t("about.repo")}</dt><dd><button class="link" onclick={openRepo}>github.com/hivework/hivework-app</button></dd></div>
       </dl>
 
       <button class="donate-cta" onclick={openSponsor} title={i18n.t("about.sponsorTitle")}>

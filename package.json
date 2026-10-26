@@ -3,8 +3,8 @@
   "version": "0.3.2",
   "description": "Hivework — a native macOS app store for AI agents. Browse, install, and track 283+ specialized agents across every AI coding tool.",
   "type": "module",
-  "author": "Michael Sitarzewski",
-  "repository": "github:msitarzewski/agency-agents-app",
+  "author": "Hivework Contributors",
+  "repository": "github:hivework/hivework-app",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",

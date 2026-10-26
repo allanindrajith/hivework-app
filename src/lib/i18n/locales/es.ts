@@ -512,7 +512,7 @@ const es = {
   "updates.checkNow": "Compruébalo ahora",
   "updates.lastChecked": "Última comprobación: {time}",
   "updates.offlineHint": "El modo sin conexión está activado: las comprobaciones de actualizaciones manuales están bloqueadas. Apáguelo arriba para verificar el manifiesto.",
-  "updates.onlineHint": "Obtiene agencyagents.app/updater.json y compara la versión publicada con la que está ejecutando. No se envía ningún número de versión.",
+  "updates.onlineHint": "Obtiene hivework.app/updater.json y compara la versión publicada con la que está ejecutando. No se envía ningún número de versión.",
   "updates.autoCheck": "Comprobación automática diaria",
   "updates.autoCheckHint": "Cuando está activado, Hivework verifica el manifiesto una vez cada 24 horas y muestra un aviso en la barra de título si hay una versión más nueva disponible. Se suspende automáticamente mientras el modo sin conexión está activado.",
   "updates.autoInstall": "Instalar actualizaciones automáticamente",

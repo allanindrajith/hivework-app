@@ -660,10 +660,10 @@ trap 'rm -f "$AIDER_TMP" "$WINDSURF_TMP"; [[ -z "$PARALLEL_OUT_DIR" ]] || rm -rf
 
 # Write Aider/Windsurf headers once
 cat > "$AIDER_TMP" <<'HEREDOC'
-# The Agency — AI Agent Conventions
+# Hivework — AI Agent Conventions
 #
-# The roster of specialized AI agents from The Agency
-# (https://github.com/msitarzewski/agency-agents): each one's name, what it is
+# The roster of specialized AI agents from Hivework
+# (https://github.com/hivework/hivework): each one's name, what it is
 # for, and where its full instructions live.
 #
 # Aider keeps a conventions file in context for the whole session, so this is an
