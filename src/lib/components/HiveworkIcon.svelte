@@ -1,0 +1,48 @@
+<script lang="ts">
+  /**
+   * HiveworkIcon — official Hivework Honeycomb Hexagon brand icon.
+   * Features outer hexagon with inner circuit bee wings and stinger node.
+   */
+  interface Props {
+    size?: number;
+    class?: string;
+    color?: string;
+  }
+  let { size = 20, class: className = "", color = "#f59e0b" }: Props = $props();
+</script>
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 120"
+  width={size}
+  height={size}
+  class={className}
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <!-- Outer Honeycomb Hexagon -->
+  <path
+    d="M60 12 L102 36 V84 L60 108 L18 84 V36 Z"
+    stroke={color}
+    stroke-width="8"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+  <!-- Inner Circuit Bee Wings -->
+  <path
+    d="M40 36 V48 L60 62 L80 48 V36"
+    stroke={color}
+    stroke-width="8"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  />
+  <!-- Stinger Stem & Node -->
+  <path
+    d="M60 62 V88"
+    stroke={color}
+    stroke-width="8"
+    stroke-linecap="round"
+  />
+  <circle cx="60" cy="93" r="5" fill={color} />
+</svg>
