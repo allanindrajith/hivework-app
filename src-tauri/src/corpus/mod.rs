@@ -271,9 +271,10 @@ impl Corpus {
 // ---------- Category metadata ----------
 
 /// The bundled `categories.json` shape we read label + icon from. Only
-/// the `categories` map is needed here.
+/// the `categories` (or `divisions`) map is needed here.
 #[derive(Debug, Deserialize)]
 struct CategoriesFile {
+    #[serde(alias = "divisions")]
     categories: BTreeMap<String, CategoryMetaRow>,
 }
 
@@ -290,6 +291,7 @@ struct CategoryMetaRow {
 /// linters. Same row shape as the bundled file, under a `divisions` key.
 #[derive(Debug, Deserialize)]
 struct DivisionsFile {
+    #[serde(alias = "categories")]
     divisions: BTreeMap<String, CategoryMetaRow>,
 }
 

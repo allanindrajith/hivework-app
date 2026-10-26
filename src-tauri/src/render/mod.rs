@@ -508,51 +508,51 @@ mod tests {
 
     #[test]
     fn osaurus_skill_md_shape_and_dest() {
-        // Mirrors upstream convert.sh `convert_osaurus`: a SKILL.md whose `name`
-        // carries the `agency-` namespace prefix, persona as the body.
+        // Mirrors convert_osaurus: a SKILL.md whose `name`
+        // carries the `hive-` namespace prefix, persona as the body.
         let out = render(&agent(), raw(), "osaurus").unwrap();
         assert_eq!(
             out,
-            "---\nname: 'agency-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
+            "---\nname: 'hive-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
         );
         // output_slug carries the prefix → it names the skill directory.
-        assert_eq!(output_slug(&agent(), raw(), "osaurus"), "agency-frontend-developer");
+        assert_eq!(output_slug(&agent(), raw(), "osaurus"), "hive-frontend-developer");
         // dest is the nested ~/.osaurus/skills/<name>/SKILL.md (user-scope).
-        let d = dests("osaurus", "agency-frontend-developer", Path::new("/home"), None).unwrap();
+        let d = dests("osaurus", "hive-frontend-developer", Path::new("/home"), None).unwrap();
         assert_eq!(
             d,
-            vec![PathBuf::from("/home/.osaurus/skills/agency-frontend-developer/SKILL.md")]
+            vec![PathBuf::from("/home/.osaurus/skills/hive-frontend-developer/SKILL.md")]
         );
     }
 
     #[test]
     fn antigravity_skill_md_shape_and_dests() {
         // Antigravity reuses the skill-md renderer (identical shape to osaurus,
-        // same `agency-` prefix). Global skills load from ~/.gemini/config/skills/,
+        // same `hive-` prefix). Global skills load from ~/.gemini/config/skills/,
         // project skills from <project>/.agents/skills/.
         let out = render(&agent(), raw(), "antigravity").unwrap();
         assert_eq!(
             out,
-            "---\nname: 'agency-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
+            "---\nname: 'hive-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
         );
-        assert_eq!(output_slug(&agent(), raw(), "antigravity"), "agency-frontend-developer");
+        assert_eq!(output_slug(&agent(), raw(), "antigravity"), "hive-frontend-developer");
         // user-scope → ~/.gemini/config/skills/<name>/SKILL.md
-        let user = dests("antigravity", "agency-frontend-developer", Path::new("/home"), None).unwrap();
+        let user = dests("antigravity", "hive-frontend-developer", Path::new("/home"), None).unwrap();
         assert_eq!(
             user,
-            vec![PathBuf::from("/home/.gemini/config/skills/agency-frontend-developer/SKILL.md")]
+            vec![PathBuf::from("/home/.gemini/config/skills/hive-frontend-developer/SKILL.md")]
         );
         // project-scope → <project>/.agents/skills/<name>/SKILL.md
         let proj = dests(
             "antigravity",
-            "agency-frontend-developer",
+            "hive-frontend-developer",
             Path::new("/home"),
             Some(Path::new("/proj")),
         )
         .unwrap();
         assert_eq!(
             proj,
-            vec![PathBuf::from("/proj/.agents/skills/agency-frontend-developer/SKILL.md")]
+            vec![PathBuf::from("/proj/.agents/skills/hive-frontend-developer/SKILL.md")]
         );
     }
 
@@ -633,14 +633,14 @@ mod tests {
 
     #[test]
     fn dsh_renders_an_agency_skill_and_vibe_is_not_installable() {
-        // DeepSeek Harness reuses the Agent-Skills renderer (upstream convert_dsh).
+        // DeepSeek Harness reuses the Agent-Skills renderer.
         let out = render(&agent(), raw(), "deepseekHarness").unwrap();
         assert_eq!(
             out,
-            "---\nname: 'agency-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
+            "---\nname: 'hive-frontend-developer'\ndescription: 'Builds UIs.'\n---\nYou are a frontend dev.\n"
         );
-        let d = dests("deepseekHarness", "agency-frontend-developer", Path::new("/home"), None).unwrap();
-        assert_eq!(d, vec![PathBuf::from("/home/.dsh/skills/agency-frontend-developer/SKILL.md")]);
+        let d = dests("deepseekHarness", "hive-frontend-developer", Path::new("/home"), None).unwrap();
+        assert_eq!(d, vec![PathBuf::from("/home/.dsh/skills/hive-frontend-developer/SKILL.md")]);
         // Vibe is recognized (its format has no native renderer yet), not installable.
         assert!(render(&agent(), raw(), "vibe").is_err());
     }
