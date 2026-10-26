@@ -1,6 +1,6 @@
-# Agency Agents Philosophy
+# Hivework Philosophy
 
-Agency Agents exists because useful AI-agent catalogs should be easy to inspect, install, and maintain without hiding what is being written to a developer's machine.
+Hivework exists because useful AI-agent catalogs should be easy to inspect, install, and maintain without hiding what is being written to a developer's machine.
 
 The app is intentionally:
 
@@ -21,7 +21,7 @@ The catalog source is either bundled, managed locally, or chosen by the user. Ag
 
 Most AI coding tools read agent files from config directories, but they do not expose a shared install database.
 
-Agency Agents fills that gap with a local ledger:
+Hivework fills that gap with a local ledger:
 
 - what agent was installed
 - where it was written
@@ -49,7 +49,7 @@ The app should be useful without accounts or background services.
 
 Network use is explicit:
 
-- refresh the `agency-agents` catalog
+- refresh the `hivework` catalog
 - sign in to GitHub
 - call GitHub-backed features
 - check for app updates
@@ -58,7 +58,7 @@ Core browsing, install tracking, reconciliation, and uninstall behavior operate 
 
 ## 5. No Telemetry
 
-Agency Agents does not collect:
+Hivework does not collect:
 
 - analytics
 - click tracking
@@ -108,4 +108,4 @@ Over:
 - opaque recommendations
 - ornamental dashboards
 
-Agency Agents should make the user's agent setup easier to understand, not harder.
+Hivework should make the user's agent setup easier to understand, not harder.

@@ -51,8 +51,8 @@ export interface Settings {
   /** Legacy vulnerability-scanning toggle inherited from the source app.
       Hivework does not currently run a vulnerability scanner. */
   vulnerabilityScanningEnabled: boolean;
-  /** Legacy live-enrichment toggle inherited from the source app. Agency
-      Agents currently reads metadata from the active AA catalog. */
+  /** Legacy live-enrichment toggle inherited from the source app. Hivework
+      currently reads metadata from the active catalog. */
   liveEnrichmentEnabled: boolean;
   /** Per-tool custom install base path (tool id → absolute base dir). When set,
       user-scope installs + detection resolve against it instead of the OS home

@@ -994,10 +994,21 @@ async fn read_capped(path: &Path, max: u64) -> Result<Vec<u8>, AppError> {
 // Catalog detection / provisioning / pull (#1 clone-as-source-of-truth)
 // =====================================================================
 
-/// `~/.agency-agents` — the default managed-catalog location (shared with the
-/// agency-agents CLI).
+/// `~/.hivework` (or fallback `~/.agency-agents`) — the default managed-catalog location.
 fn home_agency_dir() -> Option<PathBuf> {
-    dirs::home_dir().map(|h| h.join(".agency-agents"))
+    dirs::home_dir().map(|h| {
+        let hw = h.join(".hivework");
+        if hw.exists() {
+            hw
+        } else {
+            let aa = h.join(".agency-agents");
+            if aa.exists() {
+                aa
+            } else {
+                hw
+            }
+        }
+    })
 }
 
 /// Is a `git` binary on PATH? Determines clone/pull vs tarball-snapshot.
@@ -1088,15 +1099,19 @@ async fn detect_catalogs(scan: bool) -> CatalogDetection {
     if scan {
         if let Some(home) = dirs::home_dir() {
             for root in SCAN_ROOTS {
-                // Look for `<home>/<root>/agency-agents` and a direct
+                // Look for `<home>/<root>/hivework` or `agency-agents` and a direct
                 // `<home>/<root>` that is itself a catalog.
                 let base = home.join(root);
+                push(candidate_for(&base.join("hivework"), "userClone"), &mut candidates, &mut seen);
                 push(candidate_for(&base.join("agency-agents"), "userClone"), &mut candidates, &mut seen);
-                // One level of children named with "agency" (cheap heuristic).
+                // One level of children named with "hivework" or "agency" (cheap heuristic).
                 if let Ok(rd) = std::fs::read_dir(&base) {
                     for ent in rd.filter_map(|e| e.ok()) {
                         let p = ent.path();
-                        if p.is_dir() && p.file_name().map(|n| n.to_string_lossy().contains("agency")).unwrap_or(false) {
+                        if p.is_dir() && p.file_name().map(|n| {
+                            let s = n.to_string_lossy().to_lowercase();
+                            s.contains("hivework") || s.contains("agency")
+                        }).unwrap_or(false) {
                             push(candidate_for(&p, "userClone"), &mut candidates, &mut seen);
                         }
                     }

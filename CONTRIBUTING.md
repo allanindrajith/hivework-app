@@ -1,4 +1,4 @@
-# Contributing to Agency Agents
+# Contributing to Hivework
 
 Thanks for considering a contribution. This project is small, opinionated, and open. The bar for landing changes is straightforward: match the existing architecture, keep changes focused, and verify them.
 
@@ -23,24 +23,24 @@ Prerequisites:
 Loop:
 
 ```sh
-git clone https://github.com/<your-fork>/agency-agents-app
-cd agency-agents-app
+git clone https://github.com/<your-fork>/hivework-app
+cd hivework-app
 npm install
 npm run tauri dev
 npm run check
 cargo test --manifest-path src-tauri/Cargo.toml --lib
 ```
 
-The app uses the `agency-agents` catalog. For local catalog testing, use an existing clone or create one at:
+The app uses the `hivework` catalog. For local catalog testing, use an existing clone or create one at:
 
 ```text
-~/Software/AgentLand/agency-agents
+~/.hivework
 ```
 
 ## Project Structure
 
 ```text
-agency-agents-app/
+hivework-app/
 ├── src/                         Svelte 5 + TypeScript frontend
 │   ├── lib/components/          app surfaces and shared UI
 │   ├── lib/stores/              Svelte stores

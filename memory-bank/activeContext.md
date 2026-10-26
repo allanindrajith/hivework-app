@@ -1,4 +1,4 @@
-# Active Context — Agency Agents
+# Active Context — Hivework
 
 **State (2026-09-15)**: **v0.3.1 is cut and validated; only the Mac DMGs remain.** `main` @ `32641d5`, eight commits
 past `e8f3fcd`. The release candidate is PR #104 (`feat/approved-icon-family`) — Linux and Windows CI both green on
@@ -120,9 +120,9 @@ not started. 8 open PRs, all mergeable (#81 RTL, #82 healthcare label, #85, #80,
 launch (the internally-tracked "0.1.1"/"0.1.2" milestones were never cut separately — they ship here), and
 **auto-update is now LIVE** at [`agencyagents.app/updater.json`](https://agencyagents.app/updater.json) for
 **both Mac arches** (`darwin-aarch64` + `darwin-x86_64`). Release at
-[releases/tag/v0.2.0](https://github.com/msitarzewski/agency-agents-app/releases/tag/v0.2.0): **9 assets** (macOS
+[releases/tag/v0.2.0](https://github.com/hivework/hivework-app/releases/tag/v0.2.0): **9 assets** (macOS
 aarch64+x64 signed/notarized DMGs **+ updater tarballs**, Linux deb/rpm/AppImage, Windows x64/arm64). Homebrew:
-`brew tap msitarzewski/agency-agents && brew install --cask agency-agents` (cask @ 0.2.0). Cross-platform CI in
+`brew tap hivework/hivework && brew install --cask hivework` (cask @ 0.2.0). Cross-platform CI in
 `.github/workflows/` (linux-build, windows-build) fires on `v*` tags; macOS DMGs build locally via
 `scripts/release.sh`. Full ship log: `agentLog.md` 2026-06-23; task doc `tasks/2026-06/260623_v0.2.0-ship.md`.
 

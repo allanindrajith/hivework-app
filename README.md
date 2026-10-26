@@ -13,7 +13,7 @@ It is full source, MIT-licensed, local-first, and does not run telemetry.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="landing/screenshots/dashboard-dark.png">
-  <img alt="Agency Agents — Dashboard: install health, cross-tool coverage, and the catalog by division" src="landing/screenshots/dashboard-light.png">
+  <img alt="Hivework — Dashboard: install health, cross-tool coverage, and the catalog by division" src="landing/screenshots/dashboard-light.png">
 </picture>
 
 ## Why This Exists
@@ -33,7 +33,7 @@ The core idea is simple: AI tools do not share a package database, so the app ke
 
 ## Features
 
-Agency Agents is organized around four pillars — **Agents** (who), **Tools** (how), **Teams** (which), and **Projects** (where):
+Hivework is organized around four pillars — **Agents** (who), **Tools** (how), **Teams** (which), and **Projects** (where):
 
 - **Agents workspace** — searchable three-pane catalog, division and category filters, an install-state lens, a detail panel, and per-agent deployment controls.
 - **Tools panel** — shows all recognized tools from the registry, detected installs, counts, versions where available, default targets, project installs, and bulk operations. Installable targets render in full; recognized-only targets appear dimmed.
@@ -168,7 +168,7 @@ No telemetry, crash reporting, advertising pixels, or product analytics are incl
 
 ## Security
 
-Agency Agents uses typed Tauri IPC commands and avoids `tauri-plugin-shell`. File writes are restricted to known install destinations, app state, backups, and user-selected paths. Modified installed files are backed up before destructive operations.
+Hivework uses typed Tauri IPC commands and avoids `tauri-plugin-shell`. File writes are restricted to known install destinations, app state, backups, and user-selected paths. Modified installed files are backed up before destructive operations.
 
 Report vulnerabilities using [SECURITY.md](./SECURITY.md).
 

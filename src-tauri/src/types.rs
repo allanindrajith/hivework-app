@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 // =========================================================
-// Agency Agents — corpus subsystem (contracts.md §A)
+// Hivework — corpus subsystem (contracts.md §A)
 // =========================================================
 //
 // Wire format mirrors `src/lib/types.ts`.
@@ -79,7 +79,7 @@ pub struct CatalogCandidate {
 pub struct CatalogDetection {
     pub git_available: bool,
     /// True when a filesystem scan of common dev roots was performed (the
-    /// "Find Agency Agents" button), vs the cheap `~/.agency-agents`-only check.
+    /// "Find Hivework" button), vs the cheap default check.
     pub scanned: bool,
     pub candidates: Vec<CatalogCandidate>,
 }

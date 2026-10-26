@@ -115,20 +115,20 @@ pub struct Settings {
     pub skipped_update_versions: Vec<String>,
 
     /// Legacy enhanced-trending toggle inherited from the source app.
-    /// Retained for settings-file compatibility; Agency Agents should not
+    /// Retained for settings-file compatibility; Hivework should not
     /// wire a runtime feature to this without a fresh endpoint audit.
     #[serde(default)]
     pub enhanced_trending_enabled: bool,
 
     /// Legacy vulnerability-scanning toggle inherited from the source app.
-    /// Retained for settings-file compatibility; Agency Agents does not shell
+    /// Retained for settings-file compatibility; Hivework does not shell
     /// out to a vulnerability scanner.
     #[serde(default)]
     pub vulnerability_scanning_enabled: bool,
 
     /// Legacy live-enrichment toggle inherited from the source app. Retained
-    /// for settings-file compatibility; Agency Agents currently reads metadata
-    /// from the active AA catalog.
+    /// for settings-file compatibility; Hivework currently reads metadata
+    /// from the active catalog.
     #[serde(default)]
     pub live_enrichment_enabled: bool,
 

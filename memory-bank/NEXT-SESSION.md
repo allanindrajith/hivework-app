@@ -24,7 +24,7 @@ macOS build. Both are described in `activeContext.md`.
 
 ---
 
-# NEXT SESSION — resume notes (Agency Agents)
+# NEXT SESSION — resume notes (Hivework)
 
 Read this first after a compaction. Then `activeContext.md`, `agentLog.md` (append-only history),
 `phases/phase-roadmap.md`, `contracts.md`, `systemPatterns.md`, `decisions.md`.

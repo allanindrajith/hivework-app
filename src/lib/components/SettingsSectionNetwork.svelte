@@ -2,8 +2,8 @@
   /**
    * SettingsSectionNetwork.svelte — Hivework
    *
-   * Privacy controls for the app's small, well-defined network surface. Agency
-   * Agents talks to exactly two places: GitHub (to fetch/clone/pull the
+   * Privacy controls for the app's small, well-defined network surface. Hivework
+   * talks to exactly two places: GitHub (to fetch/clone/pull the
    * hivework catalog and, optionally, read repo stats + sign in) and the
    * app's own update endpoint. Offline Mode blocks all of it.
    *

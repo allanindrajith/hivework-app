@@ -1,4 +1,4 @@
-# Phase Roadmap — Agency Agents
+# Phase Roadmap — Hivework
 
 Mirrors how brew-browser was built (incremental, always-green). Each phase ends with a
 compiling app + a demoable slice.

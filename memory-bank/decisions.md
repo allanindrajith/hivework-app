@@ -1,4 +1,4 @@
-# Decisions (ADRs) — Agency Agents
+# Decisions (ADRs) — Hivework
 
 ## 2026-09-12 — Strip AppImage bundle paths from every child process, rather than patching git
 

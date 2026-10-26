@@ -1,10 +1,10 @@
-# System Patterns — Agency Agents
+# System Patterns — Hivework
 
 ## 1. Corpus-copy model (source of truth)
 
 ```
-~/Library/Application Support/com.zerologic.agency-agents-app/
-├── corpus/                  # our maintained copy of the agency-agents repo (251 .md)
+~/Library/Application Support/com.hivework.app/
+├── corpus/                  # our maintained copy of the hivework repo (251 .md)
 │   └── <category>/<slug>.md
 ├── state/
 │   ├── corpus-index.json    # slug → CorpusEntry (hashes, category, version)
@@ -15,7 +15,7 @@
 - **Seed**: a bundled baseline corpus ships inside the app bundle (resources) so first
   launch works offline. On first run it is extracted to `corpus/`.
 - **Refresh**: fetch the GitHub tarball
-  `https://codeload.github.com/msitarzewski/agency-agents/tar.gz/refs/heads/main`,
+  `https://codeload.github.com/hivework/hivework/tar.gz/refs/heads/main`,
   extract, atomically swap `corpus/`, rebuild `corpus-index.json`. Record the resolved
   commit SHA / tag as `corpus_version`. **No runtime git dependency.**
 - This mirrors brew-browser's bundled-catalog + live-refresh pattern, but the served
@@ -75,7 +75,7 @@ Identity = slug-from-filename, confirmed by re-rendering against our corpus-inde
 
 ## 6. Domain-layer module map (Rust `src-tauri/src/`)
 
-| brew-browser | Agency Agents | role |
+| brew-browser | Hivework | role |
 |---|---|---|
 | `brew/` | `agency/` | exec/parse/paths for agent ops |
 | `catalog/` | `catalog/` | parse corpus → in-memory catalog |

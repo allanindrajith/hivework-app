@@ -1,9 +1,9 @@
-# Project Brief — Agency Agents
+# Project Brief — Hivework
 
-**Product**: Agency Agents
-**Bundle ID**: `com.zerologic.agency-agents-app`
-**Repo**: github:msitarzewski/agency-agents-app
-**Author**: Michael Sitarzewski / Zerologic
+**Product**: Hivework
+**Bundle ID**: `com.hivework.app`
+**Repo**: github:hivework/hivework-app
+**Author**: Hivework Team
 **License**: MIT · No telemetry · No accounts
 
 ## One-liner
@@ -18,9 +18,9 @@ for a future "Playbooks" section.)
 
 ## Thesis
 
-This app is to the **agency-agents** repo what **brew-browser** is to **Homebrew**:
+This app is to the **hivework** repo what **brew-browser** is to **Homebrew**:
 a thin, respectful native GUI over a CLI/content catalog. We forked brew-browser
-structurally (Tauri 2 + Svelte 5 + Rust) and re-pointed the domain layer from
+structually (Tauri 2 + Svelte 5 + Rust) and re-pointed the domain layer from
 `brew` packages to AI agents.
 
 **Key difference from brew-browser**: Homebrew owns its own install database
@@ -32,12 +32,12 @@ database*. That state-tracking layer is the app's core differentiator:
 ## What it is / isn't
 
 - **Is**: a browser + installer + cross-tool state tracker + loadout manager for agents.
-- **Isn't**: a replacement for the agency-agents repo, telemetry-funded, freemium,
+- **Isn't**: a replacement for the hivework repo, telemetry-funded, freemium,
   or a runtime that executes agents itself (v1 installs into other tools; it does not run agents).
 
 ## Source of truth (the corpus-copy model)
 
-The app maintains its **own local working copy** of the agency-agents repo in
+The app maintains its **own local working copy** of the hivework repo in
 `~/Library/Application Support/com.hivework.app/corpus/`, seeded from a
 bundled baseline and refreshed from the GitHub tarball. From that copy it derives a
 hash index (`corpus-index.json`) and renders/install agents into each tool. See

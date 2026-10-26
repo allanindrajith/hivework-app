@@ -1,7 +1,7 @@
 {
-  "name": "Agency Agents",
-  "short_name": "Agency Agents",
-  "description": "A native installer for AI agents. Browse, install, and track agent personas across the AI coding tools you use.",
+  "name": "Hivework",
+  "short_name": "Hivework",
+  "description": "A native app store for AI agents. Browse, install, and track agent personas across the AI coding tools you use.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

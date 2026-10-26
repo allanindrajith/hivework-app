@@ -1,4 +1,4 @@
-# Building Agency Agents
+# Building Hivework
 
 ## Development Build
 
@@ -184,7 +184,7 @@ The ordered runbook for cutting a release. The mechanics referenced here are det
 
    Or the bundled batch: `npm run build:phase-c`.
 
-2. **Finalize release notes** — `git mv docs/release-notes/unreleased.md docs/release-notes/0.1.0.md`, retitle to `Agency Agents v0.1.0 - <date>`, drop the staging-file line, then recreate an empty `unreleased.md` stub for the next cycle.
+2. **Finalize release notes** — `git mv docs/release-notes/unreleased.md docs/release-notes/0.1.0.md`, retitle to `Hivework v0.1.0 - <date>`, drop the staging-file line, then recreate an empty `unreleased.md` stub for the next cycle.
 
 3. **Build** — `SKIP_UPDATER=1 ./scripts/release.sh` (see *Release Build On macOS*). Produces the signed, notarized, stapled `.app` + signed `.dmg`.
 
