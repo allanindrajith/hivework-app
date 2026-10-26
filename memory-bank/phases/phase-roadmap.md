@@ -1,13 +1,11 @@
 # Phase Roadmap — Hivework
 
-Mirrors how brew-browser was built (incremental, always-green). Each phase ends with a
+Development follows an incremental, always-green model. Each phase ends with a
 compiling app + a demoable slice.
 
-## ⭐ Current plan (v2, 2026-06-06) — the active sequence
+## ⭐ Current Architecture & Milestones
 
-Phases 0–3 are DONE (details below). The Library "frozen" saga is resolved (root cause:
-`each_key_duplicate` from Copilot dual-write, NOT reactivity — see agentLog). Dev port moved to
-1430 (brew-browser keeps 1420). The active forward sequence is now:
+Dev port configured on 1430. The active roadmap sequence:
 
 0. **🧹 Brew-domain sweep** — remove the now-unreachable inherited brew code (catalog/cask/formula,
    vulns, trending, enrichment, services, brewfiles, brew exec) end-to-end: backend modules +

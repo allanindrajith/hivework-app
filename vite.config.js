@@ -14,9 +14,7 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    // Agency Agents uses 1430 (NOT 1420) so it never collides with the
-    // brew-browser dev server it was forked from — both default to 1420, and a
-    // shared port makes one app's webview load the other's frontend.
+    // Hivework dev server runs on dedicated port 1430.
     port: 1430,
     strictPort: true,
     host: host || false,

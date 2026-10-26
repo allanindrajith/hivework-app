@@ -18,21 +18,17 @@ for a future "Playbooks" section.)
 
 ## Thesis
 
-This app is to the **hivework** repo what **brew-browser** is to **Homebrew**:
-a thin, respectful native GUI over a CLI/content catalog. We forked brew-browser
-structually (Tauri 2 + Svelte 5 + Rust) and re-pointed the domain layer from
-`brew` packages to AI agents.
+Hivework is a thin, respectful native GUI and state-tracking layer over the AI agent catalog.
+Built with Tauri 2, Svelte 5, and Rust, it provides a fast, lightweight desktop experience.
 
-**Key difference from brew-browser**: Homebrew owns its own install database
-(`brew list`/`brew outdated` are the source of truth). The AI tools have **no such
-registry** — every tool's config dir is a dumb dumping ground. So *we must BE the
-database*. That state-tracking layer is the app's core differentiator:
+**Core Innovation**: AI coding tools have **no shared registry** — every tool's config dir
+is an unmanaged destination. Hivework serves as the unified local database and state tracker:
 > "the only tool that tracks your agents across every AI tool you use."
 
 ## What it is / isn't
 
-- **Is**: a browser + installer + cross-tool state tracker + loadout manager for agents.
-- **Isn't**: a replacement for the hivework repo, telemetry-funded, freemium,
+- **Is**: a browser + installer + cross-tool state tracker + team loadout manager for agents.
+- **Isn't**: a replacement for the hivework catalog, telemetry-funded, freemium,
   or a runtime that executes agents itself (v1 installs into other tools; it does not run agents).
 
 ## Source of truth (the corpus-copy model)
@@ -43,7 +39,7 @@ bundled baseline and refreshed from the GitHub tarball. From that copy it derive
 hash index (`corpus-index.json`) and renders/install agents into each tool. See
 `systemPatterns.md`.
 
-## Inherited wholesale from brew-browser (do not redesign)
+## Architecture Foundation
 
 Tauri 2 shell · Svelte 5 runes frontend · streaming job model
 (`run_*_streaming` → `Channel<Event>` + global write-lock) · design system

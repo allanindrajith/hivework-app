@@ -25,18 +25,15 @@ It removes only path entries under `$APPDIR`, leaving the host's own search path
 rule generalizes: **anything an AppImage spawns must have the bundle stripped from its environment first.**
 
 
-### 2026-06-05: Fork brew-browser structurally
-**Status**: Approved. **Context**: brew-browser is a proven, signed, shipping Tauri 2 +
-Svelte 5 native macOS app that is "a thin respectful frontend over a CLI." Agency Agents
-is the same pattern over the agency-agents repo. **Decision**: rsync the scaffold, keep
-the entire shell/UI/build/updater infra, replace only the brew *domain*. **Consequences**:
-~90% of non-domain code reused; fastest path to a real signed app.
+### 2026-06-05: Adopt Tauri 2 + Svelte 5 + Rust architecture
+**Status**: Approved. **Context**: Desktop app needs a lightweight, native GUI over the agent catalog
+without Electron's heavy footprint. **Decision**: Build with Tauri 2, Svelte 5, and Rust for native performance,
+small bundle size, and robust local file system operations. **Consequences**: Fast startup, cross-platform
+support, and memory safety.
 
 ### 2026-06-05: Plan B — native Rust install engine (not shell-out)
-**Status**: Approved. **Context**: brew-browser shells out to `brew` because brew does
-heavy lifting (downloads, deps, compile). Our "install" is just transform-frontmatter +
-copy-file. **Alternatives**: (A) shell out to repo's `install.sh`/`convert.sh` — adds
-runtime bash/python dep, non-deterministic output. **Decision**: reimplement conversion +
+**Status**: Approved. **Context**: Agent deployment is frontmatter transformation and file placement.
+**Alternatives**: (A) shell out to external scripts — adds runtime bash/python dependencies and non-deterministic output. **Decision**: reimplement conversion +
 install natively in Rust; `convert.sh` is the reference spec. **Consequences**: self-
 contained, cross-platform, and — critically — **deterministic output we can hash**, which
 is the prerequisite for state tracking. Load-bearing.

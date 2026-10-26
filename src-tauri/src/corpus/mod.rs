@@ -1339,7 +1339,7 @@ pub async fn catalog_source_set(
         if !looks_like_catalog(&root) {
             return Err(AppError::InvalidArgument {
                 message: format!(
-                    "{path} doesn't look like an agency-agents catalog (no scripts/convert.sh or category dirs)"
+                    "{path} doesn't look like a Hivework catalog (no scripts/convert.sh or category dirs)"
                 ),
             });
         }

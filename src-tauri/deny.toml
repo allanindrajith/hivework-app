@@ -1,4 +1,4 @@
-# cargo-deny configuration for brew-browser
+# cargo-deny configuration for hivework-app
 # Goal: meaningful supply-chain hygiene on the macOS-arm64 build, not paranoia.
 # Run: `cargo deny check` from src-tauri/.
 

@@ -2,7 +2,7 @@
 
 Static landing page for Hivework, served at `hivework.app` via Caddy on the build host.
 
-Same setup as the brew-browser landing: a self-contained static site (no build step) deployed with `rsync`.
+A self-contained static site (no build step) deployed with `rsync`.
 
 ## Files
 

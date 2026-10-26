@@ -18,8 +18,7 @@
   `https://codeload.github.com/hivework/hivework/tar.gz/refs/heads/main`,
   extract, atomically swap `corpus/`, rebuild `corpus-index.json`. Record the resolved
   commit SHA / tag as `corpus_version`. **No runtime git dependency.**
-- This mirrors brew-browser's bundled-catalog + live-refresh pattern, but the served
-  tree is the GitHub repo itself.
+- The bundled catalog enables immediate offline browsing; refresh updates the local tree.
 
 ## 2. Two indexes
 
@@ -75,29 +74,23 @@ Identity = slug-from-filename, confirmed by re-rendering against our corpus-inde
 
 ## 6. Domain-layer module map (Rust `src-tauri/src/`)
 
-| brew-browser | Hivework | role |
-|---|---|---|
-| `brew/` | `agency/` | exec/parse/paths for agent ops |
-| `catalog/` | `catalog/` | parse corpus → in-memory catalog |
-| (new) | `corpus/` | fetch/extract/index the repo copy |
-| (new) | `render/` | deterministic per-tool converters |
-| (new) | `ledger/` | install records read/write |
-| (new) | `reconcile/` | disk ↔ ledger ↔ corpus → 5 states |
-| (new) | `projects/` | project-scope registry |
-| `enrichment/` | `enrichment/` | optional AI "best for/pairs with" |
-| `trending/` | `trending/` | New & Updated / Popular from git history |
-| `vulns/` | `quality/` | opt-in lint + originality scan |
-| `github/` | `github/` | star/watch/issues (near-identical) |
-| `services/` | `tools/` | detected AI tools + per-tool deployment |
+| Module | Role |
+|---|---|
+| `corpus/` | fetch/extract/index the local catalog copy |
+| `render/` | deterministic per-tool converters |
+| `install/` | install execution and ledger read/write |
+| `commands/` | typed Tauri IPC command handlers |
+| `registry/` | embedded tool registry and capability maps |
+| `github/` | optional star/watch/repo-stats integration |
+| `state/` | app state and safety guards |
 
-## 7. Frontend sections (Svelte) — 1:1 with brew-browser
+## 7. Frontend sections (Svelte 5)
 
-Dashboard · Discover (18-cat tile grid + search) · Library (installed across tools,
-status chips, persona detail slide-over) · Trending · **Loadouts** (Agentfile
-save/restore, was Snapshots) · **Tools** (was Services) · **Quality** (was Security) ·
-Activity drawer (live install/convert stdout). Cmd+K palette, Cmd+0…6 nav inherited.
+Dashboard · Agents (three-pane catalog + filter) · Tools (detected environments & status) ·
+Teams (app presets and user team rosters) · Projects (project-scoped installs) ·
+Runbooks (orchestration playbooks) · Activity history. Cmd+K palette, Cmd+0…6 nav.
 
-## 8. Job/streaming model (inherited)
+## 8. Job/streaming model
 
-Long ops stream stdout/stderr via `Channel<Event>` with a global write-lock, exactly
-like brew-browser's `run_brew_streaming`. Install/convert/refresh are the streaming ops.
+Long operations stream stdout/stderr via `Channel<Event>` with a global write-lock.
+Install, convert, and refresh are the primary streaming operations.

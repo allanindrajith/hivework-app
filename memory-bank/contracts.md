@@ -106,20 +106,19 @@ projects_add(path: String) -> ProjectInfo
 loadout_export(path?) -> String           // serialize current installs
 loadout_import(file: String) -> Vec<InstallRecord>   // restore (streaming)
 
-// trending / quality / github  (Phase 4–5; mirror brew-browser equivalents)
+// trending / quality / github
 trending_fetch(window) -> ...             // New & Updated / Popular from git history
 quality_scan_all() / quality_scan_one(slug)        // opt-in lint+originality
 github_repo_stats() / github_star() / github_status() / github_create_issue(...)
 
-// inherited verbatim from brew-browser: settings_*, update_*, app_version, cancel_job, open_in_finder
+// system: settings_*, update_*, app_version, cancel_job, open_in_finder
 ```
 
 ## D. Frontend stores (Svelte 5 runes, `src/lib/stores/*.svelte.ts`)
 
-Replace brew stores with: `corpus`, `library` (reconciled installs), `tools`,
-`projects`, `loadouts`, `trending`, `quality`, plus inherited `settings`, `activity`,
-`github`, `ui`, `toast`, `updater`. Keep the `$state`/`$derived` rune patterns from
-brew-browser's stores verbatim.
+Store modules: `corpus`, `install` (reconciled installs), `tools`,
+`projects`, `teams`, `activity`, `github`, `ui`, `toast`, `updater`.
+Implemented with modern `$state`/`$derived` runes.
 
 ## E. Determinism rules (non-negotiable)
 

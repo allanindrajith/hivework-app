@@ -201,8 +201,8 @@ The ordered runbook for cutting a release. The mechanics referenced here are det
 Auto-update went live in **v0.2.0** — the manifest at `hivework.app/updater.json` covers both Mac
 arches. The release-time flow:
 
-1. Hosting is provisioned: Caddy on `umacbookpro` serves `hivework.app` from `~/Sites/agency-agents/`,
-   so publishing is an `rsync` of `updater.json` into that docroot (mirrors the live `brew-browser` manifest).
+1. Hosting is provisioned: Caddy serves `hivework.app` from `~/Sites/hivework/`,
+   so publishing is an `rsync` of `updater.json` into that docroot.
 2. The signature uses agency's minisign key (public half embedded in `tauri.conf.json`). `release.sh`
    reads the private key + password from the **Keychain** (`agency-agents-updater-key` / `…-key-pw`) — no
    env file is sourced; Apple notarization uses the Developer ID identity in the login keychain.
