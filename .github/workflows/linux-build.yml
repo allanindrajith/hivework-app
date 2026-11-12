@@ -1,4 +1,4 @@
-# Linux build — produces Agency Agents' .deb / .rpm / .AppImage bundles on a
+# Linux build — produces Hivework's .deb / .rpm / .AppImage bundles on a
 # native x86_64 runner (no emulation, so the AppImage bundler works cleanly).
 #
 # Tauri 2 builds all three Linux bundle targets via `npm run tauri build`
@@ -112,20 +112,20 @@ jobs:
       - name: Upload .deb
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: agency-agents-deb
+          name: hivework-deb
           path: src-tauri/target/release/bundle/deb/*.deb
           if-no-files-found: error
 
       - name: Upload .rpm
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: agency-agents-rpm
+          name: hivework-rpm
           path: src-tauri/target/release/bundle/rpm/*.rpm
           if-no-files-found: error
 
       - name: Upload .AppImage
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: agency-agents-appimage
+          name: hivework-appimage
           path: src-tauri/target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
