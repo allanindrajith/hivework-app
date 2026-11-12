@@ -171,12 +171,12 @@
     transition: transform var(--motion-duration-fast) var(--motion-ease-out);
   }
   .toggle input:checked + .toggle-track {
-    background: var(--color-accent, #b8542a);
-    border-color: var(--color-accent, #b8542a);
+    background: var(--color-brand);
+    border-color: var(--color-brand);
   }
   .toggle input:checked + .toggle-track::after {
     transform: translateX(16px);
-    background: white;
+    background: #0d0c0a;
   }
   .toggle-label {
     font-size: var(--text-body);
@@ -223,8 +223,10 @@
     width: max-content;
   }
   .btn-primary {
-    background: var(--color-accent, #b8542a);
-    color: white;
+    background: var(--color-brand);
+    color: var(--on-primary, #0d0c0a);
+    font-weight: var(--fw-semibold);
+    border: 1px solid transparent;
   }
   .btn-primary:hover:not(:disabled) {
     filter: brightness(1.05);

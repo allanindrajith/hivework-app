@@ -309,13 +309,13 @@
 
 <style>
   .rbv { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-  .rbv-head { flex: none; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border); }
+  .rbv-head { flex: none; min-height: 54px; display: flex; flex-direction: column; justify-content: center; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border); }
   .rbv-head-top { display: flex; align-items: center; gap: var(--space-3); }
   .rbv-title { font-size: var(--text-h2); font-weight: 700; color: var(--color-text-primary); margin: 0; }
   .rbv-badge-pill { font-size: 11px; font-weight: 600; color: var(--color-brand); background: rgba(245, 158, 11, 0.12); padding: 2px 8px; border-radius: var(--radius-full); }
-  .rbv-sub { font-size: var(--text-body-sm); color: var(--color-text-secondary); margin-top: 3px; }
+  .rbv-sub { font-size: var(--text-body-sm); color: var(--color-text-secondary); margin: 3px 0 0; }
 
-  .rbv-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); max-width: 1200px; margin: 0 auto; width: 100%; }
+  .rbv-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); width: 100%; box-sizing: border-box; }
 
   /* ── Hero Banner ── */
   .rbv-hero-banner {

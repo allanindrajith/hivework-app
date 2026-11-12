@@ -150,7 +150,7 @@
     transition: transform var(--motion-duration-fast) var(--motion-ease-out);
   }
   .toggle input:checked + .toggle-track { background: var(--color-brand); border-color: var(--color-brand); }
-  .toggle input:checked + .toggle-track::after { transform: translateX(16px); background: white; }
+  .toggle input:checked + .toggle-track::after { transform: translateX(16px); background: #0d0c0a; }
   .toggle-label { font-size: var(--text-body); font-weight: var(--fw-medium); color: var(--color-text-primary); }
 
   .callout { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-border); }

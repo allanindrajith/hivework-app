@@ -292,7 +292,7 @@
   }
   .code:hover {
     background: var(--color-surface);
-    border-color: var(--color-accent, #b8542a);
+    border-color: var(--color-brand);
   }
 
   .hint {

@@ -309,12 +309,12 @@
     transition: transform var(--motion-duration-fast) var(--motion-ease-out);
   }
   .toggle input:checked + .toggle-track {
-    background: var(--color-accent, #b8542a);
-    border-color: var(--color-accent, #b8542a);
+    background: var(--color-brand);
+    border-color: var(--color-brand);
   }
   .toggle input:checked + .toggle-track::after {
     transform: translateX(16px);
-    background: white;
+    background: #0d0c0a;
   }
   .toggle-label {
     font-size: var(--text-body);
@@ -352,8 +352,10 @@
     width: max-content;
   }
   .btn-primary {
-    background: var(--color-accent, #b8542a);
-    color: white;
+    background: var(--color-brand);
+    color: var(--on-primary, #0d0c0a);
+    font-weight: var(--fw-semibold);
+    border: 1px solid transparent;
   }
   .btn-primary:hover:not(:disabled) { filter: brightness(1.05); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -389,7 +391,7 @@
     gap: 4px;
     background: transparent;
     border: none;
-    color: var(--color-accent, #b8542a);
+    color: var(--color-brand);
     cursor: pointer;
     font-size: var(--text-body-sm);
     padding: 0;
@@ -398,7 +400,7 @@
   }
   .link:hover { filter: brightness(1.1); }
   .link:focus-visible {
-    outline: 2px solid var(--color-focus, var(--color-brand, var(--color-accent)));
+    outline: 2px solid var(--color-focus, var(--color-brand));
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }

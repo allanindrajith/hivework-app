@@ -225,35 +225,40 @@
   .nav {
     background: var(--color-surface-sunken);
     border-right: 1px solid var(--color-border);
-    padding: var(--space-4) var(--space-2);
+    padding: var(--space-4) 10px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
   }
   .nav-title {
-    font-size: var(--text-body);
+    font-size: var(--text-caption);
     font-weight: var(--fw-semibold);
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0 var(--space-3);
+    padding: 0 10px;
     margin-bottom: var(--space-1);
   }
-  .nav ul { display: flex; flex-direction: column; gap: 1px; }
+  .nav ul { display: flex; flex-direction: column; gap: 3px; }
   .nav-item {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 10px;
     width: 100%;
-    padding: var(--space-2) var(--space-3);
+    height: 34px;
+    padding: 0 10px;
     border-radius: var(--radius-md);
+    border: 1px solid transparent;
     color: var(--color-text-secondary);
     font-size: var(--text-body);
     font-weight: var(--fw-medium);
-    line-height: 1;
+    line-height: 1.2;
     text-align: left;
-    transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+    transition: background-color var(--motion-duration-fast) var(--motion-ease-out),
+                border-color var(--motion-duration-fast) var(--motion-ease-out),
+                color var(--motion-duration-fast) var(--motion-ease-out);
     cursor: pointer;
   }
   .nav-item:hover {
@@ -261,32 +266,51 @@
     color: var(--color-text-primary);
   }
   .nav-item.active {
-    background: var(--color-surface-raised);
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.35);
     color: var(--color-text-primary);
     font-weight: var(--fw-semibold);
     box-shadow: var(--shadow-xs);
   }
-  .nav-icon { display: inline-flex; color: inherit; }
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+  }
+  .nav-item.active .nav-icon {
+    color: var(--color-brand);
+  }
 
   /* ---------- Right pane ---------- */
   .pane {
     position: relative;
-    padding: var(--space-6) var(--space-6) var(--space-6) var(--space-6);
+    padding: var(--space-6);
     overflow-y: auto;
     min-height: 0;
   }
   .close {
     position: absolute;
-    top: var(--space-3);
-    inset-inline-end: var(--space-3); /* right in LTR, left in RTL */
+    top: var(--space-4);
+    inset-inline-end: var(--space-4); /* right in LTR, left in RTL */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
     color: var(--color-text-muted);
-    padding: 4px;
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: var(--radius-sm);
     cursor: pointer;
   }
   .close:hover {
     color: var(--color-text-primary);
     background: var(--color-surface-sunken);
+    border-color: var(--color-border);
   }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

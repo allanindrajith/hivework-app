@@ -668,12 +668,13 @@
   .lp-head {
     flex: none; display: flex; align-items: center; justify-content: space-between;
     gap: var(--space-2);
+    min-height: 54px;
     padding: var(--space-3);
     border-bottom: 1px solid var(--color-border);
   }
   /* ── Tool filter lens (mirrors the Agents workspace) ── */
   .seg {
-    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; min-width: 0;
+    display: flex; align-items: center; gap: 3px; flex-wrap: nowrap; min-width: 0;
     padding: 3px; background: var(--color-surface-sunken);
     border: 1px solid var(--color-border); border-radius: var(--radius-md);
   }

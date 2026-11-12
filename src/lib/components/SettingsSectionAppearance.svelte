@@ -174,8 +174,9 @@
   }
   .radio-btn:hover { color: var(--color-text-primary); }
   .radio-btn.on {
-    background: var(--color-surface-raised);
-    color: var(--color-text-primary);
+    background: rgba(245, 158, 11, 0.14);
+    color: var(--color-brand);
+    font-weight: 600;
     box-shadow: var(--shadow-xs);
   }
   .select {

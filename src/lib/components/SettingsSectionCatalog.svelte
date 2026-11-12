@@ -258,7 +258,7 @@
   .primary {
     display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 var(--space-4);
     border: 1px solid var(--color-brand); border-radius: var(--radius-md);
-    background: var(--color-brand); color: var(--color-on-brand, #fff); font-size: var(--text-body-sm); cursor: pointer;
+    background: var(--color-brand); color: var(--on-primary, #0d0c0a); font-weight: 600; font-size: var(--text-body-sm); cursor: pointer;
   }
   .primary:disabled { opacity: 0.5; cursor: default; }
   .gh { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }

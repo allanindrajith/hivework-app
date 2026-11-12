@@ -366,17 +366,61 @@
 
 <style>
   .pr { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; }
   .pr-head {
     flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
-    padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border);
+    min-height: 54px; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--color-border);
   }
-  .pr-actions { display: flex; gap: var(--space-2); }
+  .pr-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+  /* ── Shared button styles in Projects ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 32px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    background: var(--color-surface-sunken); color: var(--color-text-secondary);
+    font-size: var(--text-body-sm); font-weight: 500; cursor: pointer; white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .btn:hover:not(:disabled) { color: var(--color-text-primary); background: var(--color-surface-raised); border-color: rgba(245, 158, 11, 0.35); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn.primary {
+    background: var(--color-brand); color: var(--on-primary, #0d0c0a);
+    border-color: transparent; font-weight: 600;
+  }
+  .btn.primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+  }
+  .btn.danger-ic {
+    width: 32px; padding: 0; color: var(--color-text-muted); background: transparent;
+  }
+  .btn.danger-ic:hover:not(:disabled) {
+    color: var(--color-danger); border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1);
+  }
 
   /* ── Detail header ── */
   .pr-head.detail { justify-content: flex-start; gap: var(--space-3); }
+  .dh-ic {
+    width: 34px; height: 34px; border-radius: var(--radius-md);
+    background: rgba(245, 158, 11, 0.12); color: var(--color-brand);
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+  }
+  .dh-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .dh-label { font-size: var(--text-body); font-weight: 600; color: var(--color-text-primary); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dh-path {
+    font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted);
+    background: transparent; border: none; padding: 0; cursor: pointer; text-align: left;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .dh-path:hover { color: var(--color-brand); text-decoration: underline; }
+  .dh-count {
+    flex: none; font-size: 11px; font-weight: 600; color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12); padding: 2px 8px; border-radius: var(--radius-full);
+  }
   .back-link {
     background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
-    color: var(--color-text-secondary); font-size: 12px; font-weight: 500; padding: 4px 10px; cursor: pointer;
+    color: var(--color-text-secondary); font-size: 12px; font-weight: 500; height: 30px; padding: 0 10px;
+    display: inline-flex; align-items: center; cursor: pointer;
   }
   .back-link:hover { color: var(--color-text-primary); background: var(--color-surface-sunken); border-color: rgba(245, 158, 11, 0.3); }
 

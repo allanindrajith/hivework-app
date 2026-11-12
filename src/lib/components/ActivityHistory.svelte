@@ -218,7 +218,8 @@
   .hist { display: flex; flex-direction: column; min-height: 0; height: 100%; }
   .panel-head {
     display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
-    padding: var(--space-4) var(--space-5);
+    min-height: 54px;
+    padding: var(--space-3) var(--space-5);
     border-bottom: 1px solid var(--color-border);
     flex-wrap: wrap;
   }

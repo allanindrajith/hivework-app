@@ -133,7 +133,7 @@
     background: var(--color-surface-raised);
   }
   .pill:focus-visible {
-    outline: 2px solid var(--color-focus, var(--color-brand, var(--color-accent)));
+    outline: 2px solid var(--color-focus, var(--color-brand));
     outline-offset: 2px;
   }
   .text {
@@ -176,7 +176,7 @@
     color: var(--color-text-primary);
   }
   .dismiss:focus-visible {
-    outline: 2px solid var(--color-focus, var(--color-brand, var(--color-accent)));
+    outline: 2px solid var(--color-focus, var(--color-brand));
     outline-offset: 2px;
   }
   /* Spinner sits in the same slot as the × so the pill width
