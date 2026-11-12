@@ -80,7 +80,7 @@ const API_BASE: &str = "https://api.github.com";
 const USER_AGENT: &str = concat!(
     "hivework-app/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://github.com/hivework/hivework-app)"
+    " (+https://github.com/allanindrajith/hivework-app)"
 );
 
 // ---------- DTOs ----------

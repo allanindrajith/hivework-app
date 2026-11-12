@@ -551,7 +551,7 @@ const en = {
   "updates.checkNow": "Check now",
   "updates.lastChecked": "Last checked: {time}",
   "updates.offlineHint": "Offline Mode is on — manual update checks are blocked. Turn it off above to check the manifest.",
-  "updates.onlineHint": "Fetches hivework.app/updater.json and compares the published version to the one you're running. No version number is sent.",
+  "updates.onlineHint": "Fetches hivework.online/updater.json and compares the published version to the one you're running. No version number is sent.",
   "updates.autoCheck": "Auto-check daily",
   "updates.autoCheckHint": "When on, Hivework checks the manifest once every 24 hours and surfaces a notice in the title bar if a newer version is available. Suspended automatically while Offline Mode is on.",
   "updates.autoInstall": "Install updates automatically",

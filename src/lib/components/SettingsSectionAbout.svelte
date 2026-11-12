@@ -16,8 +16,9 @@
   import { safeOpenUrl } from "$lib/util/url";
   import { i18n } from "$lib/stores/i18n.svelte";
 
-  const REPO_URL = "https://github.com/hivework/hivework-app";
-  const CATALOG_URL = "https://github.com/hivework/hivework";
+  const REPO_URL = "https://github.com/allanindrajith/hivework-app";
+  const CATALOG_URL = "https://github.com/allanindrajith/hivework";
+  const WEBSITE_URL = "https://hivework.online";
 
   let version = $state<string | null>(null);
   let versionError = $state<string | null>(null);
@@ -26,7 +27,7 @@
     void appVersion()
       .then((v) => (version = v))
       .catch(() => {
-        version = "0.3.2";
+        version = "0.4.0";
       });
   });
 </script>
@@ -46,10 +47,19 @@
       <dd>MIT</dd>
     </div>
     <div class="row">
+      <dt>Website</dt>
+      <dd>
+        <button class="link" type="button" onclick={() => void safeOpenUrl(WEBSITE_URL)}>
+          <code>hivework.online</code>
+          <ExternalLink size={12} />
+        </button>
+      </dd>
+    </div>
+    <div class="row">
       <dt>{i18n.t("settings.about.app")}</dt>
       <dd>
         <button class="link" type="button" onclick={() => void safeOpenUrl(REPO_URL)}>
-          <code>github.com/hivework/hivework-app</code>
+          <code>github.com/allanindrajith/hivework-app</code>
           <ExternalLink size={12} />
         </button>
       </dd>
@@ -58,7 +68,7 @@
       <dt>{i18n.t("settings.about.catalog")}</dt>
       <dd>
         <button class="link" type="button" onclick={() => void safeOpenUrl(CATALOG_URL)}>
-          <code>github.com/hivework/hivework</code>
+          <code>github.com/allanindrajith/hivework</code>
           <ExternalLink size={12} />
         </button>
       </dd>

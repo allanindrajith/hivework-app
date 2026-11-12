@@ -373,7 +373,7 @@ You're successful when:
 
 ## Working with the Identity Graph Operator
 
-This agent designs the **agent identity** layer (who is this agent? what can it do?). The [Identity Graph Operator](identity-graph-operator.md) handles **entity identity** (who is this person/company/product?). They're complementary:
+This agent designs the **agent identity** layer (who is this agent? what can it do?). The [Identity Graph Operator](hive-identity-graph-operator.md) handles **entity identity** (who is this person/company/product?). They're complementary:
 
 | This agent (Trust Architect) | Identity Graph Operator |
 |---|---|

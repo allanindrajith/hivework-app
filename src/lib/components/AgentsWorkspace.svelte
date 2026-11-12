@@ -18,7 +18,8 @@
   import LayersIcon from "@lucide/svelte/icons/layers";
   import LayoutGrid from "@lucide/svelte/icons/layout-grid";
   import LayoutList from "@lucide/svelte/icons/layout-list";
-  import Star from "@lucide/svelte/icons/star";
+  import CopyIcon from "@lucide/svelte/icons/copy";
+  import CheckIcon from "@lucide/svelte/icons/check";
   import DownloadIcon from "@lucide/svelte/icons/download";
   import Rocket from "@lucide/svelte/icons/rocket";
 
@@ -286,12 +287,51 @@
     if (s === "az") return "Name A-Z";
     return "Newest";
   }
+
+  let cliCopied = $state(false);
+  async function copyCliCommand(cmd: string) {
+    try {
+      await navigator.clipboard.writeText(cmd);
+      cliCopied = true;
+      toast.success("Copied CLI command to clipboard");
+      setTimeout(() => { cliCopied = false; }, 1800);
+    } catch {
+      toast.error("Could not copy command");
+    }
+  }
 </script>
 
 <section class="ws" class:sel={!!panelAgent}>
   <!-- Main Catalog Pane -->
   <div class="list-pane">
     <div class="lp-head">
+      <!-- hivework.online Workforce Eyebrow & Terminal Strip -->
+      <div class="hw-strip">
+        <div class="hw-strip-left">
+          <span class="hw-eyebrow">HIVEWORK · WORKFORCE DIVISIONS</span>
+          <div class="hw-stat-pills">
+            <span class="hw-stat-pill"><strong>{corpus.agents.length || 296}</strong> Agents</span>
+            <span class="hw-stat-pill"><strong>{corpus.tiles.length || 18}</strong> Divisions</span>
+            <span class="hw-stat-pill"><strong>17</strong> Harnesses</span>
+            <span class="hw-stat-pill"><strong>21</strong> Skills</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="hw-term-pill"
+          onclick={() => copyCliCommand("./scripts/install.sh")}
+          title="Copy ./scripts/install.sh"
+        >
+          <span class="hw-term-prompt">&gt;</span>
+          <code class="hw-term-cmd">./scripts/install.sh</code>
+          {#if cliCopied}
+            <CheckIcon size={12} />
+          {:else}
+            <CopyIcon size={12} />
+          {/if}
+        </button>
+      </div>
+
       <!-- Search & Controls Bar -->
       <div class="lp-search-row">
         <Input
@@ -522,10 +562,7 @@
                     <span class="ac-badge" style="color: {corpus.colorOf(a.category)}">
                       {corpus.labelOf(a.category)}
                     </span>
-                    <span class="ac-rating">
-                      <Star size={11} fill="var(--color-brand)" color="var(--color-brand)" />
-                      <span>{isInstalled ? '5.0' : '4.9'}</span>
-                    </span>
+                    <code class="ac-slug">{a.slug}</code>
                   </div>
                 </div>
               </div>
@@ -702,7 +739,77 @@
   .lp-head {
     flex: none; padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
     display: flex; flex-direction: column; gap: var(--space-2);
+  }
+  .hw-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+  .hw-strip-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .hw-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-brand);
+  }
+  .hw-stat-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .hw-stat-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 2px 8px;
+  }
+  .hw-stat-pill strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+  .hw-term-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .hw-term-pill:hover {
+    border-color: var(--color-brand-active);
+    color: var(--color-text-primary);
+  }
+  .hw-term-prompt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-brand);
+    font-weight: 700;
+  }
+  .hw-term-cmd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-primary);
   }
   .lp-search-row { display: flex; align-items: center; gap: var(--space-2); }
   .lp-search-row :global(.wrap) { flex: 1; min-width: 0; }
@@ -880,8 +987,8 @@
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .agent-card:hover {
-    border-color: rgba(245, 158, 11, 0.45);
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+    border-color: var(--color-brand-active);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45);
     transform: translateY(-2px);
   }
   .agent-card.active {
@@ -907,9 +1014,18 @@
   .ac-badge {
     font-size: 11px; font-weight: 600; text-transform: capitalize;
   }
-  .ac-rating {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 11px; color: var(--color-brand); font-weight: 600;
+  .ac-slug {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .ac-desc {
     font-size: var(--text-body-sm); color: var(--color-text-secondary);

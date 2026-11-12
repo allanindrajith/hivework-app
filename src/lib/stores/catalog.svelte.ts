@@ -65,17 +65,17 @@ class CatalogStore {
       this.status = {
         source: this.source,
         root: null,
-        remoteUrl: "https://github.com/hivework/hivework",
-        agentCount: corpus.agents.length || 268,
+        remoteUrl: "https://github.com/allanindrajith/hivework",
+        agentCount: corpus.agents.length || 296,
         isGit: false,
-        version: "0.3.2",
+        version: "0.4.0",
         fetchedAt: new Date().toISOString(),
         commit: "bundled",
         branch: null,
         lastCommitSubject: null,
         lastCommitDate: null,
         dirtyCount: 0,
-        repoSlug: "hivework/hivework",
+        repoSlug: "allanindrajith/hivework",
       };
       if (typeof window !== "undefined" && ("__TAURI_INTERNALS__" in window)) {
         this.error = errorText(e);

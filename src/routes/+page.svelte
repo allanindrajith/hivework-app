@@ -199,7 +199,11 @@
         <ArrowRight size={16} />
       </button>
     </div>
-    <h1 class="titlebar-title">{sectionTitle(ui.section)}</h1>
+    <h1 class="titlebar-title">
+      <span class="titlebar-eyebrow">HIVEWORK</span>
+      <span class="titlebar-sep">/</span>
+      <span>{sectionTitle(ui.section)}</span>
+    </h1>
     <div class="titlebar-right">
       <UpdateIndicator />
       <TitlebarControls />
@@ -276,7 +280,9 @@
     flex: none;
     height: 36px;
     position: relative;
-    background: var(--color-surface-raised);
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--color-border);
   }
   /* Toggle slides between two positions via CSS variables. */
@@ -342,6 +348,9 @@
     left: calc(var(--titlebar-title-left) + 62px);
     transform: translateY(-50%);
     margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-size: var(--text-h3);
     font-weight: var(--fw-semibold);
     color: var(--color-text-primary);
@@ -350,6 +359,19 @@
     /* Don't intercept the draggable region: clicks on the title still
        let the user drag the window. */
     pointer-events: none;
+  }
+  .titlebar-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color-brand);
+    text-transform: uppercase;
+  }
+  .titlebar-sep {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-muted);
   }
   @media (prefers-reduced-motion: reduce) {
     .titlebar-btn, .titlebar-title { transition: none; }

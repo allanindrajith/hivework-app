@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# convert.sh — Convert agency agent .md files into tool-specific formats.
+# convert.sh — Convert hive agent .md files into tool-specific formats.
 #
 # Reads all agent files from the standard category directories and outputs
 # converted files to integrations/<tool>/. Run this to regenerate all
@@ -136,7 +136,7 @@ convert_antigravity() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="agency-$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outdir="$OUT_DIR/antigravity/$slug"
@@ -162,7 +162,7 @@ convert_osaurus() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="agency-$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   # Stage one dir per skill (install.sh copies into ~/.osaurus/skills/<name>/).
@@ -189,7 +189,7 @@ convert_dsh() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="agency-$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outdir="$OUT_DIR/dsh/$slug"
@@ -201,9 +201,9 @@ convert_dsh() {
   # frontmatter (strict kebab-case, validated by the harness) and the persona
   # as the instruction body. DSH scans ~/.dsh/skills/ (user) and
   # <project>/.dsh/skills/ (project); skills there are user- and
-  # model-invocable by default, so an agent activates as /agency-<slug> or by
+  # model-invocable by default, so an agent activates as /hive-<slug> or by
   # name in conversation. Byte-identical to the antigravity/osaurus skill-md
-  # shape, which the Agency Agents app renders natively.
+  # shape, which the Hive app renders natively.
   cat > "$outfile" <<HEREDOC
 ---
 name: $(yaml_quote "$slug")
@@ -219,7 +219,7 @@ convert_codex() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outfile="$OUT_DIR/codex/agents/${slug}.toml"
@@ -241,7 +241,7 @@ convert_gemini_cli() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   # Gemini CLI subagent format: .md file in ~/.gemini/agents/
@@ -315,7 +315,7 @@ convert_opencode() {
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
   color="$(resolve_opencode_color "$(get_field "color" "$file")")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outfile="$OUT_DIR/opencode/agents/${slug}.md"
@@ -340,7 +340,7 @@ convert_cursor() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outfile="$OUT_DIR/cursor/rules/${slug}.mdc"
@@ -364,7 +364,7 @@ convert_openclaw() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outdir="$OUT_DIR/openclaw/$slug"
@@ -519,7 +519,7 @@ convert_qwen() {
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
   tools="$(qwen_tools "$(get_field "tools" "$file")")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outfile="$OUT_DIR/qwen/agents/${slug}.md"
@@ -554,7 +554,7 @@ convert_zcode() {
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
   tools="$(get_field "tools" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outfile="$OUT_DIR/zcode/agents/${slug}.md"
@@ -563,7 +563,7 @@ convert_zcode() {
   # ZCode agent format (Z.ai GLM harness): .md with YAML frontmatter in
   # .zcode/agents/ (project) or ~/.config/zcode/agents/ (global). name and
   # description required; tools optional (only if present in source). Byte-
-  # identical to the qwen-md shape, which the Agency Agents app renders natively.
+  # identical to the qwen-md shape, which the Hive app renders natively.
   if [[ -n "$tools" ]]; then
     cat > "$outfile" <<HEREDOC
 ---
@@ -590,7 +590,7 @@ convert_kimi() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   outdir="$OUT_DIR/kimi/$slug"
@@ -623,7 +623,7 @@ convert_vibe() {
 
   name="$(get_field "name" "$file")"
   description="$(get_field "description" "$file")"
-  slug="$(slugify "$name")"
+  slug="hive-$(slugify "$name")"
   body="$(get_body "$file")"
 
   # Mistral Vibe uses two files per agent:
@@ -663,7 +663,7 @@ cat > "$AIDER_TMP" <<'HEREDOC'
 # Hivework — AI Agent Conventions
 #
 # The roster of specialized AI agents from Hivework
-# (https://github.com/hivework/hivework): each one's name, what it is
+# (#): each one's name, what it is
 # for, and where its full instructions live.
 #
 # Aider keeps a conventions file in context for the whole session, so this is an
@@ -674,18 +674,18 @@ cat > "$AIDER_TMP" <<'HEREDOC'
 #   1. Name it in your prompt — "Use the Frontend Developer agent to review
 #      this component." The description below is usually enough for that.
 #   2. For its full instructions, pull the agent file into the session:
-#        /read-only /path/to/agency-agents/engineering/engineering-frontend-developer.md
+#        /read-only /path/to/hivework/engineering/hive-frontend-developer.md
 #
-# Paths below are relative to an agency-agents checkout.
+# Paths below are relative to an hivework checkout.
 #
 # Generated by scripts/convert.sh — do not edit manually.
 
 HEREDOC
 
 cat > "$WINDSURF_TMP" <<'HEREDOC'
-# The Agency — AI Agent Rules for Windsurf
+# Hivework — AI Agent Rules for Windsurf
 #
-# Full roster of specialized AI agents from The Agency.
+# Full roster of specialized AI agents from Hivework.
 # To activate an agent, reference it by name in your Windsurf conversation.
 #
 # Generated by scripts/convert.sh — do not edit manually.
@@ -863,7 +863,7 @@ main() {
 
   check_agent_slug_collisions || exit 1
 
-  header "The Agency -- Converting agents to tool-specific formats"
+  header "Hivework -- Converting agents to tool-specific formats"
   echo "  Repo:   $REPO_ROOT"
   echo "  Output: $OUT_DIR"
   echo "  Tool:   $tool"
@@ -887,14 +887,14 @@ main() {
     # Tools that write to separate dirs can run in parallel; buffer output so each tool's output stays together
     local parallel_tools=(antigravity gemini-cli opencode cursor openclaw qwen zcode kimi codex osaurus hermes vibe dsh)
     local parallel_out_dir
-    parallel_out_dir="$(mktemp -d "${TMPDIR:-/tmp}/agency-convert-parallel.XXXXXX")"
+    parallel_out_dir="$(mktemp -d "${TMPDIR:-/tmp}/hive-convert-parallel.XXXXXX")"
     PARALLEL_OUT_DIR="$parallel_out_dir"
     info "Converting: ${#parallel_tools[@]}/${n_tools} tools in parallel (output buffered per tool)..."
-    export AGENCY_CONVERT_OUT_DIR="$parallel_out_dir"
-    export AGENCY_CONVERT_SCRIPT="$SCRIPT_DIR/convert.sh"
-    export AGENCY_CONVERT_OUT="$OUT_DIR"
+    export HIVE_CONVERT_OUT_DIR="$parallel_out_dir"
+    export HIVE_CONVERT_SCRIPT="$SCRIPT_DIR/convert.sh"
+    export HIVE_CONVERT_OUT="$OUT_DIR"
     local parallel_status=0
-    printf '%s\n' "${parallel_tools[@]}" | xargs -P "$parallel_jobs" -I {} sh -c '"$AGENCY_CONVERT_SCRIPT" --tool "{}" --out "$AGENCY_CONVERT_OUT" > "$AGENCY_CONVERT_OUT_DIR/{}" 2>&1' || parallel_status=$?
+    printf '%s\n' "${parallel_tools[@]}" | xargs -P "$parallel_jobs" -I {} sh -c '"$HIVE_CONVERT_SCRIPT" --tool "{}" --out "$HIVE_CONVERT_OUT" > "$HIVE_CONVERT_OUT_DIR/{}" 2>&1' || parallel_status=$?
     for t in "${parallel_tools[@]}"; do
       if [[ -f "$parallel_out_dir/$t" ]]; then
         cat "$parallel_out_dir/$t"

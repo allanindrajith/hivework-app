@@ -238,6 +238,8 @@ pub fn render(_agent: &Agent, raw_source: &str, tool: &str) -> Result<String, Ap
     let description = source_field(raw_source, "description");
     let body = source_body(raw_source);
     let slug = slugify(&name);
+    let prefix = registry::get(tool).and_then(|m| m.slug_prefix.as_deref()).unwrap_or("");
+    let prefixed_slug = format!("{prefix}{slug}");
     // Dispatch on the registry's render `format` key rather than a Rust variant.
     // Every template below mirrors its `convert.sh` heredoc byte for byte,
     // including which scalars go through `yaml_quote`.
@@ -263,7 +265,7 @@ pub fn render(_agent: &Agent, raw_source: &str, tool: &str) -> Result<String, Ap
         // Gemini CLI subagent `.md`: name(=slug) + description frontmatter.
         Some("gemini-md") => format!(
             "---\nname: {name}\ndescription: {desc}\n---\n{body}\n",
-            name = yaml_quote(&slug),
+            name = yaml_quote(&prefixed_slug),
             desc = yaml_quote(&description),
         ),
 
@@ -274,13 +276,13 @@ pub fn render(_agent: &Agent, raw_source: &str, tool: &str) -> Result<String, Ap
             if tools.is_empty() {
                 format!(
                     "---\nname: {}\ndescription: {}\n---\n{body}\n",
-                    yaml_quote(&slug),
+                    yaml_quote(&prefixed_slug),
                     yaml_quote(&description),
                 )
             } else {
                 format!(
                     "---\nname: {}\ndescription: {}\ntools: {}\n---\n{body}\n",
-                    yaml_quote(&slug),
+                    yaml_quote(&prefixed_slug),
                     yaml_quote(&description),
                     yaml_quote(&tools),
                 )
@@ -296,13 +298,13 @@ pub fn render(_agent: &Agent, raw_source: &str, tool: &str) -> Result<String, Ap
             if tools.is_empty() {
                 format!(
                     "---\nname: {}\ndescription: {}\n---\n{body}\n",
-                    yaml_quote(&slug),
+                    yaml_quote(&prefixed_slug),
                     yaml_quote(&description),
                 )
             } else {
                 format!(
                     "---\nname: {}\ndescription: {}\ntools: {}\n---\n{body}\n",
-                    yaml_quote(&slug),
+                    yaml_quote(&prefixed_slug),
                     yaml_quote(&description),
                     yaml_quote(&tools),
                 )
@@ -311,13 +313,11 @@ pub fn render(_agent: &Agent, raw_source: &str, tool: &str) -> Result<String, Ap
 
         // Agent-Skills `SKILL.md`: name (namespaced) + description frontmatter,
         // persona as the body. Mirrors upstream `convert_osaurus`,
-        // `convert_antigravity` and `convert_dsh`. The `agency-` prefix on
-        // `name` comes from the tool's `slugPrefix`.
+        // `convert_antigravity` and `convert_dsh`.
         Some("skill-md") => {
-            let prefix = registry::get(tool).and_then(|m| m.slug_prefix.as_deref()).unwrap_or("");
             format!(
                 "---\nname: {name}\ndescription: {desc}\n---\n{body}\n",
-                name = yaml_quote(&format!("{prefix}{slug}")),
+                name = yaml_quote(&prefixed_slug),
                 desc = yaml_quote(&description),
             )
         }
@@ -568,7 +568,7 @@ mod tests {
     #[test]
     fn gemini_uses_slug_as_name() {
         let out = render(&agent(), raw(), "geminiCli").unwrap();
-        assert!(out.starts_with("---\nname: 'frontend-developer'\ndescription: 'Builds UIs.'\n---\n"));
+        assert!(out.starts_with("---\nname: 'hive-frontend-developer'\ndescription: 'Builds UIs.'\n---\n"));
     }
 
     #[test]
@@ -666,7 +666,7 @@ mod tests {
     fn zcode_uses_slug_name_and_optional_tools() {
         // ZCode agent .md: name(=slug) + description frontmatter, optional tools.
         let out = render(&agent(), raw(), "zcode").unwrap();
-        assert!(out.starts_with("---\nname: 'frontend-developer'\ndescription: 'Builds UIs.'\n---\n"));
+        assert!(out.starts_with("---\nname: 'hive-frontend-developer'\ndescription: 'Builds UIs.'\n---\n"));
         assert!(!out.contains("\ntools: "));
 
         let source = "---\nname: Frontend Developer\ndescription: Builds UIs.\ntools: Read, Write\n---\nBody\n";
@@ -678,12 +678,12 @@ mod tests {
     #[test]
     fn output_slug_matches_converter_identity_rules() {
         let mut a = agent();
-        a.slug = "engineering-frontend-developer".into();
+        a.slug = "hive-frontend-developer".into();
         assert_eq!(
             output_slug(&a, raw(), "claudeCode"),
-            "engineering-frontend-developer"
+            "hive-frontend-developer"
         );
-        assert_eq!(output_slug(&a, raw(), "codex"), "frontend-developer");
+        assert_eq!(output_slug(&a, raw(), "codex"), "hive-frontend-developer");
     }
 
     fn collect_markdown(root: &Path, out: &mut Vec<PathBuf>) {
@@ -782,7 +782,7 @@ mod tests {
             }
             for (tool, cli) in skill_tools {
                 let expected_path = temp.path().join(cli)
-                    .join(format!("agency-{converted_slug}")).join("SKILL.md");
+                    .join(&converted_slug).join("SKILL.md");
                 let expected = fs::read(&expected_path)
                     .unwrap_or_else(|e| panic!("read {}: {e}", expected_path.display()));
                 let actual = render(&agent, &raw, tool).unwrap();

@@ -553,7 +553,7 @@ const fr = {
   "updates.checkNow": "Rechercher",
   "updates.lastChecked": "Dernière vérification : {time}",
   "updates.offlineHint": "Le mode hors ligne est activé : la recherche manuelle de mises à jour est bloquée. Désactivez-le ci-dessus pour consulter le manifeste.",
-  "updates.onlineHint": "Télécharge hivework.app/updater.json et compare la version publiée à celle que vous utilisez. Aucun numéro de version n’est envoyé.",
+  "updates.onlineHint": "Télécharge hivework.online/updater.json et compare la version publiée à celle que vous utilisez. Aucun numéro de version n’est envoyé.",
   "updates.autoCheck": "Vérifier chaque jour",
   "updates.autoCheckHint": "Si l’option est activée, Hivework consulte le manifeste toutes les 24 heures et affiche un avis dans la barre de titre lorsqu’une nouvelle version est disponible. Suspendu automatiquement en mode hors ligne.",
   "updates.autoInstall": "Installer automatiquement les mises à jour",

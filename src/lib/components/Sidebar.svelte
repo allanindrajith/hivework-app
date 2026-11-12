@@ -70,7 +70,10 @@
 >
   <button class="brand" onclick={() => ui.setSection("personas")} title={i18n.t("nav.homeTitle")}>
     <span class="brand-mark" aria-hidden="true"><HiveworkIcon size={20} color="var(--color-brand)" /></span>
-    <span class="brand-name">Hivework</span>
+    <span class="brand-text">
+      <span class="brand-name">Hivework</span>
+      <span class="brand-tag">.online</span>
+    </span>
   </button>
 
   <nav>
@@ -88,7 +91,11 @@
           >
             <span class="ico" aria-hidden="true"><item.icon size={16} /></span>
             <span class="label">{label(item.id)}</span>
-            {#if b}<span class="badge" title={i18n.t("agentUpdates.badgeTitle", { count: Number(b) })}>{b}</span>{/if}
+            {#if b}
+              <span class="badge" title={i18n.t("agentUpdates.badgeTitle", { count: Number(b) })}>{b}</span>
+            {:else}
+              <kbd class="kbd-hint">{item.shortcut}</kbd>
+            {/if}
           </button>
         </li>
       {/each}
@@ -105,6 +112,7 @@
     >
       <span class="ico" aria-hidden="true"><SettingsIcon size={16} /></span>
       <span class="label">{i18n.t("settings.title")}</span>
+      <kbd class="kbd-hint">{shortcut(",")}</kbd>
     </button>
   </div>
 
@@ -112,6 +120,7 @@
     <div class="status status-ready" title={i18n.t("nav.catalogStatus", { count: agentCount })}>
       <span class="dot" aria-hidden="true"></span>
       <span class="status-label">{i18n.t("nav.catalogStatus", { count: agentCount })}</span>
+      <span class="ver-pill">v0.4.0</span>
     </div>
   </footer>
 </aside>
@@ -143,12 +152,20 @@
     color: var(--color-text-primary);
     cursor: pointer;
     text-align: left;
+    border-bottom: 1px solid var(--color-border);
   }
-  .brand-mark { font-size: 18px; line-height: 1; }
-  .brand-name { font-weight: var(--fw-semibold); font-size: var(--text-body); }
+  .brand-mark { font-size: 18px; line-height: 1; display: inline-flex; }
+  .brand-text { display: inline-flex; align-items: baseline; gap: 3px; }
+  .brand-name { font-weight: 700; font-size: 15px; letter-spacing: -0.02em; }
+  .brand-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-brand);
+  }
 
   nav { flex: 1; padding: var(--space-2); overflow-y: auto; }
-  ul { display: flex; flex-direction: column; gap: 1px; }
+  ul { display: flex; flex-direction: column; gap: 2px; }
 
   .nav-item {
     display: flex;
@@ -157,21 +174,47 @@
     width: 100%;
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-md);
+    border: 1px solid transparent;
     color: var(--color-text-secondary);
     font-size: var(--text-body);
     font-weight: var(--fw-medium);
     line-height: 1;
     text-align: left;
-    transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+    transition: background-color var(--motion-duration-fast) var(--motion-ease-out),
+                border-color var(--motion-duration-fast) var(--motion-ease-out),
+                color var(--motion-duration-fast) var(--motion-ease-out);
   }
-  .nav-item:hover { background: var(--color-surface-sunken); color: var(--color-text-primary); }
-  .nav-item.active {
+  .nav-item:hover {
     background: var(--color-surface-sunken);
+    color: var(--color-text-primary);
+  }
+  .nav-item.active {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.32);
     color: var(--color-text-primary);
     font-weight: var(--fw-semibold);
   }
+  .nav-item.active .ico {
+    color: var(--color-brand);
+  }
   .nav-item .label { flex: 1; }
-  .ico { display: inline-flex; }
+  .ico { display: inline-flex; transition: color var(--motion-duration-fast) var(--motion-ease-out); }
+  .kbd-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    line-height: 1.2;
+    opacity: 0.7;
+  }
+  .nav-item.active .kbd-hint {
+    color: var(--color-brand);
+    border-color: rgba(245, 158, 11, 0.35);
+    opacity: 1;
+  }
   .badge {
     display: inline-flex;
     align-items: center;
@@ -194,7 +237,7 @@
     gap: var(--space-2);
   }
   .status {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: var(--space-2);
     font-size: var(--text-caption);
@@ -206,6 +249,16 @@
     text-align: left;
     white-space: nowrap;
   }
+  .status-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .ver-pill {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: var(--radius-full);
+    padding: 1px 6px;
+  }
   .dot {
     width: 8px; height: 8px; border-radius: var(--radius-full);
     background: var(--color-text-muted);
@@ -214,7 +267,7 @@
 
   /* ── Collapsed sidebar (icon-rail mode) ── */
   .sidebar.collapsed { width: 56px; }
-  .sidebar.collapsed .brand-name { display: none; }
+  .sidebar.collapsed .brand-text { display: none; }
   .sidebar.collapsed .brand { justify-content: center; }
   .sidebar.collapsed .nav-item {
     justify-content: center;
@@ -222,7 +275,8 @@
     padding-right: 0;
     position: relative;
   }
-  .sidebar.collapsed .nav-item .label { display: none; }
+  .sidebar.collapsed .nav-item .label,
+  .sidebar.collapsed .nav-item .kbd-hint { display: none; }
   .sidebar.collapsed .nav-item .badge {
     position: absolute;
     top: 2px;
@@ -247,7 +301,8 @@
     padding-left: 0;
     padding-right: 0;
   }
-  .sidebar.collapsed .settings-item .label {
+  .sidebar.collapsed .settings-item .label,
+  .sidebar.collapsed .settings-item .kbd-hint {
     display: none;
   }
   .sidebar.collapsed .foot {
@@ -256,5 +311,6 @@
     padding-right: var(--space-2);
   }
   .sidebar.collapsed .status { justify-content: center; margin: 0; padding: 4px; }
-  .sidebar.collapsed .status-label { display: none; }
+  .sidebar.collapsed .status-label,
+  .sidebar.collapsed .ver-pill { display: none; }
 </style>

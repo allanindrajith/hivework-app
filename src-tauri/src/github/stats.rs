@@ -49,7 +49,7 @@ const HTTP_TIMEOUT: Duration = Duration::from_secs(10);
 const USER_AGENT: &str = concat!(
     "hivework-app/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://github.com/hivework/hivework-app)"
+    " (+https://github.com/allanindrajith/hivework-app)"
 );
 
 /// API base — overridable in tests so we can point at a mock server.

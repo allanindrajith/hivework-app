@@ -52,7 +52,7 @@
         allowed: !paranoid,
       },
       {
-        label: "hivework.app",
+        label: "hivework.online · github.com/allanindrajith/hivework-app",
         desc: i18n.t("network.updaterDesc"),
         allowed: !paranoid,
       },

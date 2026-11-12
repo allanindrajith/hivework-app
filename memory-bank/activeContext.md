@@ -1,5 +1,12 @@
 # Active Context — Hivework
 
+**State (2026-11-13)**: **v0.4.0 — Connected to `allanindrajith/hivework-app`, `allanindrajith/hivework`, and `hivework.online`; 296 `hive-*` agents synced; UI redesigned to Obsidian & Honeycomb Amber (`DESIGN.md`).**
+- Dual updater endpoints configured in `src-tauri/tauri.conf.json`: `https://hivework.online/updater.json` (primary) and `https://github.com/allanindrajith/hivework-app/releases/latest/download/updater.json` (fallback).
+- Bundled baseline (`src-tauri/resources/corpus-baseline/` and `static/corpus-baseline.json`) updated to 296 `hive-*` agents across 18 divisions.
+- Rust renderer (`src-tauri/src/render/mod.rs`) and `src-tauri/data/tools.json` updated for 100% byte parity with `Hivework/scripts/convert.sh`.
+- Desktop UI (`tokens.css`, `+page.svelte`, `TitlebarControls.svelte`, `Sidebar.svelte`, `Dashboard.svelte`, `AgentsWorkspace.svelte`) redesigned to match `https://hivework.online/`.
+- Gates green: `svelte-check` 0 errors / 0 warnings, `npm run build` clean, `cargo test` 288 passed / 0 failed.
+
 **State (2026-09-15)**: **v0.3.1 is cut and validated; only the Mac DMGs remain.** `main` @ `32641d5`, eight commits
 past `e8f3fcd`. The release candidate is PR #104 (`feat/approved-icon-family`) — Linux and Windows CI both green on
 its exact head — carrying the icon family, the landing favicon fix and the version bump. The queue is down from 16

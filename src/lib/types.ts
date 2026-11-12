@@ -180,7 +180,7 @@ export interface CreatedIssue {
 
 /**
  * A newer Hivework version surfaced by the manifest at
- * `hivework.app/updater.json`. Held by the updater store
+ * `hivework.online/updater.json`. Held by the updater store
  * once a check returns `available`. Matches the camelCase wire shape
  * the backend's `UpdateCheckOutcome::Available` flattens onto when
  * serde-tagged with `kind`.

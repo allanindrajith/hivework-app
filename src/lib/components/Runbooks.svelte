@@ -72,17 +72,17 @@
         {
           group: "Architecture & Planning",
           activation: "Phase 1 - Blueprint",
-          agents: ["agents-orchestrator", "design-ux-architect"],
+          agents: ["hive-agents-orchestrator", "hive-ux-architect"],
         },
         {
           group: "Implementation",
           activation: "Phase 2 - Build",
-          agents: ["engineering-senior-developer", "engineering-frontend-developer"],
+          agents: ["hive-senior-developer", "hive-frontend-developer"],
         },
         {
           group: "Verification",
           activation: "Phase 3 - Evidence QA",
-          agents: ["testing-reality-checker", "testing-evidence-collector"],
+          agents: ["hive-reality-checker", "hive-evidence-collector"],
         },
       ],
     },
@@ -97,17 +97,17 @@
         {
           group: "Root Cause Investigation",
           activation: "Phase 1 - Trace",
-          agents: ["engineering-codebase-onboarding-engineer", "lsp-index-engineer"],
+          agents: ["hive-codebase-onboarding-engineer", "hive-lsp-index-engineer"],
         },
         {
           group: "Resolution & TDD",
           activation: "Phase 2 - Fix & Test",
-          agents: ["engineering-senior-developer", "testing-test-automation-engineer"],
+          agents: ["hive-senior-developer", "hive-test-automation-engineer"],
         },
         {
           group: "Security Gate",
           activation: "Phase 3 - Certify",
-          agents: ["security-appsec-engineer", "testing-reality-checker"],
+          agents: ["hive-appsec-engineer", "hive-reality-checker"],
         },
       ],
     },
@@ -122,17 +122,17 @@
         {
           group: "Creative & Brand",
           activation: "Phase 1 - Positioning",
-          agents: ["design-brand-guardian", "design-ux-architect"],
+          agents: ["hive-brand-guardian", "hive-ux-architect"],
         },
         {
           group: "Content Engine",
           activation: "Phase 2 - Collateral",
-          agents: ["marketing-content-creator", "marketing-email-strategist"],
+          agents: ["hive-content-creator", "hive-email-strategist"],
         },
         {
           group: "Distribution",
           activation: "Phase 3 - Release",
-          agents: ["marketing-app-store-optimizer", "marketing-growth-hacker"],
+          agents: ["hive-app-store-optimizer", "hive-growth-hacker"],
         },
       ],
     },
@@ -147,17 +147,17 @@
         {
           group: "Infra Engineering",
           activation: "Phase 1 - Provision",
-          agents: ["engineering-devops-automator", "security-cloud-security-architect"],
+          agents: ["hive-devops-automator", "hive-cloud-security-architect"],
         },
         {
           group: "Observability",
           activation: "Phase 2 - Instrument",
-          agents: ["engineering-sre", "security-threat-detection-engineer"],
+          agents: ["hive-sre", "hive-threat-detection-engineer"],
         },
         {
           group: "Quality Gate",
           activation: "Phase 3 - Verify",
-          agents: ["testing-evidence-collector", "testing-reality-checker"],
+          agents: ["hive-evidence-collector", "hive-reality-checker"],
         },
       ],
     },

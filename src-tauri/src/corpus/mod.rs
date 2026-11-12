@@ -103,17 +103,17 @@ fn parse_agent_dirs(script: &str) -> Option<Vec<String>> {
 /// GitHub `codeload` tarball for the live corpus. Streamed, gunzipped,
 /// and unpacked on [`corpus_refresh`]. No git binary required.
 const CORPUS_TARBALL_URL: &str =
-    "https://codeload.github.com/hivework/hivework/tar.gz/refs/heads/main";
+    "https://codeload.github.com/allanindrajith/hivework/tar.gz/refs/heads/main";
 
 /// Git remote used to clone/pull a managed catalog when `git` is available.
-const CATALOG_GIT_URL: &str = "https://github.com/hivework/hivework.git";
+const CATALOG_GIT_URL: &str = "https://github.com/allanindrajith/hivework.git";
 
 /// Dev-root directory names scanned (under `$HOME`) by the "Find Hivework"
 /// button when looking for an existing clone.
-const SCAN_ROOTS: [&str; 7] = ["Software", "Projects", "git", "Developer", "code", "dev", "src"];
+const SCAN_ROOTS: [&str; 8] = ["AI hackathon", "Software", "Projects", "git", "Developer", "code", "dev", "src"];
 
 /// User-Agent for the refresh fetch. Mirrors the catalog refresh style.
-const USER_AGENT: &str = "hivework/0.1 (+https://github.com/hivework/hivework)";
+const USER_AGENT: &str = "hivework/0.4 (+https://github.com/allanindrajith/hivework)";
 
 /// Whole-request timeout for the tarball fetch. The repo is small (a few
 /// hundred small markdown files) so 60s is generous.
@@ -662,24 +662,22 @@ async fn seed_from_baseline(baseline: &Path, dest: &Path, categories: &[String])
     let mut seeded = 0u32;
     for category in categories.iter() {
         let src_cat = baseline.join(category);
-        let mut read = match tokio::fs::read_dir(&src_cat).await {
-            Ok(r) => r,
-            Err(_) => continue,
-        };
+        if !src_cat.is_dir() {
+            continue;
+        }
         let dst_cat = dest.join(category);
-        tokio::fs::create_dir_all(&dst_cat)
-            .await
-            .map_err(|e| AppError::Io {
-                message: format!("create {}: {e}", dst_cat.display()),
-            })?;
-        while let Ok(Some(ent)) = read.next_entry().await {
-            let path = ent.path();
-            if path.extension().and_then(|e| e.to_str()) != Some("md") {
-                continue;
+        for path in collect_md_files(&src_cat) {
+            let rel = path.strip_prefix(&src_cat).unwrap_or(&path);
+            let dst_file = dst_cat.join(rel);
+            if let Some(parent) = dst_file.parent() {
+                tokio::fs::create_dir_all(parent)
+                    .await
+                    .map_err(|e| AppError::Io {
+                        message: format!("create {}: {e}", parent.display()),
+                    })?;
             }
-            let Some(fname) = path.file_name() else { continue };
             let bytes = read_capped(&path, MAX_AGENT_BYTES).await?;
-            atomic_write(&dst_cat.join(fname), &bytes).await?;
+            atomic_write(&dst_file, &bytes).await?;
             seeded += 1;
         }
     }
@@ -1882,7 +1880,7 @@ mod tests {
 
         // The baseline is agency-agents main @ d3f71c4 (2026-10-01): every
         // division's agents, flattened exactly as `corpus_refresh` extracts them.
-        assert_eq!(corpus.count(), 283, "all bundled agent personas indexed");
+        assert_eq!(corpus.count(), 296, "all bundled agent personas indexed");
 
         // Every agent parsed real frontmatter: non-empty name + slug, real category.
         for a in &corpus.agents {
@@ -1902,10 +1900,10 @@ mod tests {
         assert_eq!(cats.len(), 18, "18 declared divisions");
         let count_of = |slug: &str| cats.iter().find(|c| c.slug == slug).map(|c| c.count).unwrap_or(0);
         assert_eq!(count_of("engineering"), 66);
-        assert_eq!(count_of("specialized"), 59);
+        assert_eq!(count_of("specialized"), 61);
         // game-development nests agents in unity/, godot/, unreal-engine/ etc.
         // upstream; a flat seeding would silently undercount these.
-        assert_eq!(count_of("game-development"), 21, "nested game-dev agents included");
+        assert_eq!(count_of("game-development"), 22, "nested game-dev agents included");
         // strategy is NOT a division (playbooks/runbooks, no agent frontmatter),
         // so it never appears as one — regardless of what's on disk.
         assert!(!cats.iter().any(|c| c.slug == "strategy"), "strategy is not a division");

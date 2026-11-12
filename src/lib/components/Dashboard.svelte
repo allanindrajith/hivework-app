@@ -16,7 +16,8 @@
   import Wrench from "@lucide/svelte/icons/wrench";
   import Folder from "@lucide/svelte/icons/folder";
   import Bot from "@lucide/svelte/icons/bot";
-  import Star from "@lucide/svelte/icons/star";
+  import CopyIcon from "@lucide/svelte/icons/copy";
+  import CheckIcon from "@lucide/svelte/icons/check";
   import CheckCircle2 from "@lucide/svelte/icons/check-circle-2";
   import ArrowRight from "@lucide/svelte/icons/arrow-right";
   import ActivityIcon from "@lucide/svelte/icons/activity";
@@ -58,7 +59,7 @@
     }
   }
 
-  const available = $derived(corpus.agents.length || 268);
+  const available = $derived(corpus.agents.length || 296);
   const managed = $derived(install.installed.filter((i) => i.state !== "foreign").length);
   const trackedByApp = $derived(install.installed.filter((i) => i.tracked && i.state !== "foreign").length);
   const fromOtherTools = $derived(managed - trackedByApp);
@@ -151,12 +152,12 @@
 
   // Featured agents selection
   const curatedSlugs = [
-    "senior-developer",
-    "devops-automator",
-    "ux-architect",
-    "database-optimizer",
-    "code-reviewer",
-    "evidence-collector",
+    "hive-senior-developer",
+    "hive-devops-automator",
+    "hive-ux-architect",
+    "hive-database-optimizer",
+    "hive-code-reviewer",
+    "hive-evidence-collector",
   ];
 
   const featuredAgents = $derived.by(() => {
@@ -164,8 +165,8 @@
       // Fallback preview placeholders when corpus is still hydrating
       return [
         {
-          slug: "senior-developer",
-          name: "Senior Full-Stack Architect",
+          slug: "hive-senior-developer",
+          name: "Senior Developer",
           category: "engineering",
           description: "High-level architecture, TypeScript, Svelte, and systems design.",
           emoji: "⚡",
@@ -174,9 +175,9 @@
           body: ""
         },
         {
-          slug: "devops-automator",
-          name: "DevOps & CI/CD Automator",
-          category: "devops",
+          slug: "hive-devops-automator",
+          name: "DevOps Automator",
+          category: "engineering",
           description: "Containerization, GitHub Actions, cloud pipelines, and Docker.",
           emoji: "🚀",
           color: "#3b82f6",
@@ -184,8 +185,8 @@
           body: ""
         },
         {
-          slug: "ux-architect",
-          name: "UI/UX System Architect",
+          slug: "hive-ux-architect",
+          name: "UX Architect",
           category: "design",
           description: "Design systems, typography, accessible UI, and micro-animations.",
           emoji: "✨",
@@ -216,9 +217,86 @@
 
   // Detected tools summary
   const detectedToolCount = $derived(install.tools.filter(t => t.detected).length);
+
+  const HERO_COMMANDS = [
+    { id: "install", label: "Install All", command: "./scripts/install.sh", desc: "Detect installed tools & deploy all 296 hive-* agents" },
+    { id: "skills", label: "Install Skills", command: "./scripts/install.sh --skills", desc: "Install 21 superpowers workflow skills alongside agents" },
+    { id: "convert", label: "Convert All", command: "./scripts/convert.sh --parallel", desc: "Regenerate 17 tool integrations in parallel" },
+  ] as const;
+
+  let activeCmdIdx = $state(0);
+  let cmdCopied = $state(false);
+
+  async function copyHeroCmd(cmd: string) {
+    try {
+      await navigator.clipboard.writeText(cmd);
+      cmdCopied = true;
+      toast.success("Copied command to clipboard");
+      setTimeout(() => { cmdCopied = false; }, 1800);
+    } catch {
+      toast.error("Could not copy command");
+    }
+  }
 </script>
 
 <section class="dash">
+  <!-- 0. hivework.online Hero Banner -->
+  <div class="hw-hero">
+    <div class="hw-hero-copy">
+      <div class="hw-eyebrow-row">
+        <span class="hw-eyebrow">HIVEWORK · HIVEWORK.ONLINE</span>
+        <span class="hw-creator-pill">Built by Allan Indrajith · itsallan.me</span>
+      </div>
+      <h2 class="hw-headline">
+        The Unified AI Agent Workforce — <span class="hw-accent">{available} Specialized Agents</span>
+      </h2>
+      <p class="hw-sub">
+        18 divisions · 21 workflow skills · 17 AI coding harnesses · Every agent prefixed with <code>hive-*</code> for zero naming collisions.
+      </p>
+    </div>
+
+    <div class="hw-terminal">
+      <div class="hw-term-head">
+        <div class="hw-term-dots" aria-hidden="true">
+          <span class="t-dot red"></span>
+          <span class="t-dot amber"></span>
+          <span class="t-dot green"></span>
+        </div>
+        <div class="hw-term-tabs" role="tablist">
+          {#each HERO_COMMANDS as c, idx (c.id)}
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeCmdIdx === idx}
+              class="hw-term-tab"
+              class:active={activeCmdIdx === idx}
+              onclick={() => (activeCmdIdx = idx)}
+            >
+              {c.label}
+            </button>
+          {/each}
+        </div>
+      </div>
+      <div class="hw-term-body">
+        <span class="hw-term-prompt">&gt;</span>
+        <code class="hw-term-code">{HERO_COMMANDS[activeCmdIdx].command}</code>
+        <button
+          type="button"
+          class="hw-term-copy"
+          onclick={() => copyHeroCmd(HERO_COMMANDS[activeCmdIdx].command)}
+        >
+          {#if cmdCopied}
+            <CheckIcon size={12} />
+            <span>Copied</span>
+          {:else}
+            <CopyIcon size={12} />
+            <span>Copy</span>
+          {/if}
+        </button>
+      </div>
+      <div class="hw-term-foot">{HERO_COMMANDS[activeCmdIdx].desc}</div>
+    </div>
+  </div>
   {#if showCatalogUpdate}
     <div class="cat-bar">
       <span class="cat-info">
@@ -396,10 +474,7 @@
                 <span class="ac-cat" style="color: {corpus.colorOf(agent.category)}">
                   {corpus.labelOf(agent.category)}
                 </span>
-                <span class="ac-rating">
-                  <Star size={11} fill="var(--color-brand)" color="var(--color-brand)" />
-                  <span>4.9</span>
-                </span>
+                <code class="ac-slug">{agent.slug}</code>
               </div>
             </div>
           </div>
@@ -512,7 +587,7 @@
             <div class="feed-indicator amber-dot"></div>
             <div class="feed-body">
               <span class="feed-title">Agent Store Ready</span>
-              <span class="feed-time">268 agents loaded into catalog</span>
+              <span class="feed-time">{available} hive-* agents loaded into catalog</span>
             </div>
             <span class="feed-tag">Ready</span>
           </div>
@@ -555,6 +630,179 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+  }
+
+  /* 0. hivework.online Hero Banner */
+  .hw-hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(ellipse at 15% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 65%),
+      var(--color-surface-raised);
+  }
+  @media (max-width: 920px) {
+    .hw-hero { grid-template-columns: 1fr; }
+  }
+  .hw-hero-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .hw-eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .hw-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-brand);
+  }
+  .hw-creator-pill {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: var(--radius-full);
+    padding: 2px 8px;
+  }
+  .hw-headline {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+  .hw-accent {
+    color: var(--color-brand);
+  }
+  .hw-sub {
+    margin: 0;
+    font-size: var(--text-body-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .hw-sub code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-brand);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  .hw-terminal {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .hw-term-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+  }
+  .hw-term-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .t-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+  .t-dot.red { background: #ef4444; opacity: 0.75; }
+  .t-dot.amber { background: #f59e0b; opacity: 0.75; }
+  .t-dot.green { background: #22c55e; opacity: 0.75; }
+  .hw-term-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .hw-term-tab {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .hw-term-tab:hover {
+    color: var(--color-text-primary);
+  }
+  .hw-term-tab.active {
+    color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.28);
+  }
+  .hw-term-body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .hw-term-prompt {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-brand);
+  }
+  .hw-term-code {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hw-term-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+  }
+  .hw-term-copy:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+  .hw-term-foot {
+    padding: 6px 12px;
+    border-top: 1px solid var(--color-border);
+    font-size: 11px;
+    color: var(--color-text-muted);
+    background: rgba(23, 21, 17, 0.55);
   }
 
   /* Catalog Update Bar */
@@ -929,13 +1177,18 @@
     font-weight: 600;
     text-transform: capitalize;
   }
-  .ac-rating {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 11px;
-    color: var(--color-brand);
-    font-weight: 600;
+  .ac-slug {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .ac-desc {
     font-size: var(--text-body-sm);

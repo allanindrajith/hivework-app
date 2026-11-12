@@ -113,7 +113,7 @@ class UiStore {
   aboutOpen: boolean = $state(false);
   /** Playbook modal — "how to get real work out of your agents" (title-bar ?). */
   playbookOpen: boolean = $state(false);
-  theme: ThemePreference = $state("system");
+  theme: ThemePreference = $state("dark");
   /** Active category ("division") filter for the Agents workspace; null = all.
       Lifted into ui so division pills can deep-link to it and so back/forward
       can restore it. */

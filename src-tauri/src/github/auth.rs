@@ -704,7 +704,7 @@ fn build_oauth_client() -> Result<reqwest::Client, AppError> {
         .user_agent(concat!(
             "hivework-app/",
             env!("CARGO_PKG_VERSION"),
-            " (+https://github.com/hivework/hivework-app)"
+            " (+https://github.com/allanindrajith/hivework-app)"
         ))
         .build()
         .map_err(|e| AppError::Network {
