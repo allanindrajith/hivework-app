@@ -802,7 +802,7 @@
     border-top: 1px solid var(--color-border);
     font-size: 11px;
     color: var(--color-text-muted);
-    background: rgba(23, 21, 17, 0.55);
+    background: var(--color-surface-sunken);
   }
 
   /* Catalog Update Bar */
@@ -965,7 +965,7 @@
   .quick-deploy {
     border: 1px solid rgba(245, 158, 11, 0.22);
     border-radius: var(--radius-lg);
-    background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, rgba(13, 12, 10, 0.4) 100%), var(--color-surface-raised);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, transparent 100%), var(--color-surface-raised);
     padding: var(--space-4);
     display: flex;
     flex-direction: column;

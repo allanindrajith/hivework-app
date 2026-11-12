@@ -5,10 +5,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Built with Tauri 2](https://img.shields.io/badge/Built%20with-Tauri%202-orange)](https://tauri.app)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-lightgrey)](https://www.apple.com/macos)
-[![Sponsor](https://img.shields.io/badge/♥-Sponsor-EC4899?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/hivework)
+[![Sponsor](https://img.shields.io/badge/♥-Sponsor-F59E0B?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/allanidrajith)
+[![Website](https://img.shields.io/badge/Website-hivework.online-F59E0B)](https://hivework.online)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/allanidrajith)
 
-Hivework is a small, native app for browsing, installing, and tracking the agent personas from [`hivework/hivework`](https://github.com/allanindrajith/hivework) across the AI coding tools you actually use.
+Hivework is a small, native app for browsing, installing, and tracking the 296 `hive-*` agent personas from [`allanindrajith/hivework`](https://github.com/allanindrajith/hivework) ([hivework.online](https://hivework.online)) across the AI coding tools you actually use.
 
 It is full source, MIT-licensed, local-first, and does not run telemetry.
 
@@ -46,32 +47,35 @@ Hivework is organized around four pillars — **Agents** (who), **Tools** (how),
 - **Tool registry** — tool knowledge lives in a single upstream-owned `tools.json` shared by the backend and frontend; adding a tool is editing one JSON entry, and installability is derived from whether the app ships a renderer for that tool's format.
 - **Dashboard** — install health, a Global-vs-Projects install sunburst, cross-tool coverage merged with the catalog-by-division view (linked hover), and deep links back into the workspace.
 - **GitHub integration** — optional OAuth Device Flow for GitHub-backed app features. Tokens are stored in the platform keychain and are never returned to the frontend.
-- **Offline-first catalog** — ships with a bundled corpus baseline and can use a local or managed clone of `agency-agents`.
+- **Offline-first catalog** — ships with a bundled corpus baseline (296 `hive-*` agents across 18 divisions) and can use a local or managed clone of `hivework`.
 - **Cross-platform shell** — Tauri 2 + Svelte 5 frontend with native macOS chrome and opaque native windows on Windows/Linux.
 
 New to directing agents? See **[docs/USING-AGENTS.md](./docs/USING-AGENTS.md)** — the Playbook: how to get shipped, tested work out of the catalog (also in-app via the title-bar book icon).
 
 ## Supported Install Targets
 
-The app currently installs to the renderer-backed targets that have deterministic byte parity with the upstream `agency-agents` converter:
+The app currently installs to the renderer-backed targets that have deterministic byte parity with the upstream `hivework` converter (`scripts/convert.sh`):
 
 | Tool | Scope Today | Output |
 |------|-------------|--------|
-| Claude Code | user | `~/.claude/agents/*.md` |
-| Codex | user | `~/.codex/agents/*.toml` |
-| Gemini CLI | user | `~/.gemini/agents/*.md` |
-| GitHub Copilot | user | `~/.github/agents/*.md` and `~/.copilot/agents/*.md` |
-| Qwen Code | user | `~/.qwen/agents/*.md` |
-| Cursor | project | `.cursor/rules/*.mdc` |
-| opencode | project | `.opencode/agents/*.md` |
-| Osaurus | user | `~/.osaurus/skills/agency-<slug>/SKILL.md` |
+| Claude Code | user | `~/.claude/agents/hive-*.md` |
+| Codex | user | `~/.codex/agents/hive-*.toml` |
+| Gemini CLI | user | `~/.gemini/agents/hive-*.md` |
+| GitHub Copilot | user | `~/.github/agents/hive-*.md` and `~/.copilot/agents/hive-*.md` |
+| Qwen Code | user | `~/.qwen/agents/hive-*.md` |
+| ZCode | user / project | `~/.zcode/agents/hive-*.md` |
+| Cursor | project | `.cursor/rules/hive-*.mdc` |
+| opencode | project | `.opencode/agents/hive-*.md` |
+| Antigravity | user | `~/.gemini/antigravity/skills/hive-<slug>/SKILL.md` |
+| Osaurus | user | `~/.osaurus/skills/hive-<slug>/SKILL.md` |
+| DSH | user | `~/.agents/skills/hive-<slug>/SKILL.md` |
 
-The upstream AA repo also contains integrations for Antigravity, Aider, Windsurf, OpenClaw, and Kimi. Those output shapes need additional app work before they should be exposed as first-class app installs — they appear in the Tools panel as recognized-only.
+The upstream `hivework` repo also contains integrations for Aider, Windsurf, OpenClaw, and Kimi. Those appear in the Tools panel as recognized-only.
 
 ## What This Isn't
 
 - Not an agent runtime. The app installs personas into other tools; it does not execute them.
-- Not a replacement for the `agency-agents` repo. The repo remains the source catalog.
+- Not a replacement for the `hivework` repo. The repo remains the source catalog.
 - Not a telemetry product. There are no analytics SDKs, user tracking, or accounts required for core use.
 - Not a shell command bridge. The frontend cannot construct arbitrary shell commands.
 
@@ -160,10 +164,10 @@ Core browsing and install tracking are local. Network access is explicit and gat
 
 Known outbound paths:
 
-- GitHub/codeload/raw GitHub endpoints for refreshing the `agency-agents` catalog when the user requests or enables it.
+- GitHub/codeload/raw GitHub endpoints for refreshing the `hivework` catalog when the user requests or enables it.
 - GitHub OAuth Device Flow when the user chooses to sign in.
 - GitHub API calls for optional GitHub-backed app features.
-- The app updater manifest and release artifacts when update checks are enabled.
+- The app updater manifest (`https://hivework.online/updater.json`) and release artifacts when update checks are enabled.
 
 No telemetry, crash reporting, advertising pixels, or product analytics are included.
 
@@ -197,6 +201,6 @@ The highest-value areas before 1.0 are:
 
 ## Support The Project
 
-If Hivework saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/hivework) or buying a coffee. Sponsorship is optional and does not unlock a paid tier.
+If Hivework saves you time, consider supporting on [Buy Me a Coffee](https://www.buymeacoffee.com/allanidrajith) or visiting [hivework.online](https://hivework.online). Sponsorship is optional and does not unlock a paid tier.
 
 <a href="https://www.buymeacoffee.com/allanidrajith" target="_blank"><img src="https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=%E2%98%95&slug=allanidrajith&button_colour=FFDD00&font_colour=000000&font_family=Bree&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee" /></a>

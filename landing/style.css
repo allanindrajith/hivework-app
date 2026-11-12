@@ -4,26 +4,23 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Brand */
-  /* --brand is for text and outlines on the page background (AA 5.2:1 on --void);
-     --brand-fill is behind white button text (AA 5.1:1). The icon red, #E83020,
-     is just under 4.5:1 for either job, so it only tints the hero glow. */
-  --brand:           #f0453a;
-  --brand-fill:      #d12e20;
-  --brand-fill-hover:#b8261a;
-  --brand-soft:      rgb(232 48 32 / 0.18);
+  /* Brand — Honeycomb Amber (hivework.online) */
+  --brand:           #f59e0b;
+  --brand-fill:      #f59e0b;
+  --brand-fill-hover:#fbbf24;
+  --brand-soft:      rgba(245, 158, 11, 0.16);
 
-  /* Surfaces (dark first) */
-  --void:            #0a0d0f;
-  --surface:         #14191c;
-  --surface-raised:  #1b2226;
-  --border:          rgba(255,255,255,0.08);
-  --border-strong:   rgba(255,255,255,0.15);
+  /* Surfaces (Dark Obsidian first) */
+  --void:            #0d0c0a;
+  --surface:         #171511;
+  --surface-raised:  #1e1b16;
+  --border:          #2d2920;
+  --border-strong:   #d97706;
 
   /* Text */
-  --text:            oklch(96% 0.005 95);
-  --text-muted:      oklch(72% 0.01 95);
-  --text-dim:        oklch(56% 0.008 95);
+  --text:            #ffffff;
+  --text-muted:      #a8a29e;
+  --text-dim:        #78716c;
 
   /* Spacing */
   --pad-x:           clamp(20px, 5vw, 64px);
@@ -36,17 +33,17 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    --void:            #f7f6f3;
+    --void:            #faf8f5;
     --surface:         #ffffff;
-    --surface-raised:  #fbfaf7;
-    --border:          rgba(0,0,0,0.08);
-    --border-strong:   rgba(0,0,0,0.15);
-    --text:            oklch(20% 0.005 95);
-    --text-muted:      oklch(48% 0.01 95);
-    --text-dim:        oklch(65% 0.008 95);
-    --brand:           #c42a1c;   /* AA 5.3:1 on --void, 5.7:1 under white text */
-    --brand-fill:      #c42a1c;
-    --brand-soft:      rgb(232 48 32 / 0.12);
+    --surface-raised:  #f3efe8;
+    --border:          #e4ded3;
+    --border-strong:   #d97706;
+    --text:            #171511;
+    --text-muted:      #57534e;
+    --text-dim:        #78716c;
+    --brand:           #d97706;
+    --brand-fill:      #f59e0b;
+    --brand-soft:      rgba(245, 158, 11, 0.12);
   }
 }
 
@@ -176,7 +173,7 @@ h1 {
 .btn:hover { transform: translateY(-1px); }
 .btn-primary {
   background: var(--brand-fill);
-  color: #fff;
+  color: #0d0c0a;
   border-color: var(--brand-fill);
 }
 .btn-primary:hover { background: var(--brand-fill-hover); border-color: var(--brand-fill-hover); }
