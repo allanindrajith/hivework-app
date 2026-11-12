@@ -178,12 +178,15 @@
       adding = false;
     }
   }
+
+  const currentWorkspacePath = "/Users/allanindrajith/AI hackathon/Hivework-app";
 </script>
 
 <section class="pr">
   {#if selected}
     <!-- ── Detail ── -->
     <header class="pr-head detail">
+      <button class="back-link" onclick={() => ui.selectProject(null)}>← {i18n.t("nav.projects")}</button>
       <span class="dh-ic"><FolderIcon size={20} /></span>
       <div class="dh-id">
         <h2 class="dh-label">{selected.label}</h2>
@@ -232,7 +235,10 @@
   {:else}
     <!-- ── List ── -->
     <header class="pr-head">
-      <p class="pr-count">{i18n.t("projects.count", { count: projects.list.length })}</p>
+      <div class="pr-head-title">
+        <h2 class="pr-main-title">{i18n.t("nav.projects")}</h2>
+        <span class="pr-count-badge">{i18n.t("projects.count", { count: projects.list.length })}</span>
+      </div>
       <div class="pr-actions">
         <button class="btn primary" disabled={adding} onclick={addProject}>
           <FolderPlus size={15} /><span>{i18n.t("projects.add")}</span>
@@ -241,34 +247,88 @@
     </header>
 
     {#if projects.list.length === 0}
-      <div class="scroll">
-        <EmptyState title={i18n.t("projects.emptyTitle")}>
-          {#snippet icon()}<FolderIcon size={48} />{/snippet}
-          {i18n.t("projects.emptyBody")}
-          {#snippet cta()}
-            <div class="empty-cta">
-              <Button variant="primary" disabled={adding} onclick={addProject}>
-                {#snippet icon()}<FolderPlus size={15} />{/snippet}
-                {i18n.t("projects.add")}
-              </Button>
-              <button class="link-btn" onclick={() => ui.openPlaybook()}>{i18n.t("projects.openPlaybook")}</button>
+      <div class="scroll empty-wrap">
+        <div class="empty-hero">
+          <div class="empty-icon-box">
+            <FolderIcon size={32} />
+          </div>
+          <h2 class="empty-title">Deploy AI Agents into your Projects</h2>
+          <p class="empty-sub">
+            Link any project repository to deploy custom AI agent squads into local tools (Claude Code, Cursor, Windsurf, Codex). Roster configurations stay inside your repository so your team stays in sync.
+          </p>
+          <div class="empty-actions">
+            <button class="btn primary lg" disabled={adding} onclick={() => { projects.register(currentWorkspacePath); ui.selectProject(currentWorkspacePath); }}>
+              <FolderPlus size={16} />
+              <span>Link Current Workspace ({currentWorkspacePath.split("/").pop()})</span>
+            </button>
+            <button class="btn secondary lg" disabled={adding} onclick={addProject}>
+              <FolderOpen size={16} />
+              <span>Browse Folder...</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="blueprints-section">
+          <h3 class="bp-heading">Recommended Squad Blueprints for Projects</h3>
+          <div class="bp-grid">
+            <div class="bp-card">
+              <span class="bp-badge">Web Application</span>
+              <h4 class="bp-title">Full-Stack Web Squad</h4>
+              <p class="bp-desc">Orchestrates architecture, responsive UI components, and strict verification gates.</p>
+              <div class="bp-roster">
+                <span class="bp-chip">Agents Orchestrator</span>
+                <span class="bp-chip">Senior Developer</span>
+                <span class="bp-chip">Reality Checker</span>
+              </div>
             </div>
-          {/snippet}
-        </EmptyState>
+            <div class="bp-card">
+              <span class="bp-badge">Systems & Cloud</span>
+              <h4 class="bp-title">DevOps & Infrastructure</h4>
+              <p class="bp-desc">Automates CI/CD, docker workflows, cloud operations, and security hygiene.</p>
+              <div class="bp-roster">
+                <span class="bp-chip">DevOps Automator</span>
+                <span class="bp-chip">Security Reviewer</span>
+                <span class="bp-chip">Evidence Collector</span>
+              </div>
+            </div>
+            <div class="bp-card">
+              <span class="bp-badge">Product Design</span>
+              <h4 class="bp-title">UX & Design Engineering</h4>
+              <p class="bp-desc">Designs CSS systems, high-conversion page heroes, and accessible interfaces.</p>
+              <div class="bp-roster">
+                <span class="bp-chip">UX Architect</span>
+                <span class="bp-chip">Brand Guardian</span>
+                <span class="bp-chip">Frontend Developer</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     {:else}
       <ul class="rows">
         {#each projects.list as project (project.path)}
           <li class="proj">
-            <button class="proj-row" onclick={() => ui.selectProject(project.path)}>
-              <span class="proj-ic"><FolderIcon size={18} /></span>
-              <span class="proj-body">
-                <span class="proj-label">{project.label}</span>
-                <span class="proj-path" title={project.path}>{project.path}</span>
-              </span>
-              <span class="proj-count">{i18n.count(project.installedCount, "common.agent.one", "common.agent.many")}</span>
-              <ChevronRight size={16} class="proj-go" />
-            </button>
+            <div class="proj-card-inner">
+              <button class="proj-row" onclick={() => ui.selectProject(project.path)}>
+                <span class="proj-ic"><FolderIcon size={20} /></span>
+                <span class="proj-body">
+                  <span class="proj-label">{project.label}</span>
+                  <span class="proj-path" title={project.path}>{project.path}</span>
+                </span>
+                <span class="proj-count">{i18n.count(project.installedCount, "common.agent.one", "common.agent.many")}</span>
+              </button>
+              <div class="proj-quick-acts">
+                <button class="btn sm" onclick={() => (browseFor = project.path)}>
+                  <span>{i18n.t("teams.deploy")}</span>
+                </button>
+                <button class="btn sm ghost" onclick={() => reveal(project.path)} title={i18n.t("common.reveal")}>
+                  <FolderOpen size={14} />
+                </button>
+                <button class="proj-enter-btn" onclick={() => ui.selectProject(project.path)} title="Open Project Detail">
+                  <ChevronRight size={16} class="proj-go" />
+                </button>
+              </div>
+            </div>
           </li>
         {/each}
       </ul>
@@ -310,60 +370,80 @@
     flex: none; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
     padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border);
   }
-  .pr-count { color: var(--color-text-secondary); font-size: var(--text-body-sm); }
   .pr-actions { display: flex; gap: var(--space-2); }
 
   /* ── Detail header ── */
-  .pr-head.detail { justify-content: flex-start; }
-  .dh-ic {
-    flex: none; display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border-radius: var(--radius-md);
-    background: var(--color-surface-sunken); color: var(--color-text-secondary);
+  .pr-head.detail { justify-content: flex-start; gap: var(--space-3); }
+  .back-link {
+    background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+    color: var(--color-text-secondary); font-size: 12px; font-weight: 500; padding: 4px 10px; cursor: pointer;
   }
-  .dh-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-  .dh-label { font-size: var(--text-h2); font-weight: var(--fw-semibold); color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .dh-path {
-    font-size: var(--text-caption); color: var(--color-text-muted); background: transparent;
-    text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+  .back-link:hover { color: var(--color-text-primary); background: var(--color-surface-sunken); border-color: rgba(245, 158, 11, 0.3); }
+
+  .pr-head-title { display: flex; align-items: center; gap: var(--space-3); }
+  .pr-main-title { font-size: var(--text-h2); font-weight: 700; color: var(--color-text-primary); margin: 0; }
+  .pr-count-badge {
+    font-size: 11px; font-weight: 600; color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12); padding: 2px 8px; border-radius: var(--radius-full);
   }
-  .dh-path:hover { color: var(--color-brand); text-decoration: underline; }
-  .dh-count { flex: none; font-size: var(--text-body-sm); color: var(--color-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    height: 32px; padding: 0 var(--space-3);
-    border: 1px solid var(--color-border); border-radius: var(--radius-md);
-    background: transparent; color: var(--color-text-secondary);
-    font-size: var(--text-body-sm); cursor: pointer; flex: none;
+  /* ── Empty Hero & Blueprints ── */
+  .empty-wrap { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-6); max-width: 1080px; margin: 0 auto; width: 100%; }
+  .empty-hero {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: var(--space-6) var(--space-5); border-radius: var(--radius-xl);
+    background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.08) 0%, transparent 70%), var(--color-surface-raised);
+    border: 1px solid var(--color-border); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
   }
-  .btn:hover:not(:disabled) { color: var(--color-text-primary); background: var(--color-surface-sunken); }
-  .btn:disabled { opacity: 0.5; cursor: default; }
-  .btn.primary { background: var(--color-brand); color: var(--color-text-inverse); border-color: transparent; }
-  .btn.primary:hover:not(:disabled) { filter: brightness(1.08); background: var(--color-brand); }
-  .btn.danger-ic { padding: 0; width: 32px; justify-content: center; }
-  .btn.danger-ic:hover { color: var(--color-danger); border-color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 10%, transparent); }
+  .empty-icon-box {
+    width: 60px; height: 60px; border-radius: var(--radius-lg);
+    background: rgba(245, 158, 11, 0.12); color: var(--color-brand);
+    display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);
+    border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+  }
+  .empty-title { font-size: var(--text-h2); font-weight: 700; color: var(--color-text-primary); margin: 0 0 var(--space-2); }
+  .empty-sub { font-size: 14px; color: var(--color-text-secondary); max-width: 580px; line-height: 1.5; margin: 0 0 var(--space-5); }
+  .empty-actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
+  .btn.lg { height: 40px; padding: 0 var(--space-4); font-size: 13px; font-weight: 600; border-radius: var(--radius-md); }
+  .btn.secondary { background: var(--color-surface-sunken); color: var(--color-text-primary); border: 1px solid var(--color-border); }
+  .btn.secondary:hover { border-color: rgba(245, 158, 11, 0.4); background: var(--color-surface-raised); }
 
-  .scroll { flex: 1; min-height: 0; overflow-y: auto; }
+  .blueprints-section { display: flex; flex-direction: column; gap: var(--space-3); }
+  .bp-heading { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary); margin: 0; }
+  .bp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-3); }
+  .bp-card {
+    display: flex; flex-direction: column; gap: var(--space-2);
+    padding: var(--space-4); border-radius: var(--radius-lg);
+    background: var(--color-surface-raised); border: 1px solid var(--color-border);
+    transition: all 0.15s ease;
+  }
+  .bp-card:hover { border-color: rgba(245, 158, 11, 0.35); transform: translateY(-1px); }
+  .bp-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--color-brand); letter-spacing: 0.04em; }
+  .bp-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin: 0; }
+  .bp-desc { font-size: 12px; color: var(--color-text-muted); line-height: 1.4; margin: 0; }
+  .bp-roster { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .bp-chip { font-size: 11px; color: var(--color-text-secondary); background: var(--color-surface-sunken); padding: 2px 7px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
 
-  .empty-cta { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
-  .link-btn { background: transparent; color: var(--color-text-link, var(--color-brand)); font-size: var(--text-body-sm); cursor: pointer; padding: 2px; }
-  .link-btn:hover { text-decoration: underline; }
-
-  /* ── Project list rows ── */
-  .rows { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
-  .proj { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); overflow: hidden; }
-  .proj:hover { border-color: var(--color-border-strong, var(--color-text-muted)); }
+  /* ── Project Rows ── */
+  .rows { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+  .proj { border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); overflow: hidden; transition: all 0.15s ease; }
+  .proj:hover { border-color: rgba(245, 158, 11, 0.4); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25); }
+  .proj-card-inner { display: flex; align-items: center; justify-content: space-between; padding: 6px var(--space-3); }
   .proj-row {
-    width: 100%; display: flex; align-items: center; gap: var(--space-3);
-    padding: var(--space-3); background: transparent; cursor: pointer; text-align: left;
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-2) 0; background: transparent; cursor: pointer; text-align: left; border: none;
   }
-  .proj-row:hover { background: var(--color-surface-sunken); }
-  .proj-ic { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--color-surface-sunken); color: var(--color-text-secondary); }
-  .proj-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-  .proj-label { font-weight: var(--fw-semibold); color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .proj-path { font-size: var(--text-caption); color: var(--color-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .proj-count { flex: none; font-size: var(--text-body-sm); color: var(--color-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  :global(.proj-go) { flex: none; color: var(--color-text-muted); }
+  .proj-quick-acts { display: flex; align-items: center; gap: 6px; flex: none; }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn.ghost { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-secondary); }
+  .btn.ghost:hover { color: var(--color-text-primary); background: var(--color-surface-sunken); }
+  .proj-enter-btn { background: transparent; border: none; color: var(--color-text-muted); cursor: pointer; padding: 4px; display: flex; }
+  .proj-enter-btn:hover { color: var(--color-brand); }
+  .proj-ic { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.1); color: var(--color-brand); }
+  .proj-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .proj-label { font-size: 14px; font-weight: 600; color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .proj-path { font-family: var(--font-mono, monospace); font-size: 11px; color: var(--color-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .proj-count { flex: none; font-size: 12px; font-weight: 600; color: var(--color-brand); background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: var(--radius-full); white-space: nowrap; margin-right: 8px; }
 
   /* ── Division groups (detail roster) ── */
   .groups { padding: var(--space-3); display: flex; flex-direction: column; gap: 2px; }

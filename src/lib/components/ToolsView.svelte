@@ -118,7 +118,41 @@
     if (l === "all") return true;
     return l === "installed" ? toolPresent(t) : !toolPresent(t);
   }
-  const visibleTools = $derived(tools.filter((t) => lensMatch(toolLens, t)));
+  const hasInstalled = $derived(tools.some((t) => toolPresent(t)));
+  const visibleTools = $derived.by(() => {
+    if (toolLens === "installed") {
+      const match = tools.filter((t) => toolPresent(t));
+      return match.length > 0 ? match : tools;
+    }
+    return tools.filter((t) => lensMatch(toolLens, t));
+  });
+
+  const recommendedSlugs = [
+    "agents-orchestrator",
+    "frontend-developer",
+    "ux-architect",
+    "code-reviewer",
+  ];
+
+  const recommendedAgents = $derived.by(() => {
+    const list = corpus.agents.filter((a) =>
+      recommendedSlugs.some((r) => a.slug.includes(r))
+    );
+    return list.length >= 4 ? list.slice(0, 4) : corpus.agents.slice(0, 4);
+  });
+
+  async function quickInstall(slug: string, name: string) {
+    if (!sel || busy) return;
+    busy = true;
+    try {
+      await install.install(slug, sel.tool, null);
+      toast.success(i18n.t("tools.quickUpdated", { name }));
+    } catch (e) {
+      toast.error(i18n.t("common.actionFailed"), errorText(e));
+    } finally {
+      busy = false;
+    }
+  }
 
   const STATE_COLOR: Record<InstallState, string> = {
     current: "var(--color-success)",
@@ -164,9 +198,9 @@
   let selectedTool = $state<Tool | null>(null);
   let autoPicked = false;
   $effect(() => {
-    if (!autoPicked && tools.length > 0) {
+    if (!autoPicked && visibleTools.length > 0) {
       autoPicked = true;
-      selectedTool = [...tools].sort((a, b) => b.installedCount - a.installedCount)[0]?.tool ?? null;
+      selectedTool = [...visibleTools].sort((a, b) => b.installedCount - a.installedCount)[0]?.tool ?? visibleTools[0].tool;
     }
   });
   // A Dashboard "Coverage by tool" click sets ui.toolsSelected — honor it so the
@@ -505,7 +539,39 @@
         {/if}
 
         {#if selRows.length === 0}
-          <p class="empty">{i18n.t("tools.noAgentsDeployed", { tool: sel.label })}</p>
+          <div class="empty-recs">
+            <div class="empty-recs-head">
+              <span class="er-badge">Recommended for {sel.label}</span>
+              <p class="er-text">Deploy essential agents into this tool to start using them immediately in your projects.</p>
+            </div>
+            <div class="er-grid">
+              {#each recommendedAgents as a (a.slug)}
+                {@const CatIcon = resolveCategoryIcon(corpus.iconOf(a.category))}
+                <div class="er-card">
+                  <div class="er-card-top">
+                    <span class="er-emoji">{a.emoji || "⚡"}</span>
+                    <div class="er-card-id">
+                      <span class="er-name">{a.name}</span>
+                      <span class="er-div" style="color: {corpus.colorOf(a.category)}">
+                        <CatIcon size={12} />
+                        {corpus.labelOf(a.category)}
+                      </span>
+                    </div>
+                  </div>
+                  <p class="er-desc">{a.description}</p>
+                  <button class="er-install-btn" disabled={busy} onclick={() => quickInstall(a.slug, a.name)}>
+                    <PlusIcon size={13} />
+                    <span>Deploy to {sel.label}</span>
+                  </button>
+                </div>
+              {/each}
+            </div>
+            <div class="er-footer">
+              <button class="ghost" onclick={() => ui.openAgents()}>
+                <span>Browse All {corpus.agents.length} Catalog Agents →</span>
+              </button>
+            </div>
+          </div>
         {:else}
           <div class="list-head">
             <h3 class="sub">
@@ -607,18 +673,24 @@
   }
   /* ── Tool filter lens (mirrors the Agents workspace) ── */
   .seg {
-    display: flex; align-items: center; gap: 2px; flex-wrap: wrap; min-width: 0;
-    padding: 2px; background: var(--color-surface-sunken);
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; min-width: 0;
+    padding: 3px; background: var(--color-surface-sunken);
     border: 1px solid var(--color-border); border-radius: var(--radius-md);
   }
   .seg-btn {
     display: inline-flex; align-items: center; gap: 6px;
     height: 26px; padding: 0 10px; border-radius: var(--radius-sm);
     background: transparent; color: var(--color-text-secondary);
-    font-size: var(--text-body-sm); cursor: pointer; white-space: nowrap;
+    font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
+    border: none; transition: all 0.15s ease;
   }
   .seg-btn:hover { color: var(--color-text-primary); }
-  .seg-btn.on { background: var(--color-surface-raised); color: var(--color-text-primary); box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.08)); }
+  .seg-btn.on {
+    background: var(--color-surface-raised);
+    color: var(--color-brand);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
   .tlist-empty {
     padding: var(--space-4) var(--space-3);
     font-size: var(--text-body-sm); color: var(--color-text-muted); text-align: center;
@@ -629,40 +701,55 @@
     border: 1px solid var(--color-border); border-radius: var(--radius-md);
     background: transparent; color: var(--color-text-secondary);
     font-size: var(--text-body-sm); cursor: pointer; flex: none;
+    transition: all 0.15s ease;
   }
-  .ghost:hover:not(:disabled) { color: var(--color-text-primary); background: var(--color-surface-sunken); }
+  .ghost:hover:not(:disabled) { color: var(--color-text-primary); background: var(--color-surface-sunken); border-color: rgba(245, 158, 11, 0.3); }
   .ghost:disabled { opacity: 0.6; cursor: default; }
   .ghost.icon { padding: 0; width: 30px; justify-content: center; }
 
-  .tlist { flex: 1; overflow-y: auto; min-height: 0; padding: var(--space-2); display: flex; flex-direction: column; gap: 2px; }
+  .tlist { flex: 1; overflow-y: auto; min-height: 0; padding: var(--space-3); display: flex; flex-direction: column; gap: 6px; }
   .trow {
-    display: flex; align-items: center; gap: var(--space-2); width: 100%;
-    padding: var(--space-2); border-radius: var(--radius-md);
-    background: transparent; cursor: pointer; text-align: left;
+    display: flex; align-items: center; gap: var(--space-3); width: 100%;
+    padding: 10px 12px; border-radius: var(--radius-lg);
+    background: var(--color-surface-raised); cursor: pointer; text-align: left;
+    border: 1px solid var(--color-border);
+    transition: all 0.15s ease;
   }
-  .trow:hover { background: var(--color-surface-sunken); }
-  .trow.sel { background: var(--color-brand-subtle); }
+  .trow:hover {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: color-mix(in srgb, var(--color-brand) 4%, var(--color-surface-raised));
+    transform: translateY(-1px);
+  }
+  .trow.sel {
+    border-color: var(--color-brand);
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%), var(--color-surface-raised);
+    box-shadow: 0 0 14px -3px rgba(245, 158, 11, 0.25);
+  }
   .trow.dim { opacity: 0.55; }
   .trow-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
   .trow-top { display: flex; align-items: center; gap: var(--space-2); }
-  .trow-name { flex: 1; min-width: 0; font-weight: var(--fw-medium); color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .trow-name { flex: 1; min-width: 0; font-weight: 600; color: var(--color-text-primary); font-size: var(--text-body-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .c-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--color-text-muted); opacity: 0.4; flex: none; }
-  .c-dot.on { background: var(--color-success); opacity: 1; }
-  .trow-sub { font-size: var(--text-caption); color: var(--color-text-muted); display: flex; gap: 4px; min-width: 0; }
+  .c-dot.on {
+    background: var(--color-success);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  }
+  .trow-sub { font-size: 11px; color: var(--color-text-muted); display: flex; gap: 6px; min-width: 0; }
   .trow-sub.recognized { font-style: italic; opacity: 0.85; }
   .trow-ver { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hbar { display: flex; height: 5px; border-radius: 999px; overflow: hidden; background: var(--color-surface-sunken); }
+  .hbar { display: flex; height: 5px; border-radius: 999px; overflow: hidden; background: var(--color-surface-sunken); margin-top: 3px; }
   .hseg { display: block; }
 
   /* ── badges ── */
   .badge {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; flex: none; border-radius: 9px;
+    width: 34px; height: 34px; flex: none; border-radius: var(--radius-md);
     background: linear-gradient(145deg, var(--accent), color-mix(in srgb, var(--accent) 70%, black));
     color: #fff; font-weight: var(--fw-bold); font-size: 15px;
-    box-shadow: inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
-  .badge.lg { width: 44px; height: 44px; border-radius: 12px; font-size: 20px; }
+  .badge.lg { width: 48px; height: 48px; border-radius: var(--radius-lg); font-size: 22px; }
   .badge .glyph { display: inline-flex; align-items: center; justify-content: center; }
   .badge .glyph :global(svg) { width: 1em; height: 1em; }
 
@@ -671,13 +758,17 @@
 
   /* ── Detail pane (console) ── */
   .detail-pane { flex: 1; min-width: 0; overflow-y: auto; border-left: 1px solid var(--color-border); }
-  .con { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
-  .con-head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .con { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+  .con-head {
+    display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+    padding: var(--space-4); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); background: var(--color-surface-raised);
+  }
   .con-id { flex: 1; min-width: 0; }
-  .con-id h2 { font-size: var(--text-h2); font-weight: var(--fw-semibold); color: var(--color-text-primary); }
-  .con-meta { font-size: var(--text-caption); color: var(--color-text-muted); }
-  .con-meta .warn { color: var(--color-warning); }
-  .con-meta .cust { color: var(--color-brand); }
+  .con-id h2 { font-size: var(--text-h2); font-weight: 700; color: var(--color-text-primary); margin: 0; }
+  .con-meta { font-size: var(--text-caption); color: var(--color-text-muted); margin-top: 4px; }
+  .con-meta .warn { color: var(--color-warning); font-weight: 600; }
+  .con-meta .cust { color: var(--color-brand); font-weight: 600; }
   .ghost.on { color: var(--color-brand); background: var(--color-surface-sunken); }
 
   .loc-editor {
@@ -707,9 +798,10 @@
     display: inline-flex; align-items: center; gap: 6px;
     height: 32px; padding: 0 var(--space-3); border-radius: var(--radius-md);
     border: 1px solid var(--color-border); background: var(--color-surface-sunken);
-    color: var(--color-text-primary); font-size: var(--text-body-sm); cursor: pointer;
+    color: var(--color-text-primary); font-size: var(--text-body-sm); font-weight: 500; cursor: pointer;
+    transition: all 0.15s ease;
   }
-  .act:hover:not(:disabled) { border-color: var(--color-brand); }
+  .act:hover:not(:disabled) { border-color: var(--color-brand); color: var(--color-brand); }
   .act:disabled { opacity: 0.45; cursor: default; }
   .act.danger { color: var(--color-danger); }
   .act.danger:hover:not(:disabled) { background: color-mix(in srgb, var(--color-danger) 12%, transparent); border-color: var(--color-danger); }
@@ -784,4 +876,55 @@
   .cd-delete { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--color-danger); background: var(--color-danger); color: #fff; font-size: var(--text-body-sm); font-weight: var(--fw-medium); cursor: pointer; }
   .cd-delete:hover:not(:disabled) { filter: brightness(1.08); }
   .cd-delete:disabled { opacity: 0.5; cursor: default; }
+
+  /* ── Recommended Starter Agents for Tools ── */
+  .empty-recs {
+    display: flex; flex-direction: column; gap: var(--space-4);
+    padding: var(--space-4); border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-surface-raised) 70%, transparent);
+    border: 1px solid var(--color-border);
+  }
+  .empty-recs-head { display: flex; flex-direction: column; gap: 4px; }
+  .er-badge {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--color-brand); width: max-content;
+  }
+  .er-text { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  .er-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-3);
+  }
+  .er-card {
+    display: flex; flex-direction: column; justify-content: space-between;
+    gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md);
+    background: var(--color-surface-sunken); border: 1px solid var(--color-border);
+    transition: all 0.15s ease;
+  }
+  .er-card:hover {
+    border-color: rgba(245, 158, 11, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  .er-card-top { display: flex; align-items: center; gap: var(--space-2); }
+  .er-emoji { font-size: 20px; line-height: 1; flex: none; }
+  .er-card-id { display: flex; flex-direction: column; min-width: 0; }
+  .er-name { font-size: 13px; font-weight: 600; color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .er-div { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; }
+  .er-desc {
+    font-size: 12px; color: var(--color-text-muted); line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0;
+  }
+  .er-install-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 30px; padding: 0 12px; border-radius: var(--radius-sm);
+    background: rgba(245, 158, 11, 0.12); color: var(--color-brand);
+    border: 1px solid rgba(245, 158, 11, 0.3); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s ease; width: 100%;
+  }
+  .er-install-btn:hover:not(:disabled) {
+    background: var(--color-brand); color: #000;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  }
+  .er-install-btn:disabled { opacity: 0.5; cursor: default; }
+  .er-footer { display: flex; justify-content: flex-start; padding-top: var(--space-1); }
 </style>

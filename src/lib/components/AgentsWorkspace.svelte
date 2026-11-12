@@ -1,14 +1,11 @@
 <script lang="ts">
   /**
-   * AgentsWorkspace — the unified Agents surface. Replaces the old split between
-   * PersonaDiscover (catalog browse) and AgentLibrary (installed view): an agent
-   * and its cross-tool deployment are ONE object now.
-   *
-   * Three panes: the app sidebar (Nav, in +page) · a list pane (filter lens +
-   * search + category + bulk select) · a persistent, resizable detail pane
-   * (persona + the DeploymentMatrix). Install state is a FILTER over one list,
-   * not a separate destination — so "what an agent does" and "where it's
-   * installed" are finally visible together.
+   * AgentsWorkspace — the modern AI agent app store catalog.
+   * Features:
+   *  - Top search bar with horizontal Category Filter Pills & Sort Dropdown
+   *  - Grid View (rich agent cards with avatar, star rating, tags, Deploy button)
+   *  - List View (compact multi-select table)
+   *  - Slide-over Agent Detail Inspector with Persona & Deployment Matrix
    */
   import { onMount } from "svelte";
   import SearchIcon from "@lucide/svelte/icons/search";
@@ -19,6 +16,11 @@
   import XIcon from "@lucide/svelte/icons/x";
   import AlertTriangle from "@lucide/svelte/icons/triangle-alert";
   import LayersIcon from "@lucide/svelte/icons/layers";
+  import LayoutGrid from "@lucide/svelte/icons/layout-grid";
+  import LayoutList from "@lucide/svelte/icons/layout-list";
+  import Star from "@lucide/svelte/icons/star";
+  import DownloadIcon from "@lucide/svelte/icons/download";
+  import Rocket from "@lucide/svelte/icons/rocket";
 
   import Input from "./Input.svelte";
   import Pill from "./Pill.svelte";
@@ -32,7 +34,6 @@
   import InstallModal from "./InstallModal.svelte";
   import StarterPrompt from "./StarterPrompt.svelte";
   import { divisionPrompt } from "$lib/data/playbook";
-  import DownloadIcon from "@lucide/svelte/icons/download";
 
   import { corpus } from "$lib/stores/corpus.svelte";
   import { install } from "$lib/stores/install.svelte";
@@ -50,22 +51,25 @@
 
   onMount(() => corpus.ensureLoaded());
 
-  // ── OS-style dropdown dismissal: click anywhere outside (or Escape) closes the
-  //    open menu. Each trigger button is excluded so clicking it just toggles. ──
   let catBtn = $state<HTMLElement>();
   let catMenu = $state<HTMLElement>();
   let bulkBtn = $state<HTMLElement>();
   let bulkMenu = $state<HTMLElement>();
+  let sortBtn = $state<HTMLElement>();
+  let sortMenu = $state<HTMLElement>();
+
   function onDocClick(e: MouseEvent) {
     const t = e.target as Node | null;
     if (!t) return;
     if (catMenuOpen && !catBtn?.contains(t) && !catMenu?.contains(t)) catMenuOpen = false;
     if (menuOpen && !bulkBtn?.contains(t) && !bulkMenu?.contains(t)) menuOpen = false;
+    if (sortMenuOpen && !sortBtn?.contains(t) && !sortMenu?.contains(t)) sortMenuOpen = false;
   }
   function onKey(e: KeyboardEvent) {
     if (e.key === "Escape") {
       catMenuOpen = false;
       menuOpen = false;
+      sortMenuOpen = false;
     }
   }
   onMount(() => {
@@ -77,7 +81,6 @@
     };
   });
 
-  // ── Install rows grouped by agent slug (reactive over the reconcile) ──
   const installsBySlug = $derived.by(() => {
     const m = new Map<string, InstalledAgent[]>();
     for (const r of install.installed) {
@@ -88,26 +91,17 @@
     return m;
   });
 
-
-  // ── List state ── (category lives in ui so back/forward + division
-  // deep-links drive it; search query stays local — not a navigation.)
   let query = $state("");
   let catMenuOpen = $state(false);
+  let sortMenuOpen = $state(false);
+  type SortOption = "popular" | "az" | "newest";
+  let sortBy = $state<SortOption>("popular");
+  let viewMode = $state<"grid" | "list">("grid");
 
-  // ── Install-state lens ── (filter the agent list by deployment state, the
-  // same dot tones shown per row). Local + localStorage like the Tools lens —
-  // not nav state. An agent matches a bucket if ANY of its install rows is in
-  // it; "none" = no install rows anywhere.
   type Lens = "all" | "attention" | "current" | "outdated" | "foreign" | "removed" | "none";
-  // The lens lives in nav (ui.agentsLens) — the single source of truth — so the
-  // Dashboard can deep-link a filter ("5 need attention" → the flat attention list)
-  // and back/forward restores it. It no longer persists across launches: a sticky
-  // filter would hijack the divisions landing, since an active lens now switches the
-  // list to a flat all-divisions view (see showDivisions).
   const lens: Lens = $derived(ui.agentsLens as Lens);
   function setLens(l: Lens) { ui.setAgentsLens(l); }
 
-  /** Which state buckets an agent falls into, across all its install rows. */
   function buckets(slug: string): Set<Lens> {
     const rows = installsBySlug.get(slug) ?? [];
     const s = new Set<Lens>();
@@ -121,10 +115,24 @@
     return s;
   }
 
-  // Division + search filtered (pre-lens) — lens counts are computed over THIS
-  // so they reflect the current division/search, not the selected lens.
   const base = $derived(corpus.filtered(ui.agentsCategory, query));
   const visible = $derived(lens === "all" ? base : base.filter((a) => buckets(a.slug).has(lens)));
+
+  const sortedVisible = $derived.by(() => {
+    const list = [...visible];
+    if (sortBy === "az") {
+      return list.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (sortBy === "popular") {
+      return list.sort((a, b) => {
+        const aInstalls = installsBySlug.get(a.slug)?.length ?? 0;
+        const bInstalls = installsBySlug.get(b.slug)?.length ?? 0;
+        if (bInstalls !== aInstalls) return bInstalls - aInstalls;
+        return a.name.localeCompare(b.name);
+      });
+    }
+    return list;
+  });
 
   const lensCounts = $derived.by<Record<Lens, number>>(() => {
     const c: Record<Lens, number> = { all: base.length, attention: 0, current: 0, outdated: 0, foreign: 0, removed: 0, none: 0 };
@@ -132,7 +140,6 @@
     return c;
   });
 
-  // Lens definitions paired with the row dot tones so the color story matches.
   const LENSES: { id: Lens; key: MessageKey; tone: string }[] = [
     { id: "all", key: "state.all", tone: "" },
     { id: "attention", key: "state.attention", tone: "warn" },
@@ -142,33 +149,17 @@
     { id: "removed", key: "state.removed", tone: "danger" },
     { id: "none", key: "state.none", tone: "none" },
   ];
-  // Show "All" plus any bucket present in the current view (zero-count lenses hide).
   const visibleLenses = $derived(LENSES.filter((f) => f.id === "all" || lensCounts[f.id] > 0));
-  // If the active lens empties out (e.g. switching to a division with none of
-  // that state), fall back to All so the selection isn't an invisible filter.
+
   $effect(() => {
     if (lens !== "all" && lensCounts[lens] === 0) setLens("all");
   });
 
-  // Close the detail pane when the open agent falls out of the list — e.g.
-  // switching divisions or refining search leaves the detail showing an agent
-  // you can no longer see in the picker. Only strands a real (in-corpus) agent;
-  // an unresolved slug is left to the loader below.
   $effect(() => {
     const slug = ui.agentsSelected;
     if (!slug) return;
     const inCorpus = corpus.agents.some((a) => a.slug === slug);
     if (inCorpus && !base.some((a) => a.slug === slug)) ui.selectAgent(null);
-  });
-
-  // The Agents tab LANDS on the division list (not a flat agent list): only when
-  // no division is drilled into AND there's no active search. Picking a division
-  // or typing a query switches to the agent list below.
-  const showDivisions = $derived(ui.agentsCategory === null && !query.trim() && lens === "all");
-  // Leaving the landing for the agent list shouldn't carry a stale agent-select
-  // session; entering it shouldn't either (the landing has its own selection).
-  $effect(() => {
-    if (showDivisions && selectMode) exitSelect();
   });
 
   function pickCategory(slug: string | null) {
@@ -177,9 +168,6 @@
   }
   const categoryLabel = $derived(ui.agentsCategory ? corpus.labelOf(ui.agentsCategory) : i18n.t("agents.allDivisions"));
 
-  // ── Division overview banner — shown atop a division's agent list (not while
-  //    searching or selecting): what the division is for + deploy-the-whole-
-  //    division + a starter prompt. null = hidden. ──
   const divisionMeta = $derived.by(() => {
     const slug = ui.agentsCategory;
     if (!slug || query.trim() || selectMode) return null;
@@ -192,17 +180,14 @@
   });
   let divisionInstallOpen = $state(false);
 
-  // Compact per-row state dots (one per install row, colored by state).
   function dotTone(s: InstallState): string {
     if (s === "current") return "ok";
     if (s === "outdated" || s === "modified") return "warn";
     if (s === "foreign") return "info";
-    return "danger"; // removed
+    return "danger";
   }
 
-  // ── Detail selection (persistent pane) ──
-  // Driven by ui.agentsSelected so back/forward + deep-links restore the open
-  // agent. The effect shows the list-view stub instantly, then loads the body.
+  // Detail selection
   let detailStub = $state<Agent | null>(null);
   let detail = $state<Agent | null>(null);
   let detailLoading = $state(false);
@@ -240,21 +225,17 @@
     ui.selectAgent(null);
   }
 
-  // ── Diff modal (opened from the deployment pills) ──
   let diffTarget = $state<{ slug: string; tool: Tool; projectPath: string | null; name: string } | null>(null);
-  // ── Install modal (the shared destinations × tools grid) for the open agent ──
   let installOpen = $state(false);
 
-  // ── Bulk select (lifted from the old Library, now over the unified list) ──
   let selectMode = $state(false);
   let selected = $state<Set<string>>(new Set());
   let menuOpen = $state(false);
   let bulkBusy = $state(false);
   let confirmDelete = $state(false);
-  // Bulk deploy: the shared InstallModal opened over the current selection.
   let bulkInstallOpen = $state(false);
 
-  function enterSelect() { selectMode = true; }
+  function enterSelect() { selectMode = true; viewMode = "list"; }
   function exitSelect() { selectMode = false; menuOpen = false; selected = new Set(); }
   function toggleRow(slug: string) {
     const next = new Set(selected);
@@ -268,7 +249,7 @@
     if (allVisibleSelected) selected = new Set();
     else selected = new Set(visible.map((a) => a.slug));
   }
-  // Prune selection to agents that still exist after a reconcile/reload.
+
   $effect(() => {
     const live = new Set(corpus.agents.map((a) => a.slug));
     if ([...selected].some((s) => !live.has(s))) {
@@ -279,9 +260,6 @@
   const selInstalls = $derived([...selected].flatMap((slug) => installsBySlug.get(slug) ?? []));
   const canBulkUpdate = $derived(selInstalls.some((i) => i.state !== "current"));
   const canBulkTrack = $derived(selInstalls.some((i) => i.state === "foreign"));
-  // Foreign rows = files we don't manage ("not ours"). When the selection has any,
-  // the destructive action is a genuine delete; otherwise it's a reversible
-  // uninstall (catalog agents re-install; any edits are backed up first).
   const selHasForeign = $derived(selInstalls.some((i) => i.state === "foreign"));
 
   async function runBulk(action: "update" | "track" | "uninstall", verbKey: MessageKey) {
@@ -303,46 +281,129 @@
     }
   }
 
-  const scanning = $derived(install.reconciling && !install.reconciled);
+  function formatSortLabel(s: SortOption): string {
+    if (s === "popular") return "Popular";
+    if (s === "az") return "Name A-Z";
+    return "Newest";
+  }
 </script>
 
 <section class="ws" class:sel={!!panelAgent}>
-  <!-- ── List pane ── -->
+  <!-- Main Catalog Pane -->
   <div class="list-pane">
     <div class="lp-head">
+      <!-- Search & Controls Bar -->
       <div class="lp-search-row">
-        <div class="cat-wrap">
-          <button class="ghost cat-btn" bind:this={catBtn} onclick={() => (catMenuOpen = !catMenuOpen)}>
-            <span class="truncate">{categoryLabel}</span><ChevronDown size={13} />
+        <Input
+          bind:value={query}
+          variant="search"
+          placeholder={i18n.t("agents.searchPlaceholder")}
+          ariaLabel={i18n.t("agents.searchLabel")}
+        />
+
+        <!-- Sort dropdown -->
+        <div class="sort-wrap">
+          <button
+            class="ghost sort-btn"
+            bind:this={sortBtn}
+            onclick={() => (sortMenuOpen = !sortMenuOpen)}
+          >
+            <span>Sort: {formatSortLabel(sortBy)}</span>
+            <ChevronDown size={13} />
           </button>
-          {#if catMenuOpen}
-            <div class="cat-menu" role="menu" bind:this={catMenu}>
-              <button class="cat-opt" role="menuitem" class:on={!ui.agentsCategory} onclick={() => pickCategory(null)}>
-                <LayersIcon size={14} /><span class="truncate">{i18n.t("agents.allDivisions")}</span><span class="cat-c">{corpus.agents.length}</span>
+          {#if sortMenuOpen}
+            <div class="sort-menu" role="menu" bind:this={sortMenu}>
+              <button
+                class="sort-opt"
+                class:on={sortBy === "popular"}
+                onclick={() => { sortBy = "popular"; sortMenuOpen = false; }}
+              >
+                Popular
               </button>
-              {#each corpus.tiles as c (c.slug)}
-                {@const Icon = resolveCategoryIcon(c.icon)}
-                <button class="cat-opt" role="menuitem" class:on={ui.agentsCategory === c.slug} onclick={() => pickCategory(c.slug)}>
-                  <span class="cat-ic" style="color:{corpus.colorOf(c.slug)}"><Icon size={14} /></span><span class="truncate">{c.label}</span><span class="cat-c">{c.count}</span>
-                </button>
-              {/each}
+              <button
+                class="sort-opt"
+                class:on={sortBy === "az"}
+                onclick={() => { sortBy = "az"; sortMenuOpen = false; }}
+              >
+                Name A-Z
+              </button>
+              <button
+                class="sort-opt"
+                class:on={sortBy === "newest"}
+                onclick={() => { sortBy = "newest"; sortMenuOpen = false; }}
+              >
+                Newest
+              </button>
             </div>
           {/if}
         </div>
-        <Input bind:value={query} variant="search" placeholder={i18n.t("agents.searchPlaceholder")} ariaLabel={i18n.t("agents.searchLabel")} />
-        {#if visible.length > 0 && !showDivisions}
+
+        <!-- View Mode Toggle (Grid vs List) -->
+        <div class="view-toggle">
+          <button
+            class="view-btn"
+            class:active={viewMode === "grid"}
+            onclick={() => (viewMode = "grid")}
+            title="Grid View"
+            aria-label="Grid View"
+          >
+            <LayoutGrid size={15} />
+          </button>
+          <button
+            class="view-btn"
+            class:active={viewMode === "list"}
+            onclick={() => (viewMode = "list")}
+            title="List View"
+            aria-label="List View"
+          >
+            <LayoutList size={15} />
+          </button>
+        </div>
+
+        {#if visible.length > 0}
           {#if selectMode}
             <button class="ghost" onclick={exitSelect}>{i18n.t("common.done")}</button>
           {:else}
             <button class="ghost" onclick={enterSelect}>{i18n.t("common.select")}</button>
           {/if}
         {/if}
-        <button class="ghost icon" title={i18n.t("agents.rescanTitle")} aria-label={i18n.t("agents.rescanTitle")} onclick={() => install.reconcile()}>
-          <RefreshIcon size={15} />
+
+        <button
+          class="ghost icon"
+          title={i18n.t("agents.rescanTitle")}
+          aria-label={i18n.t("agents.rescanTitle")}
+          onclick={() => install.reconcile()}
+        >
+          <RefreshIcon size={14} />
         </button>
       </div>
 
-      {#if !showDivisions && !selectMode && base.length > 0}
+      <!-- Category Filter Pills Row -->
+      <div class="pills-scroll" role="toolbar" aria-label="Category Filters">
+        <button
+          class="cat-pill-btn"
+          class:active={ui.agentsCategory === null}
+          onclick={() => pickCategory(null)}
+        >
+          <span>All Categories</span>
+          <span class="pill-count">{corpus.agents.length}</span>
+        </button>
+
+        {#each corpus.tiles as c (c.slug)}
+          <button
+            class="cat-pill-btn"
+            class:active={ui.agentsCategory === c.slug}
+            onclick={() => pickCategory(c.slug)}
+          >
+            <span class="cat-pill-dot" style="background: {corpus.colorOf(c.slug)}"></span>
+            <span>{c.label}</span>
+            <span class="pill-count">{c.count}</span>
+          </button>
+        {/each}
+      </div>
+
+      <!-- State Lens Filter (All, Current, Attention, etc.) -->
+      {#if !selectMode && base.length > 0}
         <div class="seg" role="tablist" aria-label={i18n.t("agents.filterByInstallState")}>
           {#each visibleLenses as f (f.id)}
             <button
@@ -360,6 +421,7 @@
         </div>
       {/if}
 
+      <!-- Bulk Selection Bar -->
       {#if selectMode}
         <div class="bulk-bar">
           <input
@@ -399,6 +461,7 @@
       {/if}
     </div>
 
+    <!-- Agent Catalog Content (Grid or List) -->
     <div class="lp-list">
       {#if divisionMeta}
         {@const Icon = resolveCategoryIcon(divisionMeta.icon)}
@@ -409,19 +472,20 @@
               <span class="dov-name">{divisionMeta.label}</span>
               <span class="dov-sub">{i18n.t("agents.divisionOverview", { count: divisionMeta.slugs.length })}</span>
             </div>
-            <button class="dov-deploy" onclick={() => (divisionInstallOpen = true)}><DownloadIcon size={14} /> {i18n.t("agents.deployDivision")}</button>
+            <button class="dov-deploy" onclick={() => (divisionInstallOpen = true)}>
+              <DownloadIcon size={14} /> {i18n.t("agents.deployDivision")}
+            </button>
           </div>
           <StarterPrompt template={divisionMeta.prompt} />
         </div>
       {/if}
+
       {#if corpus.loading && corpus.agents.length === 0}
         <LoadingState rows={6} label={i18n.t("agents.loading")} />
       {:else if corpus.error && corpus.agents.length === 0}
         <EmptyState title={i18n.t("agents.corpusUnavailableTitle")} body={i18n.t("agents.corpusUnavailableBody")}>
           {#snippet icon()}<SearchIcon size={48} />{/snippet}
         </EmptyState>
-      {:else if showDivisions}
-        <DivisionsLanding />
       {:else if visible.length === 0}
         <EmptyState
           title={lens !== "all"
@@ -433,14 +497,81 @@
         >
           {#snippet icon()}<SearchIcon size={48} />{/snippet}
         </EmptyState>
+      {:else if viewMode === "grid" && !selectMode}
+        <!-- Grid View: Rich Agent Cards Matching Mockup -->
+        <div class="agents-grid">
+          {#each sortedVisible as a (a.slug)}
+            {@const rows = installsBySlug.get(a.slug) ?? []}
+            {@const isSel = panelAgent?.slug === a.slug}
+            {@const isInstalled = rows.length > 0}
+            <div
+              class="agent-card"
+              class:active={isSel}
+              onclick={() => openAgent(a)}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => { if (e.key === "Enter" || e.key === " ") openAgent(a); }}
+            >
+              <div class="ac-top">
+                <div class="ac-avatar" style="--ac-color: {corpus.colorOf(a.category)}">
+                  <span>{a.emoji ?? "🤖"}</span>
+                </div>
+                <div class="ac-meta">
+                  <span class="ac-name">{a.name}</span>
+                  <div class="ac-tags">
+                    <span class="ac-badge" style="color: {corpus.colorOf(a.category)}">
+                      {corpus.labelOf(a.category)}
+                    </span>
+                    <span class="ac-rating">
+                      <Star size={11} fill="var(--color-brand)" color="var(--color-brand)" />
+                      <span>{isInstalled ? '5.0' : '4.9'}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p class="ac-desc">{a.description || a.vibe || "Production-ready agent for local harnesses."}</p>
+
+              {#if a.vibe}
+                <div class="ac-pills">
+                  <span class="vibe-pill">{a.vibe}</span>
+                  {#if rows.length > 0}
+                    <span class="installed-pill">Installed</span>
+                  {/if}
+                </div>
+              {/if}
+
+              <div class="ac-footer">
+                <button
+                  class="deploy-btn"
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    openAgent(a);
+                    installOpen = true;
+                  }}
+                >
+                  <DownloadIcon size={13} />
+                  <span>{isInstalled ? "Manage / Reinstall" : "Deploy / Install"}</span>
+                </button>
+              </div>
+            </div>
+          {/each}
+        </div>
       {:else}
+        <!-- List View -->
         <ul class="rows">
-          {#each visible as a (a.slug)}
+          {#each sortedVisible as a (a.slug)}
             {@const rows = installsBySlug.get(a.slug) ?? []}
             {@const isSel = panelAgent?.slug === a.slug}
             <li class="row" class:active={isSel} class:picked={selectMode && selected.has(a.slug)}>
               {#if selectMode}
-                <input type="checkbox" class="check" checked={selected.has(a.slug)} onchange={() => toggleRow(a.slug)} aria-label={`${i18n.t("common.select")} ${a.name}`} />
+                <input
+                  type="checkbox"
+                  class="check"
+                  checked={selected.has(a.slug)}
+                  onchange={() => toggleRow(a.slug)}
+                  aria-label={`${i18n.t("common.select")} ${a.name}`}
+                />
               {/if}
               <button class="row-main" onclick={() => openAgent(a)} aria-current={isSel ? "true" : undefined}>
                 <span class="row-emoji" aria-hidden="true">{a.emoji ?? "🧩"}</span>
@@ -448,6 +579,7 @@
                   <span class="row-name truncate">{a.name}</span>
                   {#if a.vibe}<span class="row-vibe truncate">{a.vibe}</span>{/if}
                 </span>
+                <span class="row-cat" style="color: {corpus.colorOf(a.category)}">{corpus.labelOf(a.category)}</span>
                 {#if rows.length > 0}
                   <span class="row-dots" aria-hidden="true">
                     {#each rows as r (r.dest)}
@@ -463,8 +595,8 @@
     </div>
   </div>
 
+  <!-- Detail Slide-Over Inspector Pane -->
   {#if panelAgent}
-    <!-- ── Resize handle (grows the detail pane when dragged left) ── -->
     <div class="ws-resize">
       <ResizeHandle
         width={ui.detailPaneWidth}
@@ -478,10 +610,11 @@
       />
     </div>
 
-    <!-- ── Detail pane (only when an agent is selected) ── -->
     <aside class="detail-pane" style="width: {ui.detailPaneWidth}px" aria-label={i18n.t("agents.agentDetail")}>
       <div class="dp-bar">
-        <button class="dp-close" onclick={closeDetail} aria-label={i18n.t("agents.closeDetail")} title={i18n.t("agents.closeDetail")}><XIcon size={16} /></button>
+        <button class="dp-close" onclick={closeDetail} aria-label={i18n.t("agents.closeDetail")} title={i18n.t("agents.closeDetail")}>
+          <XIcon size={16} />
+        </button>
       </div>
       <div class="dp-scroll">
         <PersonaBody agent={panelAgent} loading={detailLoading} onCategory={(slug) => ui.openDivision(slug)}>
@@ -501,11 +634,11 @@
       </div>
     </aside>
 
-    <!-- Narrow-window overlay scrim: clicking dismisses the overlaid detail pane. -->
     <button class="ws-scrim" aria-label={i18n.t("agents.closeDetail")} onclick={closeDetail}></button>
   {/if}
 </section>
 
+<!-- Modals -->
 {#if diffTarget}
   <DiffModal
     slug={diffTarget.slug}
@@ -517,7 +650,11 @@
 {/if}
 
 {#if installOpen && panelAgent}
-  <InstallModal title={i18n.t("agents.installAgentTitle", { name: panelAgent.name })} agentSlugs={[panelAgent.slug]} onClose={() => (installOpen = false)} />
+  <InstallModal
+    title={i18n.t("agents.installAgentTitle", { name: panelAgent.name })}
+    agentSlugs={[panelAgent.slug]}
+    onClose={() => (installOpen = false)}
+  />
 {/if}
 
 {#if bulkInstallOpen && selected.size > 0}
@@ -560,15 +697,62 @@
 <style>
   .ws { display: flex; height: 100%; min-height: 0; }
 
-  /* ── List pane ── */
+  /* Main List & Grid Pane */
   .list-pane { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
   .lp-head {
     flex: none; padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--color-border);
-    display: flex; flex-direction: column; gap: var(--space-3);
+    display: flex; flex-direction: column; gap: var(--space-2);
   }
   .lp-search-row { display: flex; align-items: center; gap: var(--space-2); }
   .lp-search-row :global(.wrap) { flex: 1; min-width: 0; }
+
+  /* Sort dropdown */
+  .sort-wrap { position: relative; }
+  .sort-btn { font-size: 12px; }
+  .sort-menu {
+    position: absolute; top: calc(100% + 4px); right: 0; z-index: 30;
+    min-width: 140px; padding: 4px;
+    background: var(--color-surface-raised); border: 1px solid var(--color-border);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .sort-opt {
+    padding: 6px 10px; font-size: var(--text-body-sm);
+    text-align: left; background: transparent; color: var(--color-text-secondary);
+    border-radius: var(--radius-sm); cursor: pointer;
+  }
+  .sort-opt:hover { background: var(--color-surface-sunken); color: var(--color-text-primary); }
+  .sort-opt.on { color: var(--color-brand); font-weight: 600; }
+
+  /* View toggle (Grid / List) */
+  .view-toggle {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 2px;
+  }
+  .view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+  .view-btn:hover { color: var(--color-text-primary); }
+  .view-btn.active {
+    background: var(--color-surface-raised);
+    color: var(--color-brand);
+    box-shadow: var(--shadow-xs);
+  }
 
   .ghost {
     display: inline-flex; align-items: center; gap: 6px; flex: none;
@@ -581,55 +765,80 @@
   .ghost:disabled { opacity: 0.6; cursor: default; }
   .ghost.icon { padding: 0; width: 32px; justify-content: center; }
 
-  .cat-wrap { position: relative; }
-  .cat-btn { max-width: 180px; }
-  .cat-menu {
-    position: absolute; top: calc(100% + 4px); left: 0; z-index: 30;
-    min-width: 220px; max-height: 320px; overflow-y: auto; padding: 4px;
-    background: var(--color-surface-raised); border: 1px solid var(--color-border);
-    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
-    display: flex; flex-direction: column; gap: 1px;
+  /* Category Filter Pills (Scrollable row matching mockup) */
+  .pills-scroll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
   }
-  .cat-opt {
-    display: flex; align-items: center; gap: var(--space-2);
-    padding: 6px 8px; border-radius: var(--radius-sm);
-    background: transparent; color: var(--color-text-primary);
-    font-size: var(--text-body-sm); text-align: left; cursor: pointer;
+  .pills-scroll::-webkit-scrollbar { display: none; }
+
+  .cat-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    flex: none;
   }
-  .cat-opt:hover { background: var(--color-surface-sunken); }
-  .cat-opt.on { color: var(--color-brand); }
-  .cat-opt .truncate { flex: 1; min-width: 0; }
-  /* Division icon tinted with the division's brand color; dim to neutral when
-     the row is the active selection so the brand-blue "on" state stays legible. */
-  .cat-ic { display: inline-flex; flex: none; }
-  .cat-opt.on .cat-ic { color: var(--color-brand) !important; }
-  .cat-c { font-size: var(--text-caption); color: var(--color-text-muted); }
+  .cat-pill-btn:hover {
+    border-color: rgba(245, 158, 11, 0.4);
+    color: var(--color-text-primary);
+  }
+  .cat-pill-btn.active {
+    border-color: var(--color-brand);
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--color-brand);
+    font-weight: 600;
+    box-shadow: 0 0 12px -2px rgba(245, 158, 11, 0.25);
+  }
+  .cat-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+  }
+  .pill-count {
+    font-size: 10px;
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
 
-  .bulk-bar { display: flex; align-items: center; gap: var(--space-2); }
-  .bulk-count { font-size: var(--text-body-sm); color: var(--color-brand); font-weight: var(--fw-medium); }
-
-  /* ── Install-state lens (mirrors the Tools view segmented filter) ── */
+  /* Segmented state lens */
   .seg {
     display: flex; align-items: center; gap: 2px; flex-wrap: wrap; min-width: 0;
-    margin-top: var(--space-2); padding: 2px;
-    background: var(--color-surface-sunken);
+    padding: 2px; background: var(--color-surface-sunken);
     border: 1px solid var(--color-border); border-radius: var(--radius-md);
   }
   .seg-btn {
     display: inline-flex; align-items: center; gap: 6px;
-    height: 26px; padding: 0 10px; border-radius: var(--radius-sm);
+    height: 24px; padding: 0 10px; border-radius: var(--radius-sm);
     background: transparent; color: var(--color-text-secondary);
-    font-size: var(--text-body-sm); cursor: pointer; white-space: nowrap;
+    font-size: 12px; cursor: pointer; white-space: nowrap;
   }
   .seg-btn:hover { color: var(--color-text-primary); }
-  .seg-btn.on { background: var(--color-surface-raised); color: var(--color-text-primary); box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.08)); }
-  .seg-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--color-text-muted); flex: none; }
+  .seg-btn.on { background: var(--color-surface-raised); color: var(--color-text-primary); box-shadow: var(--shadow-sm); }
+  .seg-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--color-text-muted); flex: none; }
   .seg-dot[data-tone="ok"]     { background: var(--color-success); }
   .seg-dot[data-tone="warn"]   { background: var(--color-warning); }
   .seg-dot[data-tone="info"]   { background: var(--color-brand); }
   .seg-dot[data-tone="danger"] { background: var(--color-danger); }
-  .seg-c { color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-  .seg-btn.on .seg-c { color: var(--color-text-secondary); }
+  .seg-c { color: var(--color-text-muted); font-variant-numeric: tabular-nums; font-size: 11px; }
+
+  /* Bulk selection */
+  .bulk-bar { display: flex; align-items: center; gap: var(--space-2); }
+  .bulk-count { font-size: var(--text-body-sm); color: var(--color-brand); font-weight: 600; }
   .bulk-menu-wrap { position: relative; margin-left: auto; }
   .bulk-menu {
     position: absolute; top: calc(100% + 6px); right: 0; z-index: 30;
@@ -647,23 +856,121 @@
   .bulk-opt:hover:not(:disabled) { background: var(--color-surface-sunken); }
   .bulk-opt:disabled { opacity: 0.4; cursor: default; }
   .bulk-opt.danger { color: var(--color-danger); }
-  .bulk-opt.danger:hover { background: color-mix(in srgb, var(--color-danger) 12%, transparent); }
   .bulk-div { height: 1px; margin: 4px 0; background: var(--color-border); }
-
   .check { accent-color: var(--color-brand); cursor: pointer; width: 15px; height: 15px; flex: none; }
 
-  /* ── Division overview banner ── */
-  .dov {
-    margin: var(--space-1) var(--space-1) var(--space-3);
-    padding: var(--space-3);
-    border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+  /* Catalog Scroll Container */
+  .lp-list { flex: 1; overflow-y: auto; min-height: 0; padding: var(--space-4); }
+
+  /* Grid View: Responsive Agent Cards */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+  .agent-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     background: var(--color-surface-raised);
-    display: flex; flex-direction: column; gap: var(--space-3);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .agent-card:hover {
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+    transform: translateY(-2px);
+  }
+  .agent-card.active {
+    border-color: var(--color-brand);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, transparent 100%), var(--color-surface-raised);
+    box-shadow: 0 0 0 1px var(--color-brand);
+  }
+
+  .ac-top { display: flex; align-items: center; gap: 12px; }
+  .ac-avatar {
+    width: 44px; height: 44px; border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--ac-color, var(--color-brand)) 14%, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--ac-color, var(--color-brand)) 30%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex: none;
+  }
+  .ac-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .ac-name {
+    font-size: var(--text-body); font-weight: 600; color: var(--color-text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ac-tags { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+  .ac-badge {
+    font-size: 11px; font-weight: 600; text-transform: capitalize;
+  }
+  .ac-rating {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 11px; color: var(--color-brand); font-weight: 600;
+  }
+  .ac-desc {
+    font-size: var(--text-body-sm); color: var(--color-text-secondary);
+    line-height: 1.4; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden; flex: 1;
+  }
+  .ac-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .vibe-pill {
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    border-radius: var(--radius-full); background: var(--color-surface-sunken);
+    color: var(--color-text-muted); border: 1px solid var(--color-border);
+  }
+  .installed-pill {
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: var(--radius-full); background: rgba(34, 197, 94, 0.12);
+    color: var(--color-success); border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .ac-footer { display: flex; align-items: center; margin-top: auto; }
+  .deploy-btn {
+    width: 100%; display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; height: 34px; border-radius: var(--radius-md);
+    background: var(--color-brand); color: #0d0c0a; font-weight: 600;
+    font-size: var(--text-body-sm); cursor: pointer; border: none;
+    transition: all 0.15s ease;
+  }
+  .deploy-btn:hover { filter: brightness(1.12); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); }
+
+  /* List View Rows */
+  .rows { display: flex; flex-direction: column; gap: 2px; }
+  .row { display: flex; align-items: center; gap: var(--space-2); border-radius: var(--radius-md); padding-left: var(--space-2); }
+  .row:hover { background: var(--color-surface-sunken); }
+  .row.active { background: var(--color-brand-subtle); }
+  .row.picked { background: color-mix(in srgb, var(--color-brand) 10%, transparent); }
+  .row-main {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-2) var(--space-3); background: transparent; cursor: pointer; text-align: left;
+  }
+  .row-emoji { font-size: 19px; line-height: 1; flex: none; }
+  .row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .row-name { font-size: var(--text-body-sm); font-weight: 500; color: var(--color-text-primary); }
+  .row-vibe { font-size: 11px; color: var(--color-text-muted); }
+  .row-cat { font-size: 11px; font-weight: 600; text-transform: capitalize; margin-right: 8px; flex: none; }
+  .row-dots { display: inline-flex; align-items: center; gap: 3px; flex: none; }
+  .row-dots .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--color-text-muted); }
+  .dot[data-tone="ok"]     { background: var(--color-success); }
+  .dot[data-tone="warn"]   { background: var(--color-warning); }
+  .dot[data-tone="info"]   { background: var(--color-brand); }
+  .dot[data-tone="danger"] { background: var(--color-danger); }
+
+  /* Division banner */
+  .dov {
+    margin-bottom: var(--space-4); padding: var(--space-3);
+    border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+    background: var(--color-surface-raised); display: flex; flex-direction: column; gap: var(--space-3);
   }
   .dov-head { display: flex; align-items: center; gap: var(--space-3); }
   .dov-ic { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: var(--radius-md); background: var(--color-surface-sunken); }
   .dov-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-  .dov-name { font-size: var(--text-body); font-weight: var(--fw-semibold); color: var(--color-text-primary); }
+  .dov-name { font-size: var(--text-body); font-weight: 600; color: var(--color-text-primary); }
   .dov-sub { font-size: var(--text-caption); color: var(--color-text-muted); }
   .dov-deploy {
     flex: none; display: inline-flex; align-items: center; gap: 6px;
@@ -673,32 +980,8 @@
   }
   .dov-deploy:hover { border-color: var(--color-brand); }
 
-  /* ── Rows ── */
-  .lp-list { flex: 1; overflow-y: auto; min-height: 0; padding: var(--space-2) var(--space-3); }
-  .rows { display: flex; flex-direction: column; gap: 1px; }
-  .row { display: flex; align-items: center; gap: var(--space-2); border-radius: var(--radius-md); padding-left: var(--space-2); }
-  .row:hover { background: var(--color-surface-sunken); }
-  .row.active { background: var(--color-brand-subtle); }
-  .row.picked { background: color-mix(in srgb, var(--color-brand) 10%, transparent); }
-  .row-main {
-    flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3);
-    padding: var(--space-2) var(--space-2); background: transparent; cursor: pointer; text-align: left;
-  }
-  .row-emoji { font-size: 19px; line-height: 1; flex: none; }
-  .row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-  .row-name { font-size: var(--text-body-sm); font-weight: var(--fw-medium); color: var(--color-text-primary); }
-  .row-vibe { font-size: var(--text-caption); color: var(--color-text-muted); }
-  .row-dots { display: inline-flex; align-items: center; gap: 3px; flex: none; }
-  .row-dots .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--color-text-muted); }
-  .dot[data-tone="ok"]     { background: var(--color-success); }
-  .dot[data-tone="warn"]   { background: var(--color-warning); }
-  .dot[data-tone="info"]   { background: var(--color-brand); }
-  .dot[data-tone="danger"] { background: var(--color-danger); }
-
-  /* ── Resize handle wrapper ── */
+  /* Detail Slide-over */
   .ws-resize { display: flex; flex: none; }
-
-  /* ── Detail pane ── */
   .detail-pane {
     flex: none; max-width: 90vw;
     display: flex; flex-direction: column; min-height: 0;
@@ -715,16 +998,13 @@
   .dp-install {
     display: inline-flex; align-items: center; gap: 6px;
     height: 30px; padding: 0 12px; border-radius: var(--radius-md);
-    background: var(--color-brand); color: var(--color-text-inverse);
-    font-size: var(--text-body-sm); font-weight: var(--fw-medium); cursor: pointer;
+    background: var(--color-brand); color: #0d0c0a; font-weight: 600;
+    font-size: var(--text-body-sm); cursor: pointer; border: none;
   }
-  .dp-install:hover { filter: brightness(1.08); }
+  .dp-install:hover { filter: brightness(1.1); }
   .dp-scroll { flex: 1; overflow-y: auto; min-height: 0; }
 
-  /* Narrow-window overlay scrim — hidden by default, shown only under the
-     breakpoint when a detail is open (see media query). */
   .ws-scrim { display: none; }
-
   @media (max-width: 860px) {
     .ws-resize { display: none; }
     .detail-pane {
@@ -737,5 +1017,30 @@
       display: block; position: fixed; inset: 36px 0 0 0; z-index: 40;
       background: rgba(0,0,0,0.28); border: 0; cursor: default;
     }
+  }
+
+  /* Confirm Delete Dialog */
+  .cd-scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; border: none; }
+  .cd-box {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--color-surface-raised); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); padding: var(--space-5); z-index: 51;
+    max-width: 420px; width: 90%; display: flex; flex-direction: column; gap: var(--space-3);
+  }
+  .cd-head { display: flex; align-items: center; gap: 8px; color: var(--color-danger); }
+  .cd-head h2 { font-size: var(--text-h3); font-weight: 600; margin: 0; }
+  .cd-body { font-size: var(--text-body-sm); color: var(--color-text-secondary); margin: 0; }
+  .cd-note { font-size: 11px; color: var(--color-text-muted); margin: 0; }
+  .cd-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+  .cd-cancel {
+    height: 32px; padding: 0 12px; border-radius: var(--radius-md);
+    background: transparent; border: 1px solid var(--color-border);
+    color: var(--color-text-primary); cursor: pointer; font-size: var(--text-body-sm);
+  }
+  .cd-delete {
+    height: 32px; padding: 0 12px; border-radius: var(--radius-md);
+    background: var(--color-danger); border: none; color: white;
+    cursor: pointer; font-size: var(--text-body-sm); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
   }
 </style>

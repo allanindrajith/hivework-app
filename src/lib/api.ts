@@ -1,11 +1,11 @@
 /**
- * Typed `invoke()` wrappers for the agency backend command surface.
+ * Typed `invoke()` wrappers for the Hivework backend command surface.
  *
  * Convention: each function resolves with the typed result, or *throws* a
  * `AppErrorPayload`-shaped object on backend error. Callers should use
  * `try/catch` and `isAppError(e)` to narrow.
  *
- * Covers the cross-cutting infrastructure the agency shell relies on:
+ * Covers the cross-cutting infrastructure the Hivework shell relies on:
  * app version, settings persistence, GitHub integration, and the in-app
  * updater. (Agent catalog/install commands live in their own modules —
  * `corpus` / `install`.)

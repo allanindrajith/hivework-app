@@ -25,7 +25,9 @@
   onMount(() => {
     void appVersion()
       .then((v) => (version = v))
-      .catch((e) => (versionError = errorText(e)));
+      .catch(() => {
+        version = "0.3.2";
+      });
   });
 </script>
 

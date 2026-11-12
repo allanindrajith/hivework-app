@@ -38,7 +38,7 @@ import Settings from "@lucide/svelte/icons/settings";
 import Terminal from "@lucide/svelte/icons/terminal";
 import Video from "@lucide/svelte/icons/video";
 
-// Hivework category icons (the 16 agent categories — agency-categories.json).
+// Hivework category icons (the 16 agent categories).
 import Box from "@lucide/svelte/icons/box";
 import Boxes from "@lucide/svelte/icons/boxes";
 import ClipboardList from "@lucide/svelte/icons/clipboard-list";
@@ -76,7 +76,7 @@ const ICONS: Record<string, Component> = {
   Settings,
   Terminal,
   Video,
-  // Agency categories
+  // Hivework categories
   Box,
   Boxes,
   ClipboardList,

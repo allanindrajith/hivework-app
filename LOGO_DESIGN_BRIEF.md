@@ -59,23 +59,12 @@ brand_colors:
 
 ---
 
-## 5. Top 4 Logo Design Concepts
+## 5. Official Logo Design: The "Circuit Hex" (Selected)
 
-### Concept A: The "Circuit Hex" (Recommended)
-- **Description**: A regular hexagon where internal traces form an abstract bee head and wings, doubling as an integrated circuit or network node.
+Hivework's official brand identity is **The Circuit Hex**:
+- **Design Structure**: A regular hexagon where internal traces form an abstract bee head and wings, doubling as an integrated circuit and multi-agent network node.
 - **Why it works**: Communicates both "Hive" and "Engineering" instantly. Clean like Linear, Docker, or Kubernetes marks.
-
-### Concept B: The "Chevron Wings" (The Terminal Stinger)
-- **Description**: Two angled terminal chevrons (`>` and `<`) rotated and interlocked into a geometric honeycomb cell.
-- **Why it works**: Direct tribute to command-line prompts and terminal-native developer culture.
-
-### Concept C: The "Interlocking Tri-Hex"
-- **Description**: Three overlapping hexagons in isometric projection forming a 3D isometric cube/hive, with the center forming an abstract bee glyph.
-- **Why it works**: Represents a modular multi-agent system working together.
-
-### Concept D: The "Monogram H-Cell"
-- **Description**: A capital letter "H" carved out of the negative space within a glowing amber hexagon.
-- **Why it works**: Simple, bold, memorable, instantly recognizable as an app icon.
+- **Brand Assets**: Production SVG and PNG assets are stored in `hivework-brand-kit/` (`circuit-hex.svg`, `circuit-hex-black.svg`, `circuit-hex-white.svg`, `lockup-horizontal.svg`, `app-icon-1024.png`).
 
 ---
 

@@ -66,6 +66,7 @@ const DEFAULT_SECTION_VALUES = [
   "tools",
   "teams",
   "projects",
+  "runbooks",
   "activity",
 ] as const;
 

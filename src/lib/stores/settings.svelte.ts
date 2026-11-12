@@ -17,8 +17,8 @@ import { isAppError, SETTINGS_DEFAULTS, errorText, type Settings } from "$lib/ty
 import { settingsGet, settingsReset, settingsSet } from "$lib/api";
 
 class SettingsStore {
-  /** Authoritative current settings, or `null` until first load. */
-  data: Settings | null = $state(null);
+  /** Authoritative current settings, initialized to defaults so the UI never renders blank. */
+  data: Settings = $state({ ...SETTINGS_DEFAULTS });
 
   /** True while a load / save / reset is in flight. UI should disable
       mutating controls. */
@@ -39,20 +39,36 @@ class SettingsStore {
   async load(): Promise<void> {
     this.loading = true;
     this.error = null;
+    if (typeof localStorage !== "undefined") {
+      try {
+        const cached = localStorage.getItem("hivework:settings");
+        if (cached) {
+          this.data = { ...SETTINGS_DEFAULTS, ...JSON.parse(cached) };
+        }
+      } catch {
+        /* ignore corrupt localStorage */
+      }
+    }
     try {
       const result = await settingsGet();
       this.data = result;
       this.corruptOnDisk = false;
+      if (typeof localStorage !== "undefined") {
+        try {
+          localStorage.setItem("hivework:settings", JSON.stringify(result));
+        } catch {
+          /* ignore storage write failures */
+        }
+      }
     } catch (e) {
       if (isAppError(e) && e.code === "internal") {
-        // Backend signals "unreadable settings file" via Internal with
-        // a message containing "unreadable" — surface the corrupt-on-disk
-        // flag so the UI can show the Reset affordance. Falls back to
-        // defaults for any reader that needs a value to render.
         this.corruptOnDisk = true;
         this.data = { ...SETTINGS_DEFAULTS };
+        this.error = errorText(e);
+      } else {
+        this.corruptOnDisk = false;
+        // In browser or non-Tauri preview, defaults or localStorage are preserved.
       }
-      this.error = errorText(e);
     } finally {
       this.loading = false;
     }
@@ -60,25 +76,32 @@ class SettingsStore {
 
   /** Merge `partial` into the current settings and save. The backend
       returns the canonicalized (clamped) struct, which we then mirror
-      back into `data` so subsequent reads see the authoritative values
-      — important when the user types e.g. `9999` into a number input
-      that gets clamped to `365`. */
+      back into `data` so subsequent reads see the authoritative values. */
   async save(partial: Partial<Settings>): Promise<void> {
-    const base: Settings = this.data ?? { ...SETTINGS_DEFAULTS };
+    const base: Settings = this.data;
     const next: Settings = { ...base, ...partial };
 
     // Optimistic update so the radio/toggle reflects the click instantly.
     this.data = next;
     this.loading = true;
     this.error = null;
+    if (typeof localStorage !== "undefined") {
+      try {
+        localStorage.setItem("hivework:settings", JSON.stringify(next));
+      } catch {
+        /* ignore storage write failures */
+      }
+    }
     try {
       const written = await settingsSet(next);
       this.data = written;
       this.corruptOnDisk = false;
     } catch (e) {
-      // Revert optimistic update on failure.
-      this.data = base;
-      this.error = errorText(e);
+      if (typeof window !== "undefined" && ("__TAURI_INTERNALS__" in window)) {
+        // Revert optimistic update only in native Tauri on real backend failure.
+        this.data = base;
+        this.error = errorText(e);
+      }
     } finally {
       this.loading = false;
     }
@@ -89,12 +112,22 @@ class SettingsStore {
   async reset(): Promise<void> {
     this.loading = true;
     this.error = null;
+    if (typeof localStorage !== "undefined") {
+      try {
+        localStorage.removeItem("hivework:settings");
+      } catch {
+        /* ignore */
+      }
+    }
+    this.data = { ...SETTINGS_DEFAULTS };
+    this.corruptOnDisk = false;
     try {
       const fresh = await settingsReset();
       this.data = fresh;
-      this.corruptOnDisk = false;
     } catch (e) {
-      this.error = errorText(e);
+      if (typeof window !== "undefined" && ("__TAURI_INTERNALS__" in window)) {
+        this.error = errorText(e);
+      }
     } finally {
       this.loading = false;
     }
@@ -103,7 +136,7 @@ class SettingsStore {
   /** Convenience accessor used by other stores that want a defaulted
       view ("use loaded values if available, fall back to defaults"). */
   get effective(): Settings {
-    return this.data ?? SETTINGS_DEFAULTS;
+    return this.data;
   }
 }
 

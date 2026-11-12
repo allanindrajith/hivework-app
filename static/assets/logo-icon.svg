@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="512" height="512" fill="none">
+  <title>Hivework - Circuit Hex Mark</title>
   <!-- Outer Honeycomb Hexagon -->
   <path d="M60 12 L102 36 V84 L60 108 L18 84 V36 Z" 
         stroke="#f59e0b" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>

@@ -97,6 +97,9 @@ class UpdaterStore {
         // the Settings card (the button's own tooltip explains why).
         this.available = null;
         this.error = null;
+      } else if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.available = null;
+        this.error = null;
       } else {
         this.error = errorText(e);
       }

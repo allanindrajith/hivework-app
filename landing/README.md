@@ -8,12 +8,12 @@ A self-contained static site (no build step) deployed with `rsync`.
 
 - `index.html` — the page
 - `style.css` — design tokens (dark-first, OKLCH, amber accent)
-- `agency-agents.png` — hero icon (Liquid Glass app icon)
+- `hivework.png`, `hivework-dark.png` — hero icon (Hivework app icon)
 - `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`
 - `social-card.png` — 1200×630 Open Graph / Twitter card
 - `manifest.json`, `robots.txt`, `sitemap.xml`
 
-Icons are generated from `../docs/icon/agency-icon-*.png` via `sips`; `favicon.ico` is `../src-tauri/icons/icon.ico`.
+Icons are generated from `../hivework-brand-kit/logos-png-transparent/` via `sips`; `favicon.ico` is `../src-tauri/icons/icon.ico`.
 
 > **TODO:** add an app screenshot to `screenshots/` and uncomment the `.section-shots`
 > block in `index.html`. Capture the Dashboard (cross-tool coverage) for the strongest shot.

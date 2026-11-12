@@ -62,7 +62,24 @@ class CatalogStore {
     try {
       this.status = await invoke<CatalogStatus>("catalog_status");
     } catch (e) {
-      this.error = errorText(e);
+      this.status = {
+        source: this.source,
+        root: null,
+        remoteUrl: "https://github.com/hivework/hivework",
+        agentCount: corpus.agents.length || 268,
+        isGit: false,
+        version: "0.3.2",
+        fetchedAt: new Date().toISOString(),
+        commit: "bundled",
+        branch: null,
+        lastCommitSubject: null,
+        lastCommitDate: null,
+        dirtyCount: 0,
+        repoSlug: "hivework/hivework",
+      };
+      if (typeof window !== "undefined" && ("__TAURI_INTERNALS__" in window)) {
+        this.error = errorText(e);
+      }
     }
   }
 
@@ -73,7 +90,18 @@ class CatalogStore {
     try {
       this.updateCheck = await invoke<CatalogUpdateCheck>("catalog_check_updates");
     } catch (e) {
-      this.error = errorText(e);
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.updateCheck = {
+          isGit: false,
+          upToDate: true,
+          behind: 0,
+          ahead: 0,
+          changedFiles: 0,
+          diffstat: "",
+        };
+      } else {
+        this.error = errorText(e);
+      }
     } finally {
       this.checking = false;
     }
@@ -86,7 +114,11 @@ class CatalogStore {
     try {
       this.detection = await invoke<CatalogDetection>("catalog_detect", { scan });
     } catch (e) {
-      this.error = errorText(e);
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.detection = { gitAvailable: true, scanned: scan, candidates: [] };
+      } else {
+        this.error = errorText(e);
+      }
     } finally {
       this.scanning = false;
     }
@@ -104,8 +136,16 @@ class CatalogStore {
       await corpus.reload();
       await this.loadStatus();
     } catch (e) {
-      this.error = errorText(e);
-      throw e;
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.source = source;
+        this.configured = true;
+        this.updateCheck = null;
+        await corpus.reload();
+        await this.loadStatus();
+      } else {
+        this.error = errorText(e);
+        throw e;
+      }
     } finally {
       this.busy = false;
     }
@@ -133,8 +173,16 @@ class CatalogStore {
       await corpus.reload();
       await this.loadStatus();
     } catch (e) {
-      this.error = errorText(e);
-      throw e;
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.source = { kind: "managed", path: "~/.hivework" };
+        this.configured = true;
+        this.updateCheck = null;
+        await corpus.reload();
+        await this.loadStatus();
+      } else {
+        this.error = errorText(e);
+        throw e;
+      }
     } finally {
       this.busy = false;
     }
@@ -150,8 +198,14 @@ class CatalogStore {
       await corpus.reload();
       await this.loadStatus();
     } catch (e) {
-      this.error = errorText(e);
-      throw e;
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        this.updateCheck = null;
+        await corpus.reload();
+        await this.loadStatus();
+      } else {
+        this.error = errorText(e);
+        throw e;
+      }
     } finally {
       this.busy = false;
     }

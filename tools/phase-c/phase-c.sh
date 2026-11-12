@@ -143,15 +143,13 @@ run_ubuntu_vm() {
   if ! command -v prlctl >/dev/null 2>&1; then
     skip_step "ubuntu parallels smoke" "prlctl not found"
     return
-  fi
-
-  run_step "ubuntu vm sync repo" prlctl exec "$UBUNTU_VM" bash -lc 'set -euo pipefail; src=""; for d in /media/psf/agency-agents-app /mnt/psf/agency-agents-app /media/sf_agency-agents-app; do if [ -d "$d" ]; then src="$d"; break; fi; done; test -n "$src"; mkdir -p /root/agency-agents-app; rsync -a --delete --exclude .git --exclude node_modules --exclude .svelte-kit --exclude build --exclude .phase-c --exclude target --exclude src-tauri/target "$src"/ /root/agency-agents-app/'
-  run_step "ubuntu vm npm install" prlctl exec "$UBUNTU_VM" npm --prefix /root/agency-agents-app ci
-  run_step "ubuntu vm cargo tests" prlctl exec "$UBUNTU_VM" cargo test --manifest-path /root/agency-agents-app/src-tauri/Cargo.toml --lib
-  run_step "ubuntu vm frontend check" prlctl exec "$UBUNTU_VM" npm --prefix /root/agency-agents-app run check
-  run_step "ubuntu vm frontend build" prlctl exec "$UBUNTU_VM" npm --prefix /root/agency-agents-app run build
-  run_step "ubuntu vm tauri bundle" bash -c 'prlctl exec "$1" npm --prefix /root/agency-agents-app run tauri -- build || true' phase-c "$UBUNTU_VM"
-  run_step "ubuntu vm bundle artifact check" prlctl exec "$UBUNTU_VM" test -d /root/agency-agents-app/src-tauri/target/release/bundle/deb -a -d /root/agency-agents-app/src-tauri/target/release/bundle/rpm -a -d /root/agency-agents-app/src-tauri/target/release/bundle/appimage
+  run_step "ubuntu vm sync repo" prlctl exec "$UBUNTU_VM" bash -lc 'set -euo pipefail; src=""; for d in /media/psf/hivework-app /mnt/psf/hivework-app /media/sf_hivework-app; do if [ -d "$d" ]; then src="$d"; break; fi; done; test -n "$src"; mkdir -p /root/hivework-app; rsync -a --delete --exclude .git --exclude node_modules --exclude .svelte-kit --exclude build --exclude .phase-c --exclude target --exclude src-tauri/target "$src"/ /root/hivework-app/'
+  run_step "ubuntu vm npm install" prlctl exec "$UBUNTU_VM" npm --prefix /root/hivework-app ci
+  run_step "ubuntu vm cargo tests" prlctl exec "$UBUNTU_VM" cargo test --manifest-path /root/hivework-app/src-tauri/Cargo.toml --lib
+  run_step "ubuntu vm frontend check" prlctl exec "$UBUNTU_VM" npm --prefix /root/hivework-app run check
+  run_step "ubuntu vm frontend build" prlctl exec "$UBUNTU_VM" npm --prefix /root/hivework-app run build
+  run_step "ubuntu vm tauri bundle" bash -c 'prlctl exec "$1" npm --prefix /root/hivework-app run tauri -- build || true' phase-c "$UBUNTU_VM"
+  run_step "ubuntu vm bundle artifact check" prlctl exec "$UBUNTU_VM" test -d /root/hivework-app/src-tauri/target/release/bundle/deb -a -d /root/hivework-app/src-tauri/target/release/bundle/rpm -a -d /root/hivework-app/src-tauri/target/release/bundle/appimage
 
   if prlctl capture "$UBUNTU_VM" --file "$SCREEN_DIR/ubuntu.png" >"$LOG_DIR/ubuntu-capture.log" 2>&1; then
     append_md "- ARTIFACT: Ubuntu screenshot [ubuntu.png](screenshots/ubuntu.png)"
@@ -166,13 +164,13 @@ run_windows_vm() {
 
   local win_env='set "CARGO_HOME=C:\CargoSystem" & set "RUSTUP_HOME=C:\Windows\System32\config\systemprofile\.rustup" & set "PATH=C:\Users\michael\.nvm\versions\node\v24.11.1\bin;C:\BuildTools\VC\Tools\Llvm\bin;C:\Windows\System32\config\systemprofile\.cargo\bin;%PATH%"'
 
-  run_step "windows vm sync repo" prlctl exec "$WINDOWS_VM" cmd.exe /c 'robocopy \\Mac\agency-agents-app C:\AgencyAgentsWinTest /MIR /XD .git node_modules .svelte-kit build .phase-c target src-tauri\target /XF .DS_Store Thumbs.db /NFL /NDL /NJH /NJS /NP & if %ERRORLEVEL% LEQ 7 exit /B 0 else exit /B %ERRORLEVEL%'
+  run_step "windows vm sync repo" prlctl exec "$WINDOWS_VM" cmd.exe /c 'robocopy \\Mac\hivework-app C:\HiveworkWinTest /MIR /XD .git node_modules .svelte-kit build .phase-c target src-tauri\target /XF .DS_Store Thumbs.db /NFL /NDL /NJH /NJS /NP & if %ERRORLEVEL% LEQ 7 exit /B 0 else exit /B %ERRORLEVEL%'
   run_step "windows vm rust target setup" prlctl exec "$WINDOWS_VM" cmd.exe /c "set \"PATH=C:\\Windows\\System32\\config\\systemprofile\\.cargo\\bin;%PATH%\" & rustup target add x86_64-pc-windows-msvc"
-  run_step "windows vm npm install" prlctl exec "$WINDOWS_VM" cmd.exe /c "set \"PATH=C:\\Users\\michael\\.nvm\\versions\\node\\v24.11.1\\bin;%PATH%\" & cd /d C:\\AgencyAgentsWinTest & npm ci"
-  run_step "windows arm64 build" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat arm64 & $win_env & set \"CARGO_TARGET_DIR=C:\\AgencyAgentsWinTarget\" & cd /d C:\\AgencyAgentsWinTest & npm run tauri -- build --no-bundle"
-  run_step "windows x64 build" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat x64 & $win_env & set \"CARGO_TARGET_DIR=C:\\AgencyAgentsWinTargetX64\" & cd /d C:\\AgencyAgentsWinTest & npm run tauri -- build --no-bundle --target x86_64-pc-windows-msvc"
-  run_step "windows pe header verification" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat x64 & dumpbin /headers C:\\AgencyAgentsWinTarget\\release\\agency-agents-app.exe | findstr /C:\"AA64 machine\" & dumpbin /headers C:\\AgencyAgentsWinTargetX64\\x86_64-pc-windows-msvc\\release\\agency-agents-app.exe | findstr /C:\"8664 machine\""
-  run_step "windows named artifacts" prlctl exec "$WINDOWS_VM" cmd.exe /c "if not exist C:\\AgencyAgentsArtifacts mkdir C:\\AgencyAgentsArtifacts & copy /Y C:\\AgencyAgentsWinTarget\\release\\agency-agents-app.exe \"C:\\AgencyAgentsArtifacts\\Agency Agents-0.1.0-windows-arm64.exe\" & copy /Y C:\\AgencyAgentsWinTargetX64\\x86_64-pc-windows-msvc\\release\\agency-agents-app.exe \"C:\\AgencyAgentsArtifacts\\Agency Agents-0.1.0-windows-x64.exe\" & dir C:\\AgencyAgentsArtifacts"
+  run_step "windows vm npm install" prlctl exec "$WINDOWS_VM" cmd.exe /c "set \"PATH=C:\\Users\\michael\\.nvm\\versions\\node\\v24.11.1\\bin;%PATH%\" & cd /d C:\\HiveworkWinTest & npm ci"
+  run_step "windows arm64 build" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat arm64 & $win_env & set \"CARGO_TARGET_DIR=C:\\HiveworkWinTarget\" & cd /d C:\\HiveworkWinTest & npm run tauri -- build --no-bundle"
+  run_step "windows x64 build" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat x64 & $win_env & set \"CARGO_TARGET_DIR=C:\\HiveworkWinTargetX64\" & cd /d C:\\HiveworkWinTest & npm run tauri -- build --no-bundle --target x86_64-pc-windows-msvc"
+  run_step "windows pe header verification" prlctl exec "$WINDOWS_VM" cmd.exe /c "call C:\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat x64 & dumpbin /headers C:\\HiveworkWinTarget\\release\\hivework-app.exe | findstr /C:\"AA64 machine\" & dumpbin /headers C:\\HiveworkWinTargetX64\\x86_64-pc-windows-msvc\\release\\hivework-app.exe | findstr /C:\"8664 machine\""
+  run_step "windows named artifacts" prlctl exec "$WINDOWS_VM" cmd.exe /c "if not exist C:\\HiveworkArtifacts mkdir C:\\HiveworkArtifacts & copy /Y C:\\HiveworkWinTarget\\release\\hivework-app.exe \"C:\\HiveworkArtifacts\\Hivework-windows-arm64.exe\" & copy /Y C:\\HiveworkWinTargetX64\\x86_64-pc-windows-msvc\\release\\hivework-app.exe \"C:\\HiveworkArtifacts\\Hivework-windows-x64.exe\" & dir C:\\HiveworkArtifacts\""ifacts"
 
   if prlctl capture "$WINDOWS_VM" --file "$SCREEN_DIR/windows.png" >"$LOG_DIR/windows-capture.log" 2>&1; then
     append_md "- ARTIFACT: Windows screenshot [windows.png](screenshots/windows.png)"

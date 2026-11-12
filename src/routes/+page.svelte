@@ -3,7 +3,7 @@
 
   import Sidebar from "$lib/components/Sidebar.svelte";
   import ResizeHandle from "$lib/components/ResizeHandle.svelte";
-  import AgencyDashboard from "$lib/components/AgencyDashboard.svelte";
+  import Dashboard from "$lib/components/Dashboard.svelte";
   import Teams from "$lib/components/Teams.svelte";
   import Projects from "$lib/components/Projects.svelte";
   import AgentsWorkspace from "$lib/components/AgentsWorkspace.svelte";
@@ -222,7 +222,7 @@
     <main class="content">
         <div class="section-pane">
           {#if ui.section === "dashboard"}
-            <AgencyDashboard />
+            <Dashboard />
           {:else if ui.section === "tools"}
             <ToolsView />
           {:else if ui.section === "teams"}

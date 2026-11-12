@@ -57,6 +57,24 @@ class CorpusStore {
         this.agents = agents ?? [];
         this.categories = categories ?? [];
       } catch (e) {
+        // In browser preview (e.g. Chrome on localhost:1430 outside Tauri runtime),
+        // gracefully fall back to the bundled baseline JSON catalog.
+        try {
+          const res = await fetch("/corpus-baseline.json");
+          if (res.ok) {
+            const data = await res.json();
+            this.agents = data.agents ?? [];
+            this.categories = data.categories ?? [];
+            this.error = null;
+            for (const a of this.agents) {
+              if (a.body) this.bodyCache.set(a.slug, a);
+            }
+            return;
+          }
+        } catch {
+          // Fall through if baseline fetch fails
+        }
+
         // Backend may not be implemented yet — degrade to an empty state
         // rather than throwing into the component tree.
         this.error = `Corpus unavailable: ${errorText(e)}`;

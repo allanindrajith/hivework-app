@@ -58,9 +58,13 @@
   }
 
   async function pickFolder() {
-    const picked = await openDialog({ directory: true, multiple: false, title: i18n.t("catalog.chooseCloneTitle") });
-    if (typeof picked === "string") {
-      await run(() => catalog.useClone(picked, manage), i18n.t("catalog.switchedClone"));
+    try {
+      const picked = await openDialog({ directory: true, multiple: false, title: i18n.t("catalog.chooseCloneTitle") });
+      if (typeof picked === "string") {
+        await run(() => catalog.useClone(picked, manage), i18n.t("catalog.switchedClone"));
+      }
+    } catch {
+      toast.info(i18n.t("catalog.chooseCloneTitle"), "Folder picker is available in the desktop app.");
     }
   }
 

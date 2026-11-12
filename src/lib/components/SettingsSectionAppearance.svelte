@@ -18,7 +18,7 @@
 
   /** Sections the user can pick as their default landing page. Mirrors the
       sidebar nav order, plus Dashboard which lives in the brand button. */
-  const SECTIONS: SidebarSection[] = ["dashboard", "personas", "tools", "teams", "projects", "activity"];
+  const SECTIONS: SidebarSection[] = ["dashboard", "personas", "tools", "teams", "projects", "runbooks", "activity"];
 
   function sectionLabel(value: SidebarSection): string {
     if (value === "dashboard") return i18n.t("nav.dashboard");
@@ -26,6 +26,7 @@
     if (value === "tools") return i18n.t("nav.tools");
     if (value === "teams") return i18n.t("nav.teams");
     if (value === "projects") return i18n.t("nav.projects");
+    if (value === "runbooks") return i18n.t("nav.runbooks");
     return i18n.t("nav.activity");
   }
 

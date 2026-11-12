@@ -6,6 +6,7 @@
   import FolderGit2 from "@lucide/svelte/icons/folder-git-2";
   import Rocket from "@lucide/svelte/icons/rocket";
   import Activity from "@lucide/svelte/icons/activity";
+  import SettingsIcon from "@lucide/svelte/icons/settings";
   import HiveworkIcon from "$lib/components/HiveworkIcon.svelte";
 
   import { ui } from "$lib/stores/ui.svelte";
@@ -21,7 +22,7 @@
     icon: typeof Bot;
   }
 
-  // Agency-first navigation. Agents is the home screen and now the UNIFIED
+  // Hivework navigation. Agents is the home screen and now the UNIFIED
   // surface — it absorbed the former Library, so install state lives there as a
   // filter, not a separate section. Shortcut glyphs adapt per platform
   // (⌘ on macOS, Ctrl elsewhere) since the app ships on macOS/Linux/Windows.
@@ -93,6 +94,19 @@
       {/each}
     </ul>
   </nav>
+
+  <div class="sidebar-bottom">
+    <button
+      class="nav-item settings-item"
+      class:active={ui.settingsOpen}
+      onclick={() => ui.openSettings()}
+      title={i18n.t("titlebar.settingsTitle", { shortcut: shortcut(",") })}
+      aria-label={i18n.t("titlebar.openSettings")}
+    >
+      <span class="ico" aria-hidden="true"><SettingsIcon size={16} /></span>
+      <span class="label">{i18n.t("settings.title")}</span>
+    </button>
+  </div>
 
   <footer class="foot">
     <div class="status status-ready" title={i18n.t("nav.catalogStatus", { count: agentCount })}>
@@ -218,6 +232,23 @@
     padding: 0 4px;
     font-size: 9px;
     line-height: 1;
+  }
+  .sidebar-bottom {
+    padding: 0 var(--space-2) var(--space-1);
+  }
+  .settings-item {
+    cursor: pointer;
+  }
+  .sidebar.collapsed .sidebar-bottom {
+    padding: 0 var(--space-1) var(--space-1);
+  }
+  .sidebar.collapsed .settings-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .sidebar.collapsed .settings-item .label {
+    display: none;
   }
   .sidebar.collapsed .foot {
     align-items: center;
