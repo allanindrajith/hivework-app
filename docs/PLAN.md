@@ -42,7 +42,7 @@ Rust backend
       v
 Local filesystem
   app state
-  agency-agents clone/baseline
+  hivework clone/baseline
   tool-specific agent directories
 ```
 
@@ -50,7 +50,7 @@ Local filesystem
 
 In scope:
 
-1. Browse the `agency-agents` catalog by division, search, and detail.
+1. Browse the `hivework` catalog by division, search, and detail.
 2. Select a bundled, managed, or user-cloned catalog source.
 3. Render supported tools natively in Rust.
 4. Install and uninstall supported one-file-per-agent targets.
@@ -135,7 +135,7 @@ Tracked inventory for the release after v0.2.0. Grouped by what unblocks each it
 The updater UI, store, plugin, dedicated signing key, and publish tooling all ship.
 
 1. **Endpoint — activated at the v0.2.0 release cut** (no longer post-0.2.0): host is `hivework.app`
-   (Caddy on umbp from `~/Sites/agency-agents/`), the v0.2.0 build runs without `SKIP_UPDATER`, and
+   (Caddy on umbp from `~/Sites/hivework/`), the v0.2.0 build runs without `SKIP_UPDATER`, and
    `publish-manifest.sh` rsyncs the signed manifest there. Resolved in `decisions.md` (2026-06-22).
 2. **Opt-in automatic install** *(remaining)* — today the live path is check → notify → one-click Install;
    the user still clicks. Wire the inert "Install updates automatically" toggle to a real off-by-default
@@ -185,7 +185,7 @@ npm run build:phase-c
 Renderer parity should be checked against the active AA clone:
 
 ```sh
-AGENCY_AGENTS_PARITY_ROOT=/Users/michael/Software/AgentLand/agency-agents \
+HIVEWORK_PARITY_ROOT=/Users/michael/Software/AgentLand/hivework \
 cargo test --manifest-path src-tauri/Cargo.toml upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored
 ```
 

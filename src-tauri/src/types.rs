@@ -43,7 +43,7 @@ pub enum CatalogSource {
     /// App-managed copy seeded from the bundled baseline (`<app_data>/corpus`).
     /// The always-works default; never touches anything outside app data.
     Bundled,
-    /// A clone the app provisioned and owns (default `~/.agency-agents`). The
+    /// A clone the app provisioned and owns (default `~/.hivework`). The
     /// app may pull/refresh it; it's shared with the CLI.
     Managed { path: String },
     /// The user's own pre-existing clone. `manage` records whether the user
@@ -64,7 +64,7 @@ impl Default for CatalogSource {
 pub struct CatalogCandidate {
     /// Absolute path to the candidate catalog root.
     pub path: String,
-    /// `"managed"` for `~/.agency-agents`, else `"userClone"`.
+    /// `"managed"` for `~/.hivework`, else `"userClone"`.
     pub kind: String,
     /// Whether it's a git checkout (has `.git`) — drives pull strategy.
     pub has_git: bool,
@@ -342,7 +342,7 @@ pub struct ProjectInfo {
 mod tests {
     use super::*;
 
-    // ---------- Agency Agents: Tool id ----------
+    // ---------- Hivework: Tool id ----------
     //
     // `Tool` is now a `String` camelCase id sourced from the embedded JSON
     // registry (which self-tests its id set in `crate::registry`). A tool id is

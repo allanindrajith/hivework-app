@@ -14,8 +14,8 @@ Dev port configured on 1430. The active roadmap sequence:
    **KEEP (not-yet-used infra):** Settings shell + generic sections, design system, updater,
    `github/` (→ P4), util, the agency domain. Optional final step: rename `BrewError` → `AppError`.
    Run in green passes. Goal: a clean, stable foundation ASAP.
-1. **Clone-as-source-of-truth** — detect/prompt for an existing agency-agents clone OR provision
-   `~/.agency-agents`; **pull on first launch**; **dynamic category discovery** (a division = any
+1. **Clone-as-source-of-truth** — detect/prompt for an existing hivework clone OR provision
+   `~/.hivework`; **pull on first launch**; **dynamic category discovery** (a division = any
    top-level dir with agent-frontmatter files); cache in `.agency-cache/` (gitignored upstream);
    honor `aliases.json` (renames); surface **orphans** (removed upstream); enforce unique slugs.
    First-run **selection modal** + **Settings → Catalog source**.
@@ -41,7 +41,7 @@ all writes explicit/previewed/reversible; source of truth is the user's clone, s
 ## Original phase log
 
 - **Phase 0 — Fork & boot** ✅ DONE (2026-06-05)
-  Forked brew-browser scaffold, rebranded to Agency Agents / `com.zerologic.agency-agents-app`,
+  Forked hivework-app scaffold, rebranded to Hivework / `com.hivework.app`,
   green `cargo check` + `vite build`. Brew's real bundled data restored so brew-domain tests stay
   green until that domain retires.
 
@@ -53,7 +53,7 @@ all writes explicit/previewed/reversible; source of truth is the user's clone, s
   (released cache lock during init → parallel seeders stomped temp files). 615 tests green.
 
 - **Phase 1.5 — Agency-first polish** ◀ IN PROGRESS
-  Make the whole shell read as Agency Agents, not brew-with-a-tab:
+  Make the whole shell read as Hivework, not brew-with-a-tab:
   1. Real Lucide category icons (kill the "?" fallback in the tile component).
   2. Retire/replace brew sidebar sections (Dashboard/Library/Discover/Snapshots/Services) + the
      `brew 5.1.x` footer with agency equivalents; lead nav with Agents.
@@ -77,7 +77,7 @@ all writes explicit/previewed/reversible; source of truth is the user's clone, s
   show the 107K★ repo stats.
 
 - **Phase 5 — Quality**
-  Opt-in lint + originality scan (port agency-agents `lint-agents.sh` +
+  Opt-in lint + originality scan (port hivework `lint-agents.sh` +
   `check-agent-originality.sh`), per-agent quality card, footprint.
 
 - **Phase 6 — Polish + Release**

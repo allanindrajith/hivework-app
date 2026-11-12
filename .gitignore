@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Agency Agents — root .gitignore
+# Hivework — root .gitignore
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Rust build artifacts (BIG — multiple GB; never commit)
@@ -73,6 +73,6 @@ __pycache__/
 # Logs
 *.log
 
-# Icon previews — regenerable from the brain-circuit source art.
+# Icon previews — regenerable from the hivework-circuit-hex source art.
 docs/icon/preview-*.png
 docs/icon/**/preview-*.png

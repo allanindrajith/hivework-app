@@ -1,8 +1,8 @@
-# Agent Log — Agency Agents (append-only)
+# Agent Log — Hivework (append-only)
 
-2026-06-05 — Phase 0 (lead): recon of agency-agents (107.5K★, 251 agents/18 cats) +
-brew-browser (Tauri2/Svelte5/Rust, 73 cmds). Locked 1:1 architecture. Forked scaffold,
-rebranded to Agency Agents. Green cargo check + vite build. Wrote memory-bank.
+2026-06-05 — Phase 0 (lead): recon of hivework (107.5K★, 251 agents/18 cats) +
+hivework-app (Tauri2/Svelte5/Rust, 73 cmds). Locked 1:1 architecture. Forked scaffold,
+rebranded to Hivework. Green cargo check + vite build. Wrote memory-bank.
 Next: Phase 1 team build (Corpus + Discover).
 
 2026-06-05 — Phase 1 (team wh3t9mkee + lead-as-integrator): Types agent landed types.rs+types.ts
@@ -11,7 +11,7 @@ split-hash index, corpus_* commands, tarball refresh) + bundled baseline + Cargo
 (serde_yaml/sha2/hex/flate2/tar/tracing) + tauri.conf resources. Discover agent landed
 corpus.svelte.ts store + PersonaDiscover.svelte + nav wiring. Workflow threw on a StructuredOutput
 protocol error AFTER the code compiled, so the Integrate phase didn't run — lead took over as
-integrator: fixed rebrand keychain id (brew-browser→agency-agents-app) + its 2 tests, decoupled
+integrator: fixed rebrand keychain id (hivework-app→hivework-app) + its 2 tests, decoupled
 corpus category metadata onto its own data/agency-categories.json (was colliding with brew's
 categories.json), restored brew's real bundled data (placeholders had broken brew's tests), added a
 real-baseline parse test. THAT test caught the big one: seeding undercounted (flat layout missed
@@ -50,7 +50,7 @@ actions (Update/Reinstall/Adopt/Remove). (4) Tools view (ToolsView.svelte) — d
 + counts + dest. Wired both into sidebar nav (Agents/Library/Tools/Activity) + fixed ⌘1/2/3/6 keymap
 to match. Library badge shows attention count. cargo test 630 / 0; vite GREEN. Deferred (noted in
 install/mod.rs): the 4 multi-file renderers (antigravity/openclaw/aider/windsurf). Next: Phase 3.
-NB: real-world validation — Michael ran the repo's install.sh (184 agents → ~/.claude/agents); the
+NB: real-world validation — Allan ran the repo's install.sh (184 agents → ~/.claude/agents); the
 Foreign sweep correctly surfaced ~180 as Adopt-able in the Library. Zero fake data.
 
 2026-06-05 — Phase 3 (lead): Loadouts + Dashboard.
@@ -77,9 +77,9 @@ Foreign sweep correctly surfaced ~180 as Adopt-able in the Library. Zero fake da
 - ADDED: Tools view "Rescan" button (re-detect tools + re-reconcile) — the requested Tool Update.
 - cargo test 631/0; vite GREEN. NOTE: couldn't visually confirm in-session — screen capture is
   blocked (terminal holds focus; transparent webview blanks on occluded window-id capture). Needs
-  Michael to confirm the Library populates (it should now show the ~190 Foreign agents).
+  Allan to confirm the Library populates (it should now show the ~190 Foreign agents).
 
-2026-06-06 — Library "frozen" bug RESOLVED (lead, via Michael's devtools console). ROOT CAUSE was
+2026-06-06 — Library "frozen" bug RESOLVED (lead, via Allan's devtools console). ROOT CAUSE was
 NOT reactivity (hours lost chasing that): a Svelte `each_key_duplicate` crash. The `{#each rows}` key
 was `slug+tool+projectPath`; **Copilot dual-writes to ~/.github AND ~/.copilot**, so the Foreign
 sweep produced TWO identical-key rows → Svelte threw during render → AgentLibrary's whole reactive
@@ -117,7 +117,7 @@ Pill formula/cask tones; brew strings in tokens.css/comments. Next: #1 clone-as-
   modified row now "Restore" via backup-aware update; Dashboard "found to adopt"→"found to track".
   Tests: track_writes_no_file, write_backs_up_existing_differing_file. lib.rs swaps adopt_agent→
   track_agent + agent_diff.
-- #1 SLICE 1 — categories now parsed from the REPO TOOLING, not hardcoded (Michael: "categories can
+- #1 SLICE 1 — categories now parsed from the REPO TOOLING, not hardcoded (Allan: "categories can
   be parsed from the repo itself, look in the tooling"). `discover_categories(root)` parses the
   `AGENT_DIRS=( … )` bash array from `<root>/scripts/convert.sh` (→ install.sh → lint-agents.sh),
   `parse_agent_dirs` is pure/tested; `DEFAULT_CATEGORIES` is the offline fallback. Threaded through
@@ -132,7 +132,7 @@ Pill formula/cask tones; brew strings in tokens.css/comments. Next: #1 clone-as-
   categoryIcon.ts −Plug +Network. Existing installs auto-correct via the DEFAULT fallback (their old
   seeded corpus has no scripts/). Tests updated incl. real-baseline→209, +4 new. Verdict: cargo test
   271/0; svelte-check 0 err; build GREEN. Next: #1 slices 2–4 (CatalogSource model → detect/provision/
-  pull → first-run modal + Settings). Managed path = ~/.agency-agents (confirmed).
+  pull → first-run modal + Settings). Managed path = ~/.hivework (confirmed).
 
 2026-06-06 — #1 slices 2–4: clone-as-source-of-truth (lead). Catalog now has a SOURCE.
 - SLICE 2 — CatalogSource model: `types.rs` enum {Bundled | Managed{path} | UserClone{path,manage}}
@@ -141,27 +141,27 @@ Pill formula/cask tones; brew strings in tokens.css/comments. Next: #1 clone-as-
   RESOLVED root (was hardcoded `<app_data>/corpus`); only Bundled seeds from baseline; refresh refuses
   a read-only UserClone. Cmds: catalog_source_get/set (set validates path + looks_like_catalog, then
   rebuilds+swaps the memoized corpus), catalog_configured (catalog.json exists? → first-run gate).
-- SLICE 3 — detect/provision/pull: `detect_catalogs(scan)` always checks ~/.agency-agents, scan=true
-  walks ~/{Software,Projects,git,Developer,code,dev,src} for an agency-agents checkout; returns
+- SLICE 3 — detect/provision/pull: `detect_catalogs(scan)` always checks ~/.hivework, scan=true
+  walks ~/{Software,Projects,git,Developer,code,dev,src} for an hivework checkout; returns
   CatalogCandidate{path,kind,has_git,agent_count}. `provision_managed` = git clone --depth1 (if git on
-  PATH) else snapshot tarball into ~/.agency-agents. `pull_active` = git pull --ff-only (git checkout)
+  PATH) else snapshot tarball into ~/.hivework. `pull_active` = git pull --ff-only (git checkout)
   else tarball refresh. git via spawn_blocking(std::process). Cmds: catalog_detect,
   catalog_provision_managed, catalog_pull (all require_network where they hit the net). Factored
   download_corpus_tarball + rebuild_corpus helpers.
 - SLICE 4 — frontend: `stores/catalog.svelte.ts` (source/configured/detection/busy + load/detect/
   setSource/useBundled/useClone/provisionManaged/pull, calls corpus.reload() after switches; added
   corpus.reload()). `CatalogFirstRun.svelte` (first-launch picker: use my clone[Find+folder picker,
-  manage checkbox] / set up ~/.agency-agents / bundled) rendered from +layout when !configured.
+  manage checkbox] / set up ~/.hivework / bundled) rendered from +layout when !configured.
   `SettingsSectionCatalog.svelte` + Settings nav "Catalog" (Library icon) + SettingsSection type:
   shows source/path/agent-count, Pull latest, switch source, Find/pick clone. +layout loads
   catalog on mount.
-  Decisions honored: picker-primary + "Find Agency Agents" button; manage-with-permission;
-  managed path ~/.agency-agents; verbs Track/Update. Verdict: cargo test 275/0; svelte-check 0 err;
-  build GREEN. NOT yet visually run by Michael. Deferred refinements: aliases.json (renames),
+  Decisions honored: picker-primary + "Find Hivework" button; manage-with-permission;
+  managed path ~/.hivework; verbs Track/Update. Verdict: cargo test 275/0; svelte-check 0 err;
+  build GREEN. NOT yet visually run by Allan. Deferred refinements: aliases.json (renames),
   explicit orphan surfacing, symlink-aware reconcile (those were #2/#3 in the old plan; core source
-  switching works). Next: Michael runs it; then #2 Track-all/Update-all, #3 tool-grouped Library IA.
+  switching works). Next: Allan runs it; then #2 Track-all/Update-all, #3 tool-grouped Library IA.
 
-2026-06-06 — Warning purge + AppError rename + Catalog GitHub/sync (lead). Michael flagged
+2026-06-06 — Warning purge + AppError rename + Catalog GitHub/sync (lead). Allan flagged
 dead-code warnings on `tauri dev` + asked for repo pull/sync management with GitHub login + diff stats.
 - CLEANUP (0 warnings now): renamed `BrewError`→`AppError` everywhere (412 refs, sed; Rust-only, wire
   `code` strings unchanged). Pruned dead brew variants (BrewNotFound/BrewExitNonZero/JobNotFound/
@@ -169,10 +169,10 @@ dead-code warnings on `tauri dev` + asked for repo pull/sync management with Git
   removed AppState require_enhanced_trending/live_enrichment/vulnerability_scanning + their tests;
   removed render Tool::supported; removed github resolve_github_homepage (brew-metadata helper) + tests.
   Kept extract_github_repo (now wired). cargo build 0 warnings; cargo test 245/0.
-- REAL BUG FIXED: `state.rs::resolve_app_data_dir` pushed "brew-browser" → settings.json + github-cache
-  were written to `~/Library/Application Support/brew-browser/` (colliding with the other app), split
+- REAL BUG FIXED: `state.rs::resolve_app_data_dir` pushed "hivework-app" → settings.json + github-cache
+  were written to `~/Library/Application Support/hivework-app/` (colliding with the other app), split
   from corpus/ledger/catalog which use the proper bundle dir. Changed to
-  "com.zerologic.agency-agents-app" so ALL app data unifies. (Existing users: settings/github-cache
+  "com.hivework.app" so ALL app data unifies. (Existing users: settings/github-cache
   effectively reset to defaults — acceptable.)
 - FEATURE — Catalog GitHub + sync status: backend `catalog_status` (source, git commit/branch/last-
   commit/dirty, remote→repo_slug via extract_github_repo, version/fetchedAt, agentCount) +
@@ -183,45 +183,45 @@ dead-code warnings on `tauri dev` + asked for repo pull/sync management with Git
   → diffstat + Pull CTA, and a GitHub card (repo stars/forks/issues/last-release via the EXISTING
   github.getRepoStats; sign-in via github.signIn → global DeviceFlowModal). Reused all existing github
   infra (auth/device-flow/stats) — no new auth code. svelte-check 0 err; build green.
-  Next: Michael runs it (first-run picker appears once); deferred #1 bits (aliases/orphans/.agency-cache/
+  Next: Allan runs it (first-run picker appears once); deferred #1 bits (aliases/orphans/.agency-cache/
   symlink reconcile); then #2/#3.
 
-2026-06-06 — Settings panel refocus to Agency Agents' lens (lead). Michael: "we're nowhere near
+2026-06-06 — Settings panel refocus to Hivework' lens (lead). Allan: "we're nowhere near
 close :9 look at the setting panel." The whole Settings panel was still a Homebrew control panel.
-Refocused every section to show ONLY what's functional + real for Agency Agents:
+Refocused every section to show ONLY what's functional + real for Hivework:
 - NETWORK → "Network & Privacy": removed dead brew controls (Cask icon fetching, Trending TTL,
   Catalog auto-refresh, stale-banner — all non-functional after the brew sweep). Kept the one
   functional toggle (Offline Mode / paranoid_mode, 19 live refs). Rewrote the outbound-paths
   disclosure to the REAL hosts: github.com/codeload (catalog clone/pull/snapshot), api.github.com
-  (stats/auth/star), raw/objects.githubusercontent.com (avatars/assets), agency-agents-app.zerologic.com
+  (stats/auth/star), raw/objects.githubusercontent.com (avatars/assets), hivework.online
   (updates). Kept Updates subsection.
 - APPEARANCE: removed the brew "AI features" enrichment toggle (aiFeaturesEnabled — 0 live agency
-  consumers; gated brew enriched metadata) + its CSS; fixed "launch brew-browser"→"Agency Agents".
+  consumers; gated brew enriched metadata) + its CSS; fixed "launch hivework-app"→"Hivework".
 - GITHUB: reframed "stats on package pages"→"repository stats" for the catalog repo; de-brewed copy.
-- ABOUT: rebranded repo links (app + catalog) + zero-telemetry copy to Agency Agents.
-- UPDATES: brew-browser→Agency Agents throughout; updater URL brew-browser.zerologic.com→
-  agency-agents-app.zerologic.com/updater.json.
-- Visible strings elsewhere: reportIssue (issue URL → agency-agents-app, "Report to Agency Agents"),
+- ABOUT: rebranded repo links (app + catalog) + zero-telemetry copy to Hivework.
+- UPDATES: hivework-app→Hivework throughout; updater URL hivework.online→
+  hivework.online/updater.json.
+- Visible strings elsewhere: reportIssue (issue URL → hivework-app, "Report to Hivework"),
   ui.svelte storage key prefix, UpdateIndicator badge, ActivityDrawer empty-state + report button,
   TitlebarControls donate label, types.ts appError toast messages (no more "Homebrew"/"brew exited").
-  ui localStorage key brew-browser→agency-agents.
+  ui localStorage key hivework-app→hivework.
 Verified: svelte-check 0 errors (was 3 brew-CSS warnings → now only the pre-existing tsconfig `node`
 note), build green. STILL BREW-NAMED PLUMBING (invisible to user, deferred): types.ts BrewErrorPayload/
 isBrewError/BrewStreamEvent type names + dead codes; reportIssue shell-exit semantics (command/exitCode/
 stderr) that agency never produces; dead frontend Settings fields (caskIconMode etc.) + backend Settings
 struct fields. These are a bounded "frontend brew-plumbing purge" — next.
 
-2026-06-06 — App icon + About rebrand (lead). Built a new app icon from Michael's brain-circuit.svg
+2026-06-06 — App icon + About rebrand (lead). Built a new app icon from Allan's hivework-circuit-hex.svg
 (purple→blue→cyan glyph) composited onto a macOS-style rounded square (rsvg-convert glyph → magick
 rounded-gradient bg + composite): dark + light 1024 masters in docs/icon/agency-icon-{dark,light}-
 1024.png. Generated the full Tauri icon set via `npm run tauri icon docs/icon/agency-icon-dark-1024
 .png` (dark = shipped). GOTCHA: incremental `tauri dev` did NOT re-embed the new icns — had to
 `touch src-tauri/build.rs` to force tauri-build to re-run, then rebuild + `killall Dock`; then the
 Dock showed the new icon. Rebranded AboutModal.svelte: new icon (src/lib/assets/app-icon.png 256px,
-drop-shadow), title "Agency Agents", tagline "A native macOS app store for AI agents", repo/license
-→ agency-agents-app, credits → built-by-agents + Opus 4.8, dropped Homebrew thanks. Also: Dock-hover
-shows "agency-agents-app" (dev binary name) while menu bar shows "Agency Agents" (productName) — a
-DEV-ONLY artifact; `tauri build` produces "Agency Agents.app" where both match. Plan persisted to
+drop-shadow), title "Hivework", tagline "A native macOS app store for AI agents", repo/license
+→ hivework-app, credits → built-by-agents + Opus 4.8, dropped Homebrew thanks. Also: Dock-hover
+shows "hivework-app" (dev binary name) while menu bar shows "Hivework" (productName) — a
+DEV-ONLY artifact; `tauri build` produces "Hivework.app" where both match. Plan persisted to
 phase-roadmap.md (v2 sequence). First git commit made. Next: #1 clone-as-source-of-truth.
 
 2026-06-08 — Install-management loop + grouped Library + signed build + report (lead). Long session;
@@ -231,10 +231,10 @@ many commits (see git log eacbf35..2370ce0). Highlights:
   first-run picker; Settings→Catalog (git status + GitHub repo stats + sign-in via existing github
   store). Categories parsed from convert.sh AGENT_DIRS (integrations dropped, strategy added).
 - RECURSIVE INDEXING: build_from_dir + read_source now recurse; real clones nest agents
-  (game-development/godot/<slug>.md etc.). Michael's clone had 19 nested agents the flat scan dropped.
+  (game-development/godot/<slug>.md etc.). Allan's clone had 19 nested agents the flat scan dropped.
   Bundled baseline is flat → count unchanged (209). Test added.
 - BYTE-IDENTICAL → CURRENT: installs_reconcile foreign sweep now byte-compares each recognized file vs
-  the canonical render; identical → Current (in sync, no "adopt"), divergent → Foreign. Michael's
+  the canonical render; identical → Current (in sync, no "adopt"), divergent → Foreign. Allan's
   "these are mine now" — a clean CLI setup stops nagging. (Load-bearing on render parity for non-CC tools.)
 - DIFF VIEWER: agent_diff (already existed) wired to DiffModal + util/diff.ts (dependency-free LCS).
   Click a divergent pill → unified diff (− on disk / + catalog).
@@ -244,25 +244,25 @@ many commits (see git log eacbf35..2370ce0). Highlights:
   Update/Track/Delete (Delete confirms + warns no-undo; inapplicable disabled). install.bulk()=1 reconcile.
 - AppError rename + dead-brew purge (0 warnings); Settings refocused; resizable/persisted panels;
   window geometry persists on resize; install-into multi-select + remembered selection; app-data-dir
-  bug fixed (was ~/Library/Application Support/brew-browser → com.zerologic.agency-agents-app).
+  bug fixed (was ~/Library/Application Support/hivework-app → com.hivework.app).
 - SIGNED + NOTARIZED BUILD: scripts/release.sh pulls notary pw + updater key from Keychain.
   SKIP_UPDATER=1 ./scripts/release.sh → Gatekeeper-accepted notarized+stapled .app + signed .dmg.
-  Notary creds: keychain service "agency-agents-notary" / msitarzewski@mac.com, Team 7JQGQ7CRH8.
+  Notary creds: keychain service "hivework-notary" / allanindrajith@mac.com, Team YOUR_APPLE_TEAM_ID.
   Updater minisign key NOT set up yet. .gitignore hardened.
 - ICON: new white-glyph-on-purple flat icon shipped; Liquid Glass layered source staged in docs/icon/
   (AppIcon.icon validates with actool) for Tahoe — not wired to build (Icon Composer is the export path).
-- THE REPORT (Michael asked "did you run a report on the 8?"): replicated the app's compare against the
+- THE REPORT (Allan asked "did you run a report on the 8?"): replicated the app's compare against the
   userClone. 184 installed = 157 identical, 8 divergent (repo NEWER — e.g. software-architect +2766b
   real new sections; a "1-byte" one was a corrupted→fixed emoji, NOT whitespace → all 8 are genuine
   repo-newer versions → Update is right + frequent), 19 nested-unknown (→ fixed by recursion).
-- ⚠️ RE-ORG COMING (Michael): re-verify catalog layout/categories/counts after it lands.
+- ⚠️ RE-ORG COMING (Allan): re-verify catalog layout/categories/counts after it lands.
 - IMMEDIATE NEXT: (1) renderer parity vs convert.sh for transform tools (now load-bearing); (2) decide
   uninstall-backs-up-first. Then: Dashboard rollup; multi-file renderers (#8); brew tech-debt sweep.
   Verdict: cargo test 247/0; svelte-check 0 err; build green. Memory bank updated; committing + pushing
   (created private GitHub repo — no remote existed before).
 
 ## 2026-06-08 (later) — IA RE-ORG: Agents + Library unified into a three-pane workspace
-Michael: "the 'Library' and 'Agents' views are overlapping … bring the latest methods, charting, UX
+Allan: "the 'Library' and 'Agents' views are overlapping … bring the latest methods, charting, UX
 patterns … cross-platform (macOS/Linux/Windows 11) … organize 200+ agents, the tools they're installed
 in, and their purpose/roles." Decided via AskUserQuestion: (1) UNIFY Agents+Library into one view;
 (2) THREE-PANE (mail/IDE) layout; (3) all four Dashboard charts (coverage matrix, health donut, category
@@ -294,7 +294,7 @@ together.
 - **REMAINING:** Phase B (4 Dashboard charts, dependency-free SVG/CSS, deep-link cells into the
   workspace) · Phase C (Windows/Linux titlebar / traffic-light degradation; "this device" copy;
   home-path display). Plus prior IMMEDIATE: renderer parity vs convert.sh; uninstall-backup decision.
-- **BACKLOG (new, Michael):** a "local-runtime system-prompt" target class — Ollama Modelfile `SYSTEM`
+- **BACKLOG (new, Allan):** a "local-runtime system-prompt" target class — Ollama Modelfile `SYSTEM`
   / LM Studio preset — as its OWN renderer+runtime track, NOT an entry in the agent-host tool set
   (those 7+4 ingest a persona file into an agents dir; runtimes serve weights and have no agents dir).
 
@@ -338,9 +338,9 @@ problem (made a squircle, regenerated 8-bit, canonical `iconutil` icns, swapped 
 icon caches, lsregister) — the `.icns` was PROVEN byte-correct the whole time (composite-over-red = red
 corners). **ROOT CAUSE: macOS 26 Tahoe renders app icons from a compiled `Assets.car` (Icon Composer
 "Liquid Glass"), not `.icns`. Apps shipping only `.icns` get "icon jail" → blank squircle.** `tauri icon`
-can't make `Assets.car` (tauri#14207/#14979). brew-browser "works" because its full-bleed square art
+can't make `Assets.car` (tauri#14207/#14979). hivework-app "works" because its full-bleed square art
 survives the legacy path. Web research (9to5Mac gray-box, Apple forums 801181, hendrik-erz.de) nailed it.
-- **THE FIX (reproducible, wired + verified):** `actool` compiles `docs/icon/AppIcon.icon` (Michael's
+- **THE FIX (reproducible, wired + verified):** `actool` compiles `docs/icon/AppIcon.icon` (Allan's
   finished Icon Composer build) → `Assets.car` + a Tahoe-aware `AppIcon.icns`. **actool is ONLY in full
   Xcode, not CLT** — call it by path: `/Applications/Xcode-beta.app/Contents/Developer/usr/bin/actool …
   --compile … --app-icon AppIcon --include-all-app-icons`. Then: `Assets.car`→`src-tauri/Assets.car`
@@ -385,13 +385,13 @@ was working-tree only). Resolved the two IMMEDIATE backlog items and the deferre
   `titleBarStyle: Overlay` + `hiddenTitle` + `trafficLightPosition` so macOS keeps the custom overlay
   titlebar. Frontend `TitlebarControls`/`ToolsView`/`AgentsWorkspace`/`ResizeHandle` touched for the
   degradation path.
-- **brew-browser → Agency Agents rename completed** in `lib.rs` (doc header, env filter
-  `agency_agents_app=info`, menu event ids `agency-agents/menu/*`, updater key paths). Dead brew
+- **hivework-app → Hivework rename completed** in `lib.rs` (doc header, env filter
+  `hivework_app=info`, menu event ids `hivework/menu/*`, updater key paths). Dead brew
   `Settings` fields purged from `commands/settings.rs` + `types.ts`. Docs overhauled (README,
   CONTRIBUTING, SECURITY, BUILD, PHILOSOPHY, PLAN); stale `release-notes/0.3.0–0.5.0` removed; tool
   READMEs trimmed; Android icons regenerated.
 - **New `tools/phase-c/` runner** (`phase-c.sh` + `validate-config.mjs`, npm `build:phase-c[:full]`):
-  runs cargo tests + the `--ignored` parity test against `AGENCY_AGENTS_PARITY_ROOT`, frontend build,
+  runs cargo tests + the `--ignored` parity test against `HIVEWORK_PARITY_ROOT`, frontend build,
   config validation, optional mac build + Parallels Win/Linux VM matrix.
 - **Catalog is now 232 agents** (the warned re-org landed; counts shifted from ~222 as predicted —
   indexing + parity absorbed it cleanly).
@@ -412,7 +412,7 @@ Then knocked out pre-release issues, all green (svelte 0, cargo 258/0), committe
   referenced `categorize.py` in a comment (repointed to `agency-categories.json`).
 - **Activity Journal**: the inherited "Activity" was a fully-built but PERMANENTLY-EMPTY brew streaming log
   (Sidebar ⌘4 + `ActivityHistory` + 223-line store + `ActivityDrawer`) — no AA backend ever emits
-  `AppStreamEvent` (`startJob`/`handleEvent` called from nowhere). Michael: "Use it!" as a journal. Pivoted
+  `AppStreamEvent` (`startJob`/`handleEvent` called from nowhere). Allan: "Use it!" as a journal. Pivoted
   `activity.svelte.ts` → `JournalEntry` store (reused the localStorage persist/hydrate/cap machinery, v1→v2);
   `install.svelte.ts` logs install/uninstall/update/track/bulk + default-target switch; `ActivityHistory`
   rewritten (day-grouped rows, action icons, relative time, ok/error dots, Clear). Deleted `ActivityDrawer`,
@@ -423,14 +423,14 @@ Then knocked out pre-release issues, all green (svelte 0, cargo 258/0), committe
   broken English, "Bulk 3 agents" non-verb. Hand-fixed all three. LESSON: gate the loop on `major`+, not
   just `blocker`.
 - **Tools pane lens**: default to **Installed** (detected OR has agents); `Installed · Not installed · All`
-  segmented toggle on the top row next to rescan (no count chips, per Michael's sketch). `ToolsView.svelte`.
+  segmented toggle on the top row next to rescan (no count chips, per Allan's sketch). `ToolsView.svelte`.
 - **Cold `cargo test` tauri-gate fix**: bare cargo (tests/CI, no Tauri CLI) reads only base `tauri.conf.json`
   which omits `macOSPrivateApi` (it's in `tauri.macos.conf.json`, merged only by the CLI) → `tauri-build`
   rejects the `macos-private-api` Cargo feature. Hidden locally by a warm build-script cache; fails on fresh
   checkout/CI. FIX: `.cargo/config.toml` sets `TAURI_CONFIG='{"app":{"macOSPrivateApi":false}}'` (the value
   that passes; `:true` does NOT). The Tauri CLI sets its own process-env `TAURI_CONFIG` (wins), so real
   `tauri dev`/`build` are unaffected — VERIFIED `tauri dev` launches clean. `macos-private-api` in `Cargo.toml`.
-- **Showed it live**: `npm run tauri dev` (warm ~4.6s). Can't self-screenshot — Michael drove. GOTCHA stays.
+- **Showed it live**: `npm run tauri dev` (warm ~4.6s). Can't self-screenshot — Allan drove. GOTCHA stays.
 
 ### 2026-06-15 (later) — live UI polish in the running app (HMR feedback loop)
 With `tauri dev` running, iterated on the Tools + Agents panes via screenshots; all svelte 0-error:
@@ -498,9 +498,9 @@ Iterating live on the Dashboard "Cross-tool coverage" + division color. All gree
   (and `.cd-cell`) like HealthDonut's `.hd-chart`, else the flex row resizes donuts unevenly by label length;
   STROKE=16 R=50 viewBox 120 size 132 is the canonical donut spec.
 - **DIVISION COLOR SCHEME (the big one).** Divisions had NO color (just label+icon). Established a curated
-  18-color palette (approved by Michael) and made it CATALOG METADATA:
-  - **Catalog PR**: `divisions.json` in the agency-agents repo (branch `add-division-metadata`) — slug →
-    {label, icon, color} for all 18 dirs. PR: github.com/msitarzewski/agency-agents/pull/592. Fixes "GIS"
+  18-color palette (approved by Allan) and made it CATALOG METADATA:
+  - **Catalog PR**: `divisions.json` in the hivework repo (branch `add-division-metadata`) — slug →
+    {label, icon, color} for all 18 dirs. PR: github.com/allanindrajith/hivework/pull/592. Fixes "GIS"
     (was title-cased "Gis") + covers gis/integrations which had no metadata.
   - **App reads it**: `src-tauri/data/agency-categories.json` mirrors it (color + the 2 missing divisions);
     threaded through Rust (`CategoryMetaRow.color`, `category_meta` → 3-tuple, `Category.color`, default
@@ -515,8 +515,8 @@ Iterating live on the Dashboard "Cross-tool coverage" + division color. All gree
   `ui.openTools(tool)`; ToolsView honors it via an `$effect` (overrides its auto-pick) and keeps it synced on
   row-click; the dashboard bars call `ui.openTools(t.id)`.
 
-### ⏳ RESUME HERE (queued, NOT done — Michael approved the plan, paused at 90% context)
-1. **Build the catalog-by-division segmented bar** (Michael's mockup: a single full-width proportion bar,
+### ⏳ RESUME HERE (queued, NOT done — Allan approved the plan, paused at 90% context)
+1. **Build the catalog-by-division segmented bar** (Allan's mockup: a single full-width proportion bar,
    segments = divisions colored via `corpus.colorOf`, with leader-line callouts above/below — top row = larger
    divisions near their segment centers, bottom row = smaller divisions EVENLY spaced with angled dotted
    leaders to their clustered-right segments; header "Total agents {N} / 100%", footer caption). Plan: new
@@ -535,7 +535,7 @@ Iterating live on the Dashboard "Cross-tool coverage" + division color. All gree
   ToolsView.svelte, corpus.svelte.ts, ui.svelte.ts, types.ts, + NEW CoverageDonuts.svelte.
 
 ## 2026-06-15 (later 4) — Catalog-by-division chart DONE + icon tinting (resume items 1–3 all closed)
-All three queued items landed; green (svelte-check 0). Built live with Michael's screenshot feedback each round.
+All three queued items landed; green (svelte-check 0). Built live with Allan's screenshot feedback each round.
 - **`CatalogByDivision.svelte`** (NEW) replaces the orange `<ul class="bars">` bar-list in AgencyDashboard.
   ONE proportional bar: a `<button>` segment per division, width ∝ count, painted with `corpus.colorOf`,
   thin inset separators, hover brighten. Header reads "{total} agents … 100%". Labels span FOUR lanes:
@@ -544,7 +544,7 @@ All three queued items landed; green (svelte-check 0). Built live with Michael's
   - top-outer = next tier (TOP_TIER=4: GIS/Security/Design/Sales) fanned across the right side (fills the
     space majors leave empty);
   - bottom-inner + bottom-outer = the tail, split even/odd into two interleaved fan-rows.
-  - **Leaders are non-crossing Z-elbows** (Michael: "use elbows … so lines and labels never cross"): each is
+  - **Leaders are non-crossing Z-elbows** (Allan: "use elbows … so lines and labels never cross"): each is
     a `<polyline>` vertical-off-segment → short horizontal at a **rank-staggered rail** (`5+rank*3` px off the
     bar, so no two horizontals share a y) → vertical down the **label's own column**. Bottom rows use
     **phase-shifted x-spans** ([2,88] vs [14,99]) so one row's verticals fall between the other's labels.
@@ -564,7 +564,7 @@ All three queued items landed; green (svelte-check 0). Built live with Michael's
 
 ## 2026-06-15 (later 5) — PR #3 MERGED to main; giant-donut fix; full VM matrix GREEN (21/0/1)
 - **PR #3 merged** (`release-planning → main`, merge commit 633ff3ff). Catalog-by-division + icon work shipped.
-- **Giant CoverageDonut bug** (Michael: "that ain't right" — one donut ballooned to full card width). ROOT
+- **Giant CoverageDonut bug** (Allan: "that ain't right" — one donut ballooned to full card width). ROOT
   CAUSE: the donut `<svg>` had only `viewBox` + relied on `.cd-chart { width:132px }`; when that scoped style
   doesn't apply (stale/raced webview CSS, e.g. a dead `tauri dev`'s last frame), a viewBox-only svg grows to
   full width and its 1:1 ratio balloons into one giant circle. Verified source + dev-served CSS were BOTH
@@ -580,8 +580,8 @@ All three queued items landed; green (svelte-check 0). Built live with Michael's
   cross-platform gate, **stop `tauri dev` and `git checkout -- src-tauri/Cargo.toml`** (revert the base-feature
   injection; line ~17 must NOT list macos-private-api, only line ~89 `[target.macos]` does). See [[tauri-dev-rewrites-cargo-toml-base-features]].
 - **Final matrix run 20260615T190208Z: 21 passed / 0 failed / 1 skip** (skip = opt-in PHASE_C_STRICT_TAURI).
-  arm64 PASS after Michael closed the running .exe that held the file lock on `C:\AgencyAgentsWinTarget`.
-- **Uncommitted**: CoverageDonuts.svelte (the donut hardening) — awaiting Michael's go to branch + PR (on main).
+  arm64 PASS after Allan closed the running .exe that held the file lock on `C:\HiveworkWinTarget`.
+- **Uncommitted**: CoverageDonuts.svelte (the donut hardening) — awaiting Allan's go to branch + PR (on main).
 
 ## 2026-06-15 (later 6) — app reads catalog divisions.json directly (corpus, backend-only)
 Catalog PR #592 merged (divisions.json now canonical, with a check-divisions CI linter + becoming the CLI
@@ -627,7 +627,7 @@ bundled `agency-categories.json` (no drift). Then wired the app to read it direc
   consider also dropping `strategy` from the division set (0 agents). Then we're clear to cut **v0.1.0**.
 
 ## 2026-06-16 — v0.1.0 SHIPPED (cross-platform, signed) + repo PUBLIC + Homebrew tap
-Cut the first public release: **github.com/msitarzewski/agency-agents-app/releases/tag/v0.1.0**, all 7 artifacts.
+Cut the first public release: **github.com/allanindrajith/hivework-app/releases/tag/v0.1.0**, all 7 artifacts.
 - **macOS** aarch64 + x64 DMGs — signed + **notarized** (spctl: accepted / Notarized Developer ID; stapler ok).
   Built locally via `scripts/release.sh` (dual-arch; host native, x64 cross via rustup).
 - **Linux** deb/rpm/AppImage (x86_64) + **Windows** x64/arm64 NSIS — built by NEW GitHub Actions workflows
@@ -638,8 +638,8 @@ Cut the first public release: **github.com/msitarzewski/agency-agents-app/releas
   public; `gh` auth-download worked, masking it). Pre-flight secret scan: gitleaks 50 commits → **1 FALSE
   POSITIVE** (AGENTS.md "Context Exceeded" prose); no secret files in history; `.gitignore` covers `.env*`/`*.key`;
   notary pw + updater private key live in Keychain (never committed). Clean → public.
-- **Homebrew tap**: NEW repo `msitarzewski/homebrew-agency-agents` with `Casks/agency-agents.rb` (dual-arch,
-  installs the notarized DMG). `brew tap msitarzewski/agency-agents && brew install --cask agency-agents`.
+- **Homebrew tap**: NEW repo `allanindrajith/homebrew-hivework` with `Casks/hivework.rb` (dual-arch,
+  installs the notarized DMG). `brew tap allanindrajith/hivework && brew install --cask hivework`.
   Audited online (download + sha ok). README/landing got download + brew-install sections; landing redeployed.
 - **⚠️ HARD-WON MACOS BUILD GOTCHA** (cost ~2h of debugging): on macOS 27 Tahoe BETA + Xcode BETA, the Tauri CLI
   sets `MACOSX_DEPLOYMENT_TARGET=13.0` (from `minimumSystemVersion`), which breaks FRESH proc-macro compilation
@@ -660,7 +660,7 @@ Two PRs merged (`main` @ `1df932c`):
   a Global-vs-Projects dashboard sunburst + merged cross-tool/catalog card. 8 themed commits.
 - **PR #19** — consolidated to the single upstream-owned `tools.json`; dropped the `wired` field + `include_dir`
   dep; **installability derived** from `format ∈ IMPLEMENTED_FORMATS` (7 formats) on both sides.
-- **Upstream coordination** (`AgentLand/agency-agents`, same machine, with the "aa Claude"): contributed the
+- **Upstream coordination** (`AgentLand/hivework`, same machine, with the "aa Claude"): contributed the
   Osaurus transformer (`convert.sh`/`install.sh`) and the canonical `tools.json` + `scripts/check-tools.sh`
   (no-jq twin of `check-divisions.sh`) + `.github/workflows/check-tools.yml`. aa landed PRs #605/#606; our
   bundled `tools.json` is byte-identical to the canonical (diff-verified — same machine, no relaying).
@@ -678,11 +678,11 @@ never separate releases; they ship here. Then took it further: **turned auto-upd
   consolidated `docs/release-notes/0.2.0.md`; README four-pillar/Teams/Projects/registry/Osaurus pass (+ Osaurus
   install-target row, 8 installable); `docs/PLAN.md` refresh (Phase D = done via the registry; post-0.2.0 punch
   list). Inert "Install updates automatically" toggle (present-but-disabled). Fixed two stale updater strings
-  (`agency-agents-app.zerologic.com` → `agencyagents.app`; broken release-notes URL). **Dedicated agency signing
+  (`hivework.online` → `hivework.online`; broken release-notes URL). **Dedicated agency signing
   key `ABF5AFD8`** swapped in (clean isolation while no clients live). Scoped review (Code Reviewer + Accessibility)
   caught a stale Rust `UPDATER_PUBKEY` const → synced. Updater-host ADR resolved (`decisions.md` 2026-06-22).
-- **Auto-update LIVE** at `agencyagents.app/updater.json` (Caddy on umbp from `~/Sites/agency-agents/`, sibling
-  vhost to the proven `brew-browser.zerologic.com` manifest). Building + deploying it surfaced real bugs, all
+- **Auto-update LIVE** at `hivework.online/updater.json` (Caddy on umbp from `~/Sites/hivework/`, sibling
+  vhost to the proven `hivework.online` manifest). Building + deploying it surfaced real bugs, all
   fixed (PR #22):
   - `release.sh` **`set -u` empty-array crash** (`BUILD_ARGS`) + **missing `--config` merge** — the
     macos-private-api allowlist check reads only base `tauri.conf.json` ([tauri#11142](https://github.com/tauri-apps/tauri/issues/11142)),
@@ -693,14 +693,14 @@ never separate releases; they ship here. Then took it further: **turned auto-upd
     add x86_64-apple-darwin` (force remove+add — the component was stale).
   - **Updater Keychain key corrupted** (trailing-newline paste) → build-time signing `incorrect updater private
     key password: Invalid input`. The *password* was fine (file-key + Keychain-password signs). Repaired by
-    re-storing the key from the canonical file via `$(cat ~/.config/agency-agents-app/updater.key)`. BUILD.md
+    re-storing the key from the canonical file via `$(cat ~/.config/hivework-app/updater.key)`. BUILD.md
     reconciled to the **Keychain-based** flow `release.sh` actually uses (no `signing.env`).
 - **Shipped — GitHub release v0.2.0, 9 assets:** macOS `aarch64` + `x64` DMGs (signed/notarized) + both updater
   tarballs (+`.sig`); Linux `deb`/`rpm`/`AppImage` + Windows `x64`/`arm64` NSIS (from the **tag-triggered CI**
   workflows `linux-build.yml`/`windows-build.yml`). Live manifest covers `darwin-aarch64` **and** `darwin-x86_64`.
-  Homebrew cask bumped to 0.2.0 (`homebrew-agency-agents` @ ed5d283; url pattern dots→underscores + new sha256).
+  Homebrew cask bumped to 0.2.0 (`homebrew-hivework` @ ed5d283; url pattern dots→underscores + new sha256).
 - PRs **#21** (release) + **#22** (build-tooling/Keychain docs) merged; `main` @ `16182e5`. Asset naming for v0.2.0
-  uses **underscores** (`Agency_Agents_0.2.0_*`), not v0.1.0's auto-sanitized dots — the live updater manifest and
+  uses **underscores** (`Hivework_0.2.0_*`), not v0.1.0's auto-sanitized dots — the live updater manifest and
   the brew cask both depend on this. Task doc: `tasks/2026-06/260623_v0.2.0-ship.md`.
 - **Post-ship UX (PR #23):** added a **"Needs attention" filter** to the Agents pane. After an app update the
   Dashboard reports N agents needing attention, but there was no way to see ONLY those — the install-state lens

@@ -1,6 +1,6 @@
 //! Deterministic per-tool agent renderers + destination-path resolution.
 //!
-//! Ports agency-agents `scripts/convert.sh`. Every renderer is a PURE function
+//! Ports hivework `scripts/convert.sh`. Every renderer is a PURE function
 //! of `(Agent, raw source)` — no timestamps, no randomness, stable key order —
 //! so `rendered_hash` is reproducible. That reproducibility is the load-bearing
 //! requirement for install-state reconciliation (`reconcile/`): we identify an
@@ -123,7 +123,7 @@ fn unquote_scalar(raw: &str) -> String {
 
 /// Match `body="$(get_body "$file")"` from the upstream converter: skip only
 /// the two `---` lines that fence the frontmatter. Later `---` lines are
-/// Markdown horizontal rules and belong to the body (agency-agents #891).
+/// Markdown horizontal rules and belong to the body (hivework #891).
 /// `awk` emits one newline per body line and command substitution strips
 /// every trailing newline before the heredoc adds exactly one back.
 fn source_body(source: &str) -> String {
@@ -147,7 +147,7 @@ fn source_body(source: &str) -> String {
 
 /// Match `convert.sh#yaml_quote`: a single-quoted YAML scalar with embedded
 /// apostrophes doubled. Unquoted, a description containing `: ` is invalid
-/// frontmatter (agency-agents #778).
+/// frontmatter (hivework #778).
 fn yaml_quote(value: &str) -> String {
     format!("'{}'", value.replace('\'', "''"))
 }
@@ -155,7 +155,7 @@ fn yaml_quote(value: &str) -> String {
 /// Match `convert.sh#qwen_tools`: rename a source agent's Claude Code tool list
 /// to Qwen Code's canonical tool names. Qwen resolves a subagent's tools by
 /// exact name or display name only, so `Read`, `Write` and `Bash` would match
-/// nothing and grant nothing (agency-agents #965). Unknown names (MCP tools,
+/// nothing and grant nothing (hivework #965). Unknown names (MCP tools,
 /// names Qwen already knows) pass through; duplicates collapse.
 fn qwen_tools(tools: &str) -> String {
     let mut out: Vec<String> = Vec::new();
@@ -390,7 +390,7 @@ pub fn dests(
         .collect())
 }
 
-/// Map an agency-agents `color` (named or hex) to an OpenCode-safe `#RRGGBB`
+/// Map an hivework `color` (named or hex) to an OpenCode-safe `#RRGGBB`
 /// (uppercase). Unknown → neutral gray. Ported from `resolve_opencode_color`.
 fn resolve_opencode_color(color: &str) -> String {
     let c = color.trim().to_ascii_lowercase();
@@ -587,7 +587,7 @@ mod tests {
         assert_eq!(source_field(source, "name"), "Quoted Name");
         assert_eq!(source_field(source, "description"), "has: colon");
         // get_body: only the two frontmatter fences are skipped; a later `---`
-        // is a horizontal rule and stays in the body (agency-agents #891).
+        // is a horizontal rule and stays in the body (hivework #891).
         assert_eq!(source_body(source), "Body\n---\nTail");
         assert_eq!(slugify("FP&A / QA"), "fp-a-qa");
     }
@@ -701,10 +701,10 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "requires AGENCY_AGENTS_PARITY_ROOT and executes upstream convert.sh"]
+    #[ignore = "requires HIVEWORK_PARITY_ROOT and executes upstream convert.sh"]
     fn upstream_convert_sh_is_byte_identical_for_transform_tools() {
-        let root = std::env::var("AGENCY_AGENTS_PARITY_ROOT")
-            .expect("set AGENCY_AGENTS_PARITY_ROOT to an agency-agents clone");
+        let root = std::env::var("HIVEWORK_PARITY_ROOT")
+            .expect("set HIVEWORK_PARITY_ROOT to an hivework clone");
         let root = PathBuf::from(root);
         let script = root.join("scripts/convert.sh");
         assert!(script.is_file(), "missing {}", script.display());

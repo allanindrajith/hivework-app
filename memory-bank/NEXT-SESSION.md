@@ -7,10 +7,10 @@ Linux and Windows CI green on its exact head — and merging it is step one.
    **#81** (RTL: `main` has no direction handling at all; the Farsi UI only looked right because browsers apply bidi
    to Arabic script).
 2. **Build the Mac DMGs here** — `scripts/release.sh`. Developer ID and the notarisation password come from the
-   Keychain (`agency-agents-notary`), so this step cannot run on CI. Both architectures.
+   Keychain (`hivework-notary`), so this step cannot run on CI. Both architectures.
 3. **Tag `v0.3.1`, cut the release**: two DMGs from this machine, deb/rpm/AppImage and two `-setup.exe` from CI.
 4. **Bump the Homebrew cask** — `version` plus both `sha256`, computable only once the DMGs exist. The tap is
-   `msitarzewski/homebrew-agency-agents`; the `verified:` deprecation is already fixed at `551d6eb`.
+   `allanindrajith/homebrew-hivework`; the `verified:` deprecation is already fixed at `551d6eb`.
 5. **Then #100** (`cargo fmt`, 18 files) — last, so it conflicts with nothing. Turn on `cargo fmt --check` in
    `pr-check.yml` in the same commit, not before.
 
@@ -119,8 +119,8 @@ baked in its own frame/gloss/shadow, wrong shape for the OS-applied Liquid Glass
 v0.1.1 IA re-org (divisions landing, Teams, Projects pillar, the single InstallModal grid + DeployBrowser) and
 v0.1.2 tool-registry/Osaurus/Playbook arc, **plus LIVE auto-update**. 9 release assets across macOS (aarch64+x64,
 signed/notarized) / Linux (deb/rpm/AppImage) / Windows (x64/arm64); Homebrew cask @ 0.2.0. Auto-update is live at
-`agencyagents.app/updater.json` for **both Mac arches** — dedicated agency signing key `ABF5AFD8` (private key +
-password in the macOS **Keychain**; canonical backup `~/.config/agency-agents-app/updater.key`).
+`hivework.online/updater.json` for **both Mac arches** — dedicated agency signing key `ABF5AFD8` (private key +
+password in the macOS **Keychain**; canonical backup `~/.config/hivework-app/updater.key`).
 **Release-build gotchas (hard-won, now in `BUILD.md` + `release.sh`):** updater-on macOS builds must pass a
 `--config` (the macos-private-api allowlist reads only base `tauri.conf.json` — tauri#11142); Intel cross-compile
 needs the **rustup** toolchain (Homebrew rust is host-only); store the updater Keychain key via `$(cat …)` not a
@@ -146,7 +146,7 @@ Don't trust the numbers below blindly post-re-org; re-run the report (see "Diagn
 
 ## TL;DR
 Native macOS app (Tauri 2 · Svelte 5 runes · Rust) — "app store for AI agents." Browses the
-agency-agents catalog and installs/tracks agents across AI tools. The app IS the cross-tool install
+hivework catalog and installs/tracks agents across AI tools. The app IS the cross-tool install
 registry. **State: the install-management loop is real and working.** Signed + notarized build works.
 
 ## How to run / critical env facts
@@ -155,13 +155,13 @@ registry. **State: the install-management loop is real and working.** Signed + n
   build`; `npm run check` (0 errors; the only warning is a benign tsconfig `node` note). Full Phase C
   gate: `npm run build:phase-c` (adds the parity test + config validation; `:full` adds the VM matrix).
 - **Active catalog source = a USER CLONE**, persisted in
-  `~/Library/Application Support/com.zerologic.agency-agents-app/state/catalog.json`:
-  `{"kind":"userClone","path":"/Users/michael/Software/AgentLand/agency-agents","manage":true}`.
+  `~/Library/Application Support/com.hivework.app/state/catalog.json`:
+  `{"kind":"userClone","path":"/Users/michael/Software/AgentLand/hivework","manage":true}`.
   So the app reads/compares against THAT clone, not the bundled baseline.
-- App data dir (FIXED this session — was wrongly `…/brew-browser/`): all under
-  `~/Library/Application Support/com.zerologic.agency-agents-app/` → `state/{catalog.json,
+- App data dir (FIXED this session — was wrongly `…/hivework-app/`): all under
+  `~/Library/Application Support/com.hivework.app/` → `state/{catalog.json,
   corpus-index.json,corpus-meta.json,installs.json}`, `corpus/` (bundled only), `backups/`, `settings.json`.
-- Michael's reality: ~184 agents installed via the CLI `install.sh` into `~/.claude/agents/`
+- Allan's reality: ~184 agents installed via the CLI `install.sh` into `~/.claude/agents/`
   (Claude Code). Report: 157 byte-identical (→ shown `current`), 8 divergent (repo is NEWER → use
   Update), 19 nested (now indexed after the recursion fix).
 
@@ -201,7 +201,7 @@ new `tauri.macos.conf.json` override re-adds `macOSPrivateApi` + `transparent` +
    The `--ignored` test `upstream_convert_sh_is_byte_identical_for_transform_tools` shells out to the
    REAL `scripts/convert.sh` and diffs every transform tool: **232 agents × 5 tools = 1160/1160
    byte-identical** (Cursor `.mdc`, Codex TOML, Gemini, opencode, qwen). State correctness is proven.
-   To re-run: `AGENCY_AGENTS_PARITY_ROOT=/Users/michael/Software/AgentLand/agency-agents cargo test
+   To re-run: `HIVEWORK_PARITY_ROOT=/Users/michael/Software/AgentLand/hivework cargo test
    --manifest-path src-tauri/Cargo.toml --lib upstream_convert_sh_is_byte_identical_for_transform_tools
    -- --ignored --nocapture` (or `npm run build:phase-c`).
 2. **uninstall backup decision — RESOLVED: recoverable ✕.** `remove_agent_files` runs a backup-first
@@ -212,7 +212,7 @@ new `tauri.macos.conf.json` override re-adds `macOSPrivateApi` + `transparent` +
    `uninstall_backup_failure_preserves_original`, …).
 
 ## Backlog (not immediate)
-- **Local-runtime system-prompt target (NEW, Michael 2026-06-08)**: a separate target CLASS for model
+- **Local-runtime system-prompt target (NEW, Allan 2026-06-08)**: a separate target CLASS for model
   runtimes — Ollama (`Modelfile` `SYSTEM "…"`) and LM Studio (preset/system prompt) — where an agent is
   deployed as the model's system prompt, not a per-tool agents/*.md. Needs its OWN renderer + a runtime
   locator + a reconcile story (no agents dir to scan; track the generated Modelfile/preset). NOT a missing
@@ -225,7 +225,7 @@ new `tauri.macos.conf.json` override re-adds `macOSPrivateApi` + `transparent` +
   `isBrewError` / `BrewStreamEvent` type names + dead codes in `types.ts`; `reportIssue.ts` shell-exit
   semantics; leftover `tools/` brew pipeline in the tree. `catalog_auto_refresh` has NO scheduler (dead).
 - Updater: minisign key NOT set up (builds run `SKIP_UPDATER=1`). Endpoint placeholder
-  `agency-agents-app.zerologic.com/updater.json`. `updater.pubkey` in tauri.conf is a placeholder.
+  `hivework.online/updater.json`. `updater.pubkey` in tauri.conf is a placeholder.
 
 ## What's built + working (this session's arc)
 - **Catalog-as-source-of-truth (#1)**: CatalogSource {bundled|managed|userClone}; detect / provision
@@ -242,15 +242,15 @@ new `tauri.macos.conf.json` override re-adds `macOSPrivateApi` + `transparent` +
   installed tools (state-dotted) + a "USE WITH" disclosure where user tools toggle via `Switch.svelte`
   and project tools (Cursor/opencode) keep Install/Add-project + per-project sub-rows; Diff (`DiffModal`
   + `util/diff.ts`) / Track / Update inline when applicable. `PersonaDiscover` + `AgentLibrary` deleted.
-- **Settings refocused** to Agency Agents (Network/GitHub/About/Appearance/Updates rewritten; dead brew
+- **Settings refocused** to Hivework (Network/GitHub/About/Appearance/Updates rewritten; dead brew
   toggles removed). **`BrewError`→`AppError`** rename + dead-code purge (0 warnings).
 - **Window/panel persistence**: resizable + persisted sidebar + agent-detail panel; window geometry
   saves on resize (survives dev kills).
 - **Install-into = multi-select** with remembered selection (`PersonaDiscover`).
 - **Signed + notarized build WORKS**: `scripts/release.sh` (pulls notary pw + updater key from
   Keychain). `SKIP_UPDATER=1 ./scripts/release.sh` → Gatekeeper-accepted, notarized, stapled
-  `Agency Agents.app` + signed `.dmg`. Notary creds: keychain service `agency-agents-notary`, account
-  `msitarzewski@mac.com`, **Team `7JQGQ7CRH8`**, Apple ID `msitarzewski@mac.com`. Developer ID cert is
+  `Hivework.app` + signed `.dmg`. Notary creds: keychain service `hivework-notary`, account
+  `allanindrajith@mac.com`, **Team `YOUR_APPLE_TEAM_ID`**, Apple ID `allanindrajith@mac.com`. Developer ID cert is
   in the keychain. `.gitignore` hardened for signing secrets.
 - **Icon**: new white-glyph-on-purple icon shipped (`src-tauri/icons/*`, flat). Liquid Glass layered
   source staged in `docs/icon/` (`AppIcon.icon` validates with actool; `layers/`) for macOS 26 Tahoe —
@@ -263,7 +263,7 @@ new `tauri.macos.conf.json` override re-adds `macOSPrivateApi` + `transparent` +
   For transform tools this only works if parity holds.
 - **Recursive indexing**: `build_from_dir` + `read_source` recurse; bundled baseline is flat (count
   unchanged 209), real clones nest.
-- **Can't self-screenshot the app** — ask Michael.
+- **Can't self-screenshot the app** — ask Allan.
 - Dev Dock label = binary name; only a real `tauri build` makes it match productName.
 
 ## Diagnostics (re-run after the re-org)
@@ -274,7 +274,7 @@ for the exact script — it found 157 identical / 8 divergent / 19 nested-unknow
 
 ## Key files
 - Backend: `src-tauri/src/{corpus,render,install,github,util}/`, `state.rs`, `types.rs`, `error.rs`
-  (now `AppError`), `lib.rs`. Tauri: `src-tauri/tauri.conf.json` (id com.zerologic.agency-agents-app,
+  (now `AppError`), `lib.rs`. Tauri: `src-tauri/tauri.conf.json` (id com.hivework.app,
   port 1430, signingIdentity, updater endpoint placeholder).
 - Frontend: `src/lib/components/{AgentsWorkspace,PersonaBody,DeploymentMatrix,Switch,DiffModal,
   CatalogFirstRun,SettingsSectionCatalog,Sidebar,ResizeHandle}.svelte`,

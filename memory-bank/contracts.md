@@ -1,4 +1,4 @@
-# Build Contract — Agency Agents
+# Build Contract — Hivework
 
 > The canonical interface spec. Every agent/teammate building a module codes against
 > THIS. Types are the wire format between Rust (`serde`) and the Svelte frontend (`src/lib/types.ts`).
@@ -60,7 +60,7 @@ struct ToolInfo {            // for the Tools section
 }
 ```
 
-## B. Install-target matrix (authoritative — source: agency-agents `scripts/install.sh`)
+## B. Install-target matrix (authoritative — source: hivework `scripts/install.sh`)
 
 | Tool | enum | scope | dest | format/notes |
 |---|---|---|---|---|
@@ -69,14 +69,14 @@ struct ToolInfo {            // for the Tools section
 | gemini-cli | GeminiCli | user | `~/.gemini/agents/<slug>.md` | md |
 | codex | Codex | user | `~/.codex/agents/<slug>.toml` | **TOML** (convert frontmatter→toml) |
 | qwen | Qwen | user/project | `~/.qwen/agents/` or `.qwen/agents/<slug>.md` | md |
-| openclaw | Openclaw | user | `~/.openclaw/agency-agents/<slug>.md` | md |
+| openclaw | Openclaw | user | `~/.openclaw/hivework/<slug>.md` | md |
 | antigravity | Antigravity | user | `~/.gemini/antigravity/skills/<slug>/` | skill dir |
 | cursor | Cursor | project | `.cursor/rules/<slug>.mdc` | **.mdc** (color→hex) |
 | opencode | Opencode | project | `.opencode/agents/<slug>.md` | md (color→hex) |
 | windsurf | Windsurf | project | `.windsurfrules` (append/managed block) | rules text |
 | aider | Aider | project | `CONVENTIONS.md` | conventions text |
 
-> Per-tool exact conversion rules live in agency-agents `scripts/convert.sh` — port them
+> Per-tool exact conversion rules live in hivework `scripts/convert.sh` — port them
 > verbatim into `render/<tool>.rs`. Each `render` MUST be deterministic & idempotent.
 
 ## C. Tauri commands (the invoke surface — register in `lib.rs`)
@@ -124,5 +124,5 @@ Implemented with modern `$state`/`$derived` runes.
 
 1. Renderers are pure functions of `(Agent, Tool)` — no timestamps, no random, stable key order.
 2. Hash = SHA-256 lowercase hex of UTF-8 bytes.
-3. Frontmatter parsing tolerates the agency-agents format (YAML between `---` fences).
+3. Frontmatter parsing tolerates the hivework format (YAML between `---` fences).
 4. Never write into an agent file we'd classify `Modified` without explicit user confirm.

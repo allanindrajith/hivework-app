@@ -7,7 +7,7 @@ replaces the inherited brew Dashboard.
 ## Outcome
 - ✅ `cargo test` 631 passed / 0 · vite GREEN · verified live (Dashboard renders real data).
 - ✅ Dashboard shows: 210 available · 0 installed-by-you · 0 need-attention · 180 found-to-adopt
-  (the Foreign agents from Michael's install.sh) · catalog-by-category bars · 6 detected tools.
+  (the Foreign agents from Allan's install.sh) · catalog-by-category bars · 6 detected tools.
 
 ## Files
 - `src-tauri/src/install/mod.rs` — `loadout_export(path)` (writes Agentfile JSON from the ledger),
@@ -24,7 +24,7 @@ replaces the inherited brew Dashboard.
 
 ## Notes
 - Agentfile = `{ "agentfile": 1, "installs": [{slug, tool, projectPath}] }` — diffable/shareable.
-- Default landing kept as Agents (personas) per Michael's "catalog is the front door" preference;
+- Default landing kept as Agents (personas) per Allan's "catalog is the front door" preference;
   Dashboard is ⌘0 / first nav item.
 
 ## Next

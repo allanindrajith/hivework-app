@@ -1,7 +1,7 @@
 # 260605_phase1-corpus-discover
 
 ## Objective
-Build the corpus subsystem (the maintained local copy + hash index of the agency-agents repo) and
+Build the corpus subsystem (the maintained local copy + hash index of the hivework repo) and
 the Agents catalog (Discover) view.
 
 ## Outcome

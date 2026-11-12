@@ -30,7 +30,7 @@ live picture.
   three redundant branches.
 - **`cargo fmt` is not clean on `main`** (PR #100 is the fix). Format only files you add; reformatting a file you
   touched buries a 3-line change under ~50 lines of churn and collides with #100.
-- **Deliberately not done:** `reportableToastError()` already exists and would add a "Report to Agency Agents"
+- **Deliberately not done:** `reportableToastError()` already exists and would add a "Report to Hivework"
   button at the toast sites. That is a UX decision, not a bug fix, so it was left for its own PR.
 
 ## Not done — the actual priority

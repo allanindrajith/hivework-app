@@ -39,7 +39,7 @@ contained, cross-platform, and — critically — **deterministic output we can 
 is the prerequisite for state tracking. Load-bearing.
 
 ### 2026-06-05: Corpus-copy model (own the repo locally)
-**Status**: Approved. **Context**: the catalog (agency-agents) is small (3.4MB), git-
+**Status**: Approved. **Context**: the catalog (hivework) is small (3.4MB), git-
 versioned, and changes constantly. **Decision**: maintain our own working copy in app
 support, seeded from a bundled baseline, refreshed from the GitHub **tarball** (no runtime
 git). Derive `corpus-index.json` (hash index) from it. **Consequences**: one decision
@@ -63,13 +63,13 @@ Foreign files. **Consequences**: zero content mutation; respects every tool's fo
 tools install into any dir and are tracked per `project_path` via a Projects registry.
 
 ### 2026-06-05: vulns→Quality, services→Tools, Snapshots→Loadouts
-**Status**: Approved. **Decision**: repurpose brew-browser's opt-in vuln scanner as an
-opt-in lint+originality scanner (agency-agents ships `lint-agents.sh` +
+**Status**: Approved. **Decision**: repurpose hivework-app's opt-in vuln scanner as an
+opt-in lint+originality scanner (hivework ships `lint-agents.sh` +
 `check-agent-originality.sh`); `brew services` view becomes per-tool deployment management;
 Brewfile snapshots become "Agentfile" loadouts.
 
 ### 2026-06-05: Agent catalog = 210 personas / 16 categories (not 251)
-**Status**: Approved. **Context**: the agency-agents repo has ~251 `.md` total, but many are
+**Status**: Approved. **Context**: the hivework repo has ~251 `.md` total, but many are
 docs. The corpus parser's real-baseline test revealed only files with `name:` frontmatter are
 agents. **Decision**: the catalog is the **210** agent personas across **16** categories. The
 repo's `strategy/` (NEXUS playbooks/runbooks) and `examples/` (multi-agent workflow walkthroughs)
@@ -106,7 +106,7 @@ agents). **Consequences**: the ✕ is now reversible for the cases that matter, 
 ### 2026-06-14: First release = v0.1.0, manual DMG, auto-update deferred
 **Status**: Approved (plan only — NOT cutting yet). **Context**: all three manifests already read
 `0.1.0`; signing + notarization are proven; the updater pubkey is real but the endpoint
-(`agency-agents-app.zerologic.com/updater.json`) is not provisioned. **Decision**: ship v0.1.0 as a
+(`hivework.online/updater.json`) is not provisioned. **Decision**: ship v0.1.0 as a
 signed + notarized `.dmg` for manual download, built with `SKIP_UPDATER=1`; defer auto-update to a later
 release once the endpoint serves a manifest. **Out of scope** (documented as known limitations):
 auto-update, multi-file renderers, Windows/Linux runtime verification, local-runtime target.
@@ -115,7 +115,7 @@ auto-update, multi-file renderers, Windows/Linux runtime verification, local-run
 we are NOT cutting now — knocking out final pre-release issues first.
 
 ### 2026-06-15: Repurpose the inherited "Activity" surface into a usage journal
-**Status**: Approved. **Context**: AA inherited brew-browser's "Activity" view (Sidebar ⌘4 + components +
+**Status**: Approved. **Context**: AA inherited hivework-app's "Activity" view (Sidebar ⌘4 + components +
 223-line store) for streaming long-running `brew` jobs — but AA installs are instant native file writes, no
 backend emits `AppStreamEvent`, so the section was fully built yet permanently EMPTY. **Decision**: keep the
 surface but repurpose it as a frontend **journal** of discrete agent actions (install/uninstall/update/track/
@@ -138,20 +138,20 @@ bypassed only when `TAURI_CONFIG` is set, and only with the `false` value). **Co
 green from cold; the Tauri CLI sets its own process-env `TAURI_CONFIG` (precedence over `[env]`), so real
 `tauri dev`/`build` use the merged config (`macOSPrivateApi: true`) — verified `tauri dev` launches clean.
 
-### 2026-06-22: Updater host = `agencyagents.app`; dedicated agency signing key (resolves the OPEN host ADR)
+### 2026-06-22: Updater host = `hivework.online`; dedicated agency signing key (resolves the OPEN host ADR)
 **Status**: Approved (v0.2.0). **Context**: the prior OPEN entry assumed the endpoint would be
-`agency-agents-app.zerologic.com` and that the embedded pubkey was a one-off real key. Tracing the live
+`hivework.online` and that the embedded pubkey was a one-off real key. Tracing the live
 build host settled both. **Decision (host — the important detail)**: the updater endpoint is
-**`https://agencyagents.app/updater.json`**, NOT the `…zerologic.com` host the UI/docs/source comments
+**`https://hivework.online/updater.json`**, NOT the `…hivework.online` host the UI/docs/source comments
 had drifted to. It is already in `tauri.conf.json` `endpoints` + the CSP `connect-src`, and Caddy on
-`umacbookpro` serves `agencyagents.app` from `~/Sites/agency-agents/` (a sibling vhost to the live
-`brew-browser.zerologic.com/updater.json`, so the file_server pattern is proven). Publishing is an
-`rsync` of `dist/updater.json` to `umacbookpro:Sites/agency-agents/updater.json`. **Decision (key)**:
-the embedded pubkey was byte-identical to brew-browser's shared key (id `7335DD0F`); swapped to a
+`hivework.online` serves `hivework.online` from `~/Sites/hivework/` (a sibling vhost to the live
+`hivework.online/updater.json`, so the file_server pattern is proven). Publishing is an
+`rsync` of `dist/updater.json` to `cpanel:~/hivework.online/updater.json`. **Decision (key)**:
+the embedded pubkey was byte-identical to hivework-app's shared key (id `7335DD0F`); swapped to a
 **dedicated agency minisign key** (id `ABF5AFD8`) generated on the build machine — clean signing
 isolation, done now while NO updater client is live (endpoint never served a manifest under
 `SKIP_UPDATER`), so there is zero continuity cost. Private key + `signing.env` live at
-`~/.config/agency-agents-app/` (chmod 600, outside the repo); Apple notarization uses the Developer ID
+`~/.config/hivework-app/` (chmod 600, outside the repo); Apple notarization uses the Developer ID
 identity in the login keychain. The Rust `UPDATER_PUBKEY` const (`lib.rs`) is kept in sync with
 `tauri.conf.json` for documentation only — verification is driven entirely by the conf value the
 `tauri-plugin-updater` reads at startup. **Consequences**: v0.1.0 users (old embedded pubkey, and no
@@ -171,8 +171,8 @@ cloud, Microsoft-managed) — cheap and modern but org must be 3+ yrs old or pas
 (c) **OV cert** — cheaper but reputation warms up over downloads, so early users still get warned. All
 rejected *for now* on cost + weeks-long CA vetting lead time vs. an early, technical Windows audience.
 **Consequences**: Windows users see a one-time SmartScreen click-through until we sign. **Revisit trigger**:
-real Windows download demand → pick EV cert (instant reputation) or Azure Trusted Signing (if ZeroLogic
-qualifies); the cert publisher name should match the legal entity behind bundle id `com.zerologic.*`. Build
+real Windows download demand → pick EV cert (instant reputation) or Azure Trusted Signing (if Hivework
+qualifies); the cert publisher name should match the legal entity behind bundle id `com.hivework.*`. Build
 wiring when we do it: a `tauri.windows.conf.json` (mirroring the macOS split) with
 `bundle.windows.certificateThumbprint`/`signCommand` + `timestampUrl`, build the **NSIS** installer (drop
 `--no-bundle`), sign exe + installer for both arm64 and x64, and verify on the Parallels Windows 11 VM with
@@ -191,7 +191,7 @@ index to forget," the exact thing we're killing). **Consequences**: adding a too
 guard the render output. Load-bearing.
 
 ### 2026-06-21: `tools.json` is upstream-owned; installability is derived app-side
-**Status**: Approved (coordinated with the `agency-agents` catalog repo). **Context**: who owns the canonical
+**Status**: Approved (coordinated with the `hivework` catalog repo). **Context**: who owns the canonical
 tool list? The catalog repo already owns `divisions.json` (validated by a no-jq `check-divisions.sh`), and the
 app is "a respectful frontend over the clone." **Decision**: the catalog repo owns the canonical **`tools.json`**
 (twin of `divisions.json`), CI-guarded by `check-tools.sh` (the no-jq twin of `check-divisions.sh`, enforced by
@@ -229,7 +229,7 @@ on exposed three latent traps that the manual-DMG (`SKIP_UPDATER`) path had alwa
    `PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH"` after `rustup target add x86_64-apple-darwin`.
 3. **The updater signing key lives in the Keychain; store it via `$(cat keyfile)`, never a manual paste.** A
    trailing newline corrupts the stored key and signing fails with `incorrect updater private key password:
-   Invalid input`. The canonical key is the file `~/.config/agency-agents-app/updater.key` (its pubkey is embedded);
+   Invalid input`. The canonical key is the file `~/.config/hivework-app/updater.key` (its pubkey is embedded);
    the Keychain copy must match it byte-for-byte. `release.sh` is fully Keychain-based — no `signing.env`.
 **Consequences**: `release.sh` now signs updater artifacts cleanly with no manual `signer sign -f` step; the next
 release "just works." **References**: `tasks/2026-06/260623_v0.2.0-ship.md`, `~/Downloads/fix-updater-keychain.sh`.

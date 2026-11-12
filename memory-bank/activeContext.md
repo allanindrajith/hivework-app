@@ -39,7 +39,7 @@ No `nghttp2` error. **A harness lesson came with it**: the first capture read em
 
 **Two live bugs found and not yet fixed.**
 - **`PYTHONHOME`/`PYTHONPATH` leak into AppImage children** — the same class as #94 at different variables, and the
-  sanitiser does not cover them. The bundle contains no Python (`usr/bin` holds exactly `agency-agents-app` and
+  sanitiser does not cover them. The bundle contains no Python (`usr/bin` holds exactly `hivework-app` and
   `xdg-open`), so a Python child dies with `ModuleNotFoundError: No module named 'encodings'`. **`aider` is a
   pip-installed CLI and one of the fifteen binaries `probe_version` spawns**, so every AppImage install reports it as
   absent when it is present. Demonstrated with a `#!/usr/bin/env python3` stand-in: rc=0 on the host, rc=1 under the
@@ -125,9 +125,9 @@ not started. 8 open PRs, all mergeable (#81 RTL, #82 healthcare label, #85, #80,
 
 **State**: 🚀 **v0.2.0 SHIPPED (2026-06-23)** — `main` @ `16182e5`. First feature release since the v0.1.0
 launch (the internally-tracked "0.1.1"/"0.1.2" milestones were never cut separately — they ship here), and
-**auto-update is now LIVE** at [`agencyagents.app/updater.json`](https://agencyagents.app/updater.json) for
+**auto-update is now LIVE** at [`hivework.online/updater.json`](https://hivework.online/updater.json) for
 **both Mac arches** (`darwin-aarch64` + `darwin-x86_64`). Release at
-[releases/tag/v0.2.0](https://github.com/hivework/hivework-app/releases/tag/v0.2.0): **9 assets** (macOS
+[releases/tag/v0.2.0](https://github.com/allanindrajith/hivework-app/releases/tag/v0.2.0): **9 assets** (macOS
 aarch64+x64 signed/notarized DMGs **+ updater tarballs**, Linux deb/rpm/AppImage, Windows x64/arm64). Homebrew:
 `brew tap hivework/hivework && brew install --cask hivework` (cask @ 0.2.0). Cross-platform CI in
 `.github/workflows/` (linux-build, windows-build) fires on `v*` tags; macOS DMGs build locally via
@@ -136,10 +136,10 @@ aarch64+x64 signed/notarized DMGs **+ updater tarballs**, Linux deb/rpm/AppImage
 **Workflow (from 2026-06-16):** ALL changes go through a **branch → PR → merge to `main`**. No direct commits to main.
 
 ## ✅ v0.2.0 — first feature release + LIVE auto-update — SHIPPED (2026-06-23, PRs #21 + #22; `main` @ 16182e5)
-- **Auto-update is on.** Endpoint `agencyagents.app/updater.json` (Caddy on `umacbookpro` from `~/Sites/agency-agents/`,
-  sibling vhost to the live `brew-browser.zerologic.com` manifest). **Dedicated agency signing key `ABF5AFD8`**
+- **Auto-update is on.** Endpoint `hivework.online/updater.json` (Caddy on `hivework.online` from `~/Sites/hivework/`,
+  sibling vhost to the live `hivework.online` manifest). **Dedicated agency signing key `ABF5AFD8`**
   (embedded pubkey in `tauri.conf.json`; private key + password in the **macOS Keychain**, services
-  `agency-agents-updater-key` / `…-key-pw`; canonical key file backup at `~/.config/agency-agents-app/updater.key`).
+  `hivework-updater-key` / `…-key-pw`; canonical key file backup at `~/.config/hivework-app/updater.key`).
   Live path = check → notify → one-click install; full hands-off auto-install is still deferred (the
   "Install updates automatically" toggle ships **present-but-disabled**).
 - **Release build gotchas (now fixed + documented in `BUILD.md` / `release.sh` / PR #22):**
@@ -151,7 +151,7 @@ aarch64+x64 signed/notarized DMGs **+ updater tarballs**, Linux deb/rpm/AppImage
     core`). Build with `PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH"`.
   - **Store the updater Keychain key via `$(cat …)`**, never a manual paste — a trailing newline corrupts it and
     signing fails with `incorrect updater private key password: Invalid input`.
-- **Asset naming uses underscores** (`Agency_Agents_0.2.0_*`), NOT v0.1.0's auto-sanitized dots — the live updater
+- **Asset naming uses underscores** (`Hivework_0.2.0_*`), NOT v0.1.0's auto-sanitized dots — the live updater
   manifest and the brew cask url both depend on this.
 - **Post-ship UX (PR #23):** the Agents pane now has a **"Needs attention" filter** (= Outdated ∪ Modified ∪
   Missing). The install-state lens moved into nav (`ui.agentsLens`) so the Dashboard "N need attention" stat +
@@ -162,7 +162,7 @@ aarch64+x64 signed/notarized DMGs **+ updater tarballs**, Linux deb/rpm/AppImage
 
 ## ✅ v0.1.2 — Tool registry + Osaurus + Playbook + Projects dashboard — SHIPPED (2026-06-21, PRs #18 + #19; `main` @ 1df932c)
 **Tool knowledge is now a single source of truth.** It consolidated to the single canonical `tools.json` the
-upstream `agency-agents` repo OWNS (twin of `divisions.json`, CI-guarded by its no-jq `check-tools.sh`); both the
+upstream `hivework` repo OWNS (twin of `divisions.json`, CI-guarded by its no-jq `check-tools.sh`); both the
 Rust backend (`registry.rs`, `include_str!`) and the frontend (`toolRegistry.ts`) read it. **The Rust `Tool` enum
 is GONE** — a tool is a string id; `label`/`detect`/`version`/`dests`/`scope` are registry lookups; `render()`
 dispatches on the JSON `format` key. Frontend deleted ACCENTS/ICONS_SVG/SHORT/hardcoded SUPPORTED_TOOLS.
@@ -182,7 +182,7 @@ dispatches on the JSON `format` key. Frontend deleted ACCENTS/ICONS_SVG/SHORT/ha
   cross-tool coverage **merged** with catalog-by-division (linked hover); uniform donuts, equal-height cards.
 
 Task doc: [tasks/2026-06/260621_tool-registry-12-tools-osaurus.md](tasks/2026-06/260621_tool-registry-12-tools-osaurus.md).
-Green: cargo 264/0, svelte-check 0, build clean. Upstream `agency-agents` (same machine): Osaurus transformer +
+Green: cargo 264/0, svelte-check 0, build clean. Upstream `hivework` (same machine): Osaurus transformer +
 `tools.json` + `check-tools.sh` + `check-tools.yml` landed (aa PRs #605/#606).
 
 ## ✅ v0.1.1 IA arc — SHIPPED (2026-06-17 → 06-20, PRs #15 + #16, + the deploy-browser PR)
@@ -258,7 +258,7 @@ in the shim though it works natively.
 - **Terminology**: user-facing **Category → Division** (catalog repo's term); internal `category` field kept.
 - **Dashboard viz DONE**: replaced the cross-tool matrix with **CoverageDonuts** (one donut per tool,
   sliced by division, shared legend, linked hover); established a curated **division color scheme** as catalog
-  metadata (PR github.com/msitarzewski/agency-agents/pull/592 = `divisions.json`) read via `corpus.colorOf`;
+  metadata (PR github.com/allanindrajith/hivework/pull/592 = `divisions.json`) read via `corpus.colorOf`;
   Dashboard "Coverage by tool" click now selects the tool (`ui.openTools`). **`CatalogByDivision.svelte`** (NEW)
   replaces the orange bar-list: ONE proportional bar (segment per division, brand-colored), labels across FOUR
   lanes (2 top, 2 bottom) tied to segments by **non-crossing Z-elbow leaders** (rank-staggered rails +
@@ -310,7 +310,7 @@ Dev Dock hack REMOVED (lib.rs plain `.run()`, objc2 deps dropped).
 - Nav: `library` section retired everywhere; `ui.agentsFilter` + `ui.openAgents(filter)` deep-link
   (Dashboard cards + palette use it). Section id stayed `personas`.
 - **Byte-identical foreign → `current`**; **recursive indexing**; `agent_diff` + `DiffModal`; Track (safe).
-- Active catalog = **userClone** `/Users/michael/Software/AgentLand/agency-agents` (manage:true).
+- Active catalog = **userClone** `/Users/michael/Software/AgentLand/hivework` (manage:true).
 - **Signed + notarized `.app`/`.dmg`** via `scripts/release.sh` (SKIP_UPDATER=1). 247 Rust tests / 0.
 - 🔵 NEXT: **Phase B** = 4 Dashboard charts (coverage matrix · health donut · category distribution ·
   per-tool coverage), dependency-free SVG/CSS, cells deep-link into the workspace. Then **Phase C** =
@@ -326,12 +326,12 @@ Dev Dock hack REMOVED (lib.rs plain `.run()`, objc2 deps dropped).
   added.** Removed the orphan `integrations/backend-architect-with-memory.md` from the baseline (it's
   a valid-but-misfiled enrichment example; to ship it for real, promote it UPSTREAM into a real
   category — then it flows in via refresh).
-- **#1 slices 2–4 — catalog source**: `CatalogSource` (Bundled | Managed{~/.agency-agents} |
+- **#1 slices 2–4 — catalog source**: `CatalogSource` (Bundled | Managed{~/.hivework} |
   UserClone{path,manage}) in `state/catalog.json`; corpus reads/writes the RESOLVED root. Detect
-  (~/.agency-agents + "Find" scan), provision (git clone or snapshot), pull (git pull or tarball).
+  (~/.hivework + "Find" scan), provision (git clone or snapshot), pull (git pull or tarball).
   First-run picker (`CatalogFirstRun`) + `Settings → Catalog`. Verbs Track/Update, manage-with-
   permission, picker+Find — all as decided. cargo test 275/0; svelte-check 0 err; build green.
-- ⚠️ NOTE: existing installs (incl. Michael's) have no catalog.json → the **first-run picker WILL
+- ⚠️ NOTE: existing installs (incl. Allan's) have no catalog.json → the **first-run picker WILL
   appear** on next launch (by design — one-time source choice; pick "Bundled" to keep current).
 
 > Full plan + sequence: `phases/phase-roadmap.md` (the "v2" block). Detailed resume notes +
@@ -339,9 +339,9 @@ Dev Dock hack REMOVED (lib.rs plain `.run()`, objc2 deps dropped).
 
 ## How to run (dev)
 - `npm run tauri dev` from repo root. **Dev server is on port 1430** (NOT 1420 — that's
-  brew-browser; sharing it makes one app load the other's frontend). HMR for frontend; Rust changes
+  hivework-app; sharing it makes one app load the other's frontend). HMR for frontend; Rust changes
   recompile. The app opens on **Agents** (personas).
-- Reference clones (read-only): `/tmp/brew-browser-inspect`, `/tmp/agency-agents-inspect`.
+- Reference clones (read-only): `/tmp/hivework-app-inspect`, `/tmp/hivework-inspect`.
 
 ## What works (verified)
 - **Agents** catalog (210 agents / 16 categories), search, persona detail with an **Install** menu.
@@ -349,13 +349,13 @@ Dev Dock hack REMOVED (lib.rs plain `.run()`, objc2 deps dropped).
 - **Tools**, **Loadouts** (Agentfile), **Dashboard** (agency rollup), Activity, Settings (⌘,).
 - Backend: `corpus · render · install · github · util · commands{github,settings,updater}`.
   `cargo test` ~265/0; `vite build` + `svelte-check` green; app boots clean (210 corpus seeded).
-- New brain-circuit **app icon** (dark shipped; light master in `docs/icon/`). About window rebranded.
+- New hivework-circuit-hex **app icon** (dark shipped; light master in `docs/icon/`). About window rebranded.
 
-## Immediate next: Michael runs it, then #2 / #3
+## Immediate next: Allan runs it, then #2 / #3
 **#1 slices 1–4 ✅ done.** Remaining for #1 (deferred refinements, non-blocking):
 - `aliases.json` (slug renames across catalog versions) — not yet honored.
 - Explicit **orphan** surfacing (ledger rows whose slug left the catalog) + unique-slug enforcement.
-- `.agency-cache/` convention + add to the agency-agents repo `.gitignore` (cache not yet written).
+- `.agency-cache/` convention + add to the hivework repo `.gitignore` (cache not yet written).
 - Symlink-aware reconcile (the `~/.claude` alias case) — still the old behavior.
 
 Then: **#2 Track-all / Update-all**; **#3 tool-grouped Library IA** (L1 tools+counts → L2 per-tool)
@@ -363,8 +363,8 @@ Then: **#2 Track-all / Update-all**; **#3 tool-grouped Library IA** (L1 tools+co
 
 ## Decisions locked (this session)
 - Build order: **Both, Track first** → Track DONE, now #1.
-- Clone detection: **picker-primary + a "Find Agency Agents" button** (opt-in scan, not auto).
-- Existing clone: **manage-with-permission**. Managed path: **`~/.agency-agents`**.
+- Clone detection: **picker-primary + a "Find Hivework" button** (opt-in scan, not auto).
+- Existing clone: **manage-with-permission**. Managed path: **`~/.hivework`**.
 - Cache dir: `.agency-cache/`. Verbs: **Track / Update**.
 - Categories: **parse from repo tooling** (`AGENT_DIRS` in convert.sh), not a frontmatter heuristic.
 

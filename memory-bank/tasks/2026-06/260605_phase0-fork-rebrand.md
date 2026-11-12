@@ -1,12 +1,12 @@
 # 260605_phase0-fork-rebrand
 
 ## Objective
-Fork the brew-browser scaffold into a new app, "Agency Agents", as the foundation for an
-app-store-for-AI-agents over the agency-agents repo.
+Fork the hivework-app scaffold into a new app, "Hivework", as the foundation for an
+app-store-for-AI-agents over the hivework repo.
 
 ## Outcome
 - ✅ `cargo check` green · `vite build` green
-- ✅ Rebranded: productName "Agency Agents", id `com.zerologic.agency-agents-app`, window title,
+- ✅ Rebranded: productName "Hivework", id `com.hivework.app`, window title,
   CSP (re-pointed to GitHub hosts), Cargo/lib/main, app.html, keychain service id.
 
 ## Files Modified
@@ -16,5 +16,5 @@ app-store-for-AI-agents over the agency-agents repo.
   that domain retires.
 
 ## Notes
-- Reference clones kept read-only: `/tmp/brew-browser-inspect`, `/tmp/agency-agents-inspect`.
+- Reference clones kept read-only: `/tmp/hivework-app-inspect`, `/tmp/hivework-inspect`.
 - Methodology + architecture captured in `memory-bank/{projectbrief,systemPatterns,contracts,decisions}.md`.

@@ -27,13 +27,13 @@ edge highlight, depth, and Light/Dark/Clear/Tinted variants are applied *live by
 the OS* from a **layered** icon authored in **Icon Composer** (`.icon` format).
 A flat `.icns`/PNG (what `tauri icon` produces) is shown literally — no glass.
 
-This folder has everything staged to give Agency Agents the native treatment.
+This folder has everything staged to give Hivework the native treatment.
 
 ## What's here
 
 ```
 layers/
-  Foreground.png         brain-circuit glyph, COLOR, transparent, 1024² (≈71% inset)
+  Foreground.png         hivework-circuit-hex glyph, COLOR, transparent, 1024² (≈71% inset)
   Foreground-white.png   same glyph as a white silhouette (reads great on glass)
   Background.png         deep purple→teal gradient, 1024², full-bleed
   preview-flat.png       flat composite (reference only — NOT the glassed result)
@@ -96,10 +96,10 @@ Info.plist has BOTH `CFBundleIconName` + `CFBundleIconFile`.
 
 ## Regenerating the layers from source art
 
-Source: `brain-circuit.svg` (Affinity export). To rebuild the layers:
+Source: `hivework-circuit-hex.svg` (Affinity export). To rebuild the layers:
 
 ```sh
-SVG="/path/to/brain-circuit.svg"
+SVG="/path/to/hivework-circuit-hex.svg"
 rsvg-convert -h 760 "$SVG" -o /tmp/g.png
 magick -size 1024x1024 xc:none /tmp/g.png -gravity center -composite layers/Foreground.png
 magick /tmp/g.png -channel RGB -evaluate set 100% +channel /tmp/gw.png

@@ -25,7 +25,7 @@ cp "$OUT/Assets.car" "$ROOT/src-tauri/Assets.car"
 cp "$OUT/fallback/32x32.png" "$ROOT/static/favicon.png"
 if [ -d "$ROOT/native" ]; then
   cp "$OUT/fallback/icon.icns" "$ROOT/native/AppIcon.icns"
-  cp "$OUT/fallback/icon.icns" "$ROOT/native/Sources/BrewBrowserKit/Resources/AppIcon.icns"
+  cp "$OUT/fallback/icon.icns" "$ROOT/native/Sources/HiveworkKit/Resources/AppIcon.icns"
 fi
 # In-app About-modal asset, both appearances. AboutModal swaps on the app's
 # resolved [data-theme], so the light plate no longer sits in a dark window.

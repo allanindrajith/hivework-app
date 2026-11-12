@@ -13,7 +13,7 @@ Close the two IMMEDIATE backlog items and the deferred Phase C chrome on the
 - ✅ Cross-platform chrome: Tauri config split (base + macOS override).
 - ✅ Tests: cargo 258 passing / 0 failed (+1 `--ignored` parity test, 1/0). svelte-check 0 errors.
   vite build clean.
-- ✅ Review: approved by Michael (commit/push/PR authorized).
+- ✅ Review: approved by Allan (commit/push/PR authorized).
 
 ## Files Modified
 - `src-tauri/src/render/mod.rs` — `source_field` (mirrors `lib.sh#get_field`, literal field:value
@@ -27,7 +27,7 @@ Close the two IMMEDIATE backlog items and the deferred Phase C chrome on the
 - `src-tauri/tauri.conf.json` — cross-platform-safe base (`decorations: true`, opaque, no macOS-only keys).
 - `src-tauri/tauri.macos.conf.json` (NEW) — macOS override: `macOSPrivateApi`, `transparent`,
   `titleBarStyle: Overlay`, `hiddenTitle`, `trafficLightPosition`.
-- `src-tauri/src/lib.rs` — finished brew-browser → Agency Agents rename (env filter, menu event ids,
+- `src-tauri/src/lib.rs` — finished hivework-app → Hivework rename (env filter, menu event ids,
   updater key paths, doc header).
 - `src-tauri/src/commands/settings.rs`, `src/lib/types.ts` — dead brew `Settings` fields purged.
 - Frontend: `TitlebarControls.svelte`, `ToolsView.svelte`, `AgentsWorkspace.svelte`, `ResizeHandle.svelte`,
@@ -44,7 +44,7 @@ Close the two IMMEDIATE backlog items and the deferred Phase C chrome on the
 - **Platform chrome via config split** (not `#[cfg]`): `tauri.macos.conf.json` merges over the base.
 
 ## Verification
-`AGENCY_AGENTS_PARITY_ROOT=/Users/michael/Software/AgentLand/agency-agents cargo test --manifest-path
+`HIVEWORK_PARITY_ROOT=/Users/michael/Software/AgentLand/hivework cargo test --manifest-path
 src-tauri/Cargo.toml --lib upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored
 --nocapture` → `renderer parity: 232 agents, 1160 byte comparisons … ok`. Or `npm run build:phase-c`.
 

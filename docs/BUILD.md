@@ -39,7 +39,7 @@ npm run build
 Renderer parity against the active AA repo:
 
 ```sh
-AGENCY_AGENTS_PARITY_ROOT=../Hivework \
+HIVEWORK_PARITY_ROOT=../Hivework \
 cargo test --manifest-path src-tauri/Cargo.toml upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored
 ```
 
@@ -62,7 +62,7 @@ or an env file. The non-secret `APPLE_ID` / `APPLE_TEAM_ID` are hardcoded in the
    (Sign-In and Security → App-Specific Passwords), stored in the Keychain:
 
    ```sh
-   security add-generic-password -a "<apple-id>" -s "agency-agents-notary" -U -w
+   security add-generic-password -a "<apple-id>" -s "hivework-notary" -U -w
    # paste the app-specific password when prompted
    ```
 
@@ -72,7 +72,7 @@ or an env file. The non-secret `APPLE_ID` / `APPLE_TEAM_ID` are hardcoded in the
    command line:
 
    ```sh
-   xcrun notarytool store-credentials agency-agents --apple-id "<apple-id>" --team-id 7JQGQ7CRH8
+   xcrun notarytool store-credentials hivework --apple-id "<apple-id>" --team-id YOUR_APPLE_TEAM_ID
    ```
 
    `release.sh` checks the profile before building, which also surfaces an expired Apple developer
@@ -84,17 +84,17 @@ or an env file. The non-secret `APPLE_ID` / `APPLE_TEAM_ID` are hardcoded in the
    the Keychain:
 
    ```sh
-   npm run tauri -- signer generate -w ~/.config/agency-agents-app/updater.key
+   npm run tauri -- signer generate -w ~/.config/hivework-app/updater.key
    # paste the PUBLIC key it prints into tauri.conf.json → plugins.updater.pubkey
 
-   security add-generic-password -a agency-agents -s agency-agents-updater-key    -U -w "$(cat ~/.config/agency-agents-app/updater.key)"
-   security add-generic-password -a agency-agents -s agency-agents-updater-key-pw -U -w
+   security add-generic-password -a hivework -s hivework-updater-key    -U -w "$(cat ~/.config/hivework-app/updater.key)"
+   security add-generic-password -a hivework -s hivework-updater-key-pw -U -w
    # (paste the key's password for the second one)
    ```
 
    Store the key via `$(cat …)`, not a manual paste — a stray trailing newline corrupts it and
    signing fails with `incorrect updater private key password: Invalid input`. (Repair script:
-   re-run the `agency-agents-updater-key` line above from the canonical file.)
+   re-run the `hivework-updater-key` line above from the canonical file.)
 
 ### Build
 
@@ -152,11 +152,11 @@ tools/release/publish-manifest.sh <version>
 ```
 
 The updater public key is embedded in the app config/source. The matching private key is read from
-the **Keychain** at build time (`agency-agents-updater-key` + `…-key-pw`); the canonical key file it
+the **Keychain** at build time (`hivework-updater-key` + `…-key-pw`); the canonical key file it
 was generated from is kept outside the repo (chmod 600) as the backup of record:
 
 ```text
-~/.config/agency-agents-app/updater.key
+~/.config/hivework-app/updater.key
 ```
 
 ## Release Checklist
@@ -176,7 +176,7 @@ The ordered runbook for cutting a release. The mechanics referenced here are det
 
    ```sh
    (cd src-tauri && cargo test --lib)                 # expect 258/0
-   AGENCY_AGENTS_PARITY_ROOT=<clone> cargo test --manifest-path src-tauri/Cargo.toml --lib \
+   HIVEWORK_PARITY_ROOT=<clone> cargo test --manifest-path src-tauri/Cargo.toml --lib \
      upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored   # expect 1160/1160
    npm run check                                      # 0 errors
    npm run build                                      # clean
@@ -204,11 +204,11 @@ arches. The release-time flow:
 1. Hosting is provisioned: Caddy serves `hivework.app` from `~/Sites/hivework/`,
    so publishing is an `rsync` of `updater.json` into that docroot.
 2. The signature uses agency's minisign key (public half embedded in `tauri.conf.json`). `release.sh`
-   reads the private key + password from the **Keychain** (`agency-agents-updater-key` / `…-key-pw`) — no
+   reads the private key + password from the **Keychain** (`hivework-updater-key` / `…-key-pw`) — no
    env file is sourced; Apple notarization uses the Developer ID identity in the login keychain.
 3. Build **without** `SKIP_UPDATER`, run `tools/release/publish-manifest.sh <version>`, attach the gzipped
    `.app` tarball(s) to the GitHub release, then `rsync` `dist/updater.json` to
-   `umacbookpro:Sites/agency-agents/updater.json`. `publish-manifest.sh` emits the `darwin-aarch64` entry;
+   `cpanel:~/hivework.online/updater.json`. `publish-manifest.sh` emits the `darwin-aarch64` entry;
    for Intel, sign the x64 `.app.tar.gz` and add a `darwin-x86_64` entry to the manifest by hand.
 
 ## macOS Icon Notes

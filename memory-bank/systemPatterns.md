@@ -38,7 +38,7 @@ scope), `dest` (absolute path written), `source_hash` (corpus version installed 
 Install = **transform frontmatter + write file**, done natively in Rust (no shell/python
 at runtime). Each tool has a deterministic converter: `render(agent, tool) -> (bytes, rendered_hash)`.
 Determinism is REQUIRED so `rendered_hash` is stable and provenance reconciliation works.
-`scripts/convert.sh` in the agency-agents repo is the **reference spec** (color→hex maps,
+`scripts/convert.sh` in the hivework repo is the **reference spec** (color→hex maps,
 `.md`→`.mdc`/TOML, etc.), not a runtime dependency.
 
 ## 4. Reconciliation — the 5 states (this is our `brew list`/`brew outdated`)
@@ -65,7 +65,7 @@ Identity = slug-from-filename, confirmed by re-rendering against our corpus-inde
 - **User-global tools** → fixed `~/…` dests, single global state:
   claude-code (`~/.claude/agents/`), gemini-cli (`~/.gemini/agents/`),
   copilot (`~/.github/agents/` + `~/.copilot/agents/`), qwen (`~/.qwen/agents/`),
-  codex (`~/.codex/agents/`, TOML), openclaw (`~/.openclaw/agency-agents/`),
+  codex (`~/.codex/agents/`, TOML), openclaw (`~/.openclaw/hivework/`),
   antigravity (`~/.gemini/antigravity/skills/`).
 - **Project-scoped tools** → install into ANY directory, tracked per `project_path`:
   cursor (`.cursor/rules/*.mdc`), windsurf (`.windsurfrules`), aider (`CONVENTIONS.md`),

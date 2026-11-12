@@ -12,7 +12,7 @@ This is a pre-1.0 project. Support windows may change as release packaging stabi
 
 ## Reporting A Vulnerability
 
-Please report security vulnerabilities responsibly via GitHub Security Advisories at [GitHub Security](https://github.com/hivework/hivework-app/security/advisories) or privately through GitHub.
+Please report security vulnerabilities responsibly via GitHub Security Advisories at [GitHub Security](https://github.com/allanindrajith/hivework-app/security/advisories) or privately through GitHub.
 
 Please include:
 

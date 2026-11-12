@@ -36,7 +36,7 @@
 #        }
 #   6. Echoes (but does NOT execute) the rsync command the user runs
 #      to publish the manifest to hivework.app via
-#      umacbookpro:Sites/hivework/updater.json (the Caddy docroot
+#      cpanel:~/hivework.online/updater.json (the Caddy docroot
 #      for hivework.app). Publishing is a
 #      deliberate manual step.
 #
@@ -147,12 +147,12 @@ mkdir -p "$DIST_DIR"
 # the manifest generator and the release notes editorial step separate
 # is the simpler shape than wiring CHANGELOG parsing here.
 PUB_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-URL="https://github.com/hivework/hivework-app/releases/download/v${VERSION}/${ARTIFACT_RELEASE_NAME}"
+URL="https://github.com/allanindrajith/hivework-app/releases/download/v${VERSION}/${ARTIFACT_RELEASE_NAME}"
 
 cat > "$MANIFEST_PATH" <<EOF
 {
   "version": "${VERSION}",
-  "notes": "See https://github.com/hivework/hivework-app/releases/tag/v${VERSION} for release notes.",
+  "notes": "See https://github.com/allanindrajith/hivework-app/releases/tag/v${VERSION} for release notes.",
   "pub_date": "${PUB_DATE}",
   "platforms": {
     "darwin-aarch64": {
@@ -173,7 +173,7 @@ echo "  pub_date:   $PUB_DATE"
 echo "  signature:  $(wc -c < "$SIGNATURE_FILE" | tr -d ' ') bytes from $SIGNATURE_FILE"
 echo ""
 echo "next steps (run manually):"
-echo "  1. rsync -av $MANIFEST_PATH umacbookpro:Sites/hivework/updater.json"
+echo "  1. rsync -av $MANIFEST_PATH cpanel:~/hivework.online/updater.json"
 echo "  2. gh release create v${VERSION} \\"
 echo "       src-tauri/target/release/bundle/dmg/Hivework_${VERSION}_aarch64.dmg \\"
 echo "       $ARTIFACT_PATH#${ARTIFACT_RELEASE_NAME} \\"

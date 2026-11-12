@@ -15,7 +15,7 @@
 //! You are a …
 //! ```
 //!
-//! Parsing mirrors the agency-agents `scripts/convert.sh` reference
+//! Parsing mirrors the hivework `scripts/convert.sh` reference
 //! (`get_field` / `get_body`): the frontmatter is everything between the
 //! first two `---` fences; the body is everything after the second
 //! fence. We parse the frontmatter with `serde_yaml` (tolerant of quoted

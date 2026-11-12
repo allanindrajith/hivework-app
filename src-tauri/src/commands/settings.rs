@@ -446,7 +446,7 @@ pub(crate) async fn persist(app_data_dir: &Path, mut settings: Settings) -> Resu
 
     // Defense in depth — ensure the parent dir exists. `AppState::build`
     // already mkdir_p'd it, but a fresh checkout of the app on a system
-    // that's never run Agency Agents could plausibly hit this otherwise.
+    // that's never run Hivework could plausibly hit this otherwise.
     if !app_data_dir.exists() {
         tokio::fs::create_dir_all(app_data_dir).await.map_err(|e| {
             AppError::Io {

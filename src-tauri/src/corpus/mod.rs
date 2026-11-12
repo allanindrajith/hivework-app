@@ -1,11 +1,11 @@
-//! Corpus subsystem (Phase 1) — the maintained copy of the agency-agents
+//! Corpus subsystem (Phase 1) — the maintained copy of the hivework
 //! repo that the whole app reads from.
 //!
 //! ## Source of truth (systemPatterns.md §1)
 //!
 //! ```text
 //! <app_data_dir>/
-//! ├── corpus/                 our maintained copy of the agency-agents repo
+//! ├── corpus/                 our maintained copy of the hivework repo
 //! │   └── <category>/<slug>.md
 //! └── state/
 //!     └── corpus-index.json   slug → CorpusEntry (hashes, category, version)
@@ -47,7 +47,7 @@ use crate::util::process::headless_command;
 // ---------- Constants ----------
 
 /// The division set for the active catalog = the keys of its `divisions.json`
-/// (the canonical division truth the agency-agents repo declares, shared with
+/// (the canonical division truth the hivework repo declares, shared with
 /// the CLI installer and the linters). Read the active root's file when present
 /// (a clone, or the seeded baseline once it carries one); otherwise fall back to
 /// the bundled floor (`agency-categories.json`, itself a mirror of the catalog's
@@ -773,7 +773,7 @@ async fn refresh(app_data_dir: &Path) -> Result<CorpusMeta, AppError> {
         .unwrap_or_else(bundled_division_slugs);
 
     // Extract the category dirs (+ the tooling) into the active catalog root.
-    // The tarball has a single top-level `agency-agents-main/` prefix we strip.
+    // The tarball has a single top-level `hivework-main/` prefix we strip.
     let dir = catalog_root(app_data_dir, &source);
     let extracted = extract_categories(&bytes, &dir, &categories)?;
     if extracted == 0 {
@@ -898,7 +898,7 @@ fn categories_from_tarball(tar_gz: &[u8]) -> Option<Vec<String>> {
 /// Gunzip + untar `tar_gz`, writing every `<category>/<slug>.md` whose category
 /// is in `categories` into `<dest>/<category>/`, plus `scripts/convert.sh` (so
 /// the working copy stays self-describing). The codeload tarball nests
-/// everything under a single `agency-agents-main/` top-level dir, which we
+/// everything under a single `hivework-main/` top-level dir, which we
 /// strip. Returns the count of agent files written.
 ///
 /// Path-traversal safe: we only ever join the *sanitized* `category` +
@@ -925,7 +925,7 @@ fn extract_categories(tar_gz: &[u8], dest: &Path, categories: &[String]) -> Resu
         let path = entry.path().map_err(|e| AppError::Io {
             message: format!("tar entry path: {e}"),
         })?;
-        // Strip the single top-level `agency-agents-main/` component.
+        // Strip the single top-level `hivework-main/` component.
         let comps: Vec<String> = path
             .components()
             .filter_map(|c| match c {
@@ -994,21 +994,9 @@ async fn read_capped(path: &Path, max: u64) -> Result<Vec<u8>, AppError> {
 // Catalog detection / provisioning / pull (#1 clone-as-source-of-truth)
 // =====================================================================
 
-/// `~/.hivework` (or fallback `~/.agency-agents`) — the default managed-catalog location.
+/// `~/.hivework` (or fallback `~/.hivework`) — the default managed-catalog location.
 fn home_agency_dir() -> Option<PathBuf> {
-    dirs::home_dir().map(|h| {
-        let hw = h.join(".hivework");
-        if hw.exists() {
-            hw
-        } else {
-            let aa = h.join(".agency-agents");
-            if aa.exists() {
-                aa
-            } else {
-                hw
-            }
-        }
-    })
+    dirs::home_dir().map(|h| h.join(".hivework"))
 }
 
 /// Is a `git` binary on PATH? Determines clone/pull vs tarball-snapshot.
@@ -1077,9 +1065,9 @@ fn candidate_for(path: &Path, kind: &str) -> Option<CatalogCandidate> {
     })
 }
 
-/// Detect candidate catalogs. Always checks `~/.agency-agents`; when `scan` is
-/// true also walks common dev roots for an `agency-agents` checkout (the "Find
-/// Agency Agents" button). Pure of app state — safe to call anytime.
+/// Detect candidate catalogs. Always checks `~/.hivework`; when `scan` is
+/// true also walks common dev roots for an `hivework` checkout (the "Find
+/// Hivework" button). Pure of app state — safe to call anytime.
 async fn detect_catalogs(scan: bool) -> CatalogDetection {
     let git_available = git_available().await;
     let mut candidates: Vec<CatalogCandidate> = Vec::new();
@@ -1099,18 +1087,17 @@ async fn detect_catalogs(scan: bool) -> CatalogDetection {
     if scan {
         if let Some(home) = dirs::home_dir() {
             for root in SCAN_ROOTS {
-                // Look for `<home>/<root>/hivework` or `agency-agents` and a direct
+                // Look for `<home>/<root>/hivework` or `hivework` and a direct
                 // `<home>/<root>` that is itself a catalog.
                 let base = home.join(root);
                 push(candidate_for(&base.join("hivework"), "userClone"), &mut candidates, &mut seen);
-                push(candidate_for(&base.join("agency-agents"), "userClone"), &mut candidates, &mut seen);
                 // One level of children named with "hivework" or "agency" (cheap heuristic).
                 if let Ok(rd) = std::fs::read_dir(&base) {
                     for ent in rd.filter_map(|e| e.ok()) {
                         let p = ent.path();
                         if p.is_dir() && p.file_name().map(|n| {
                             let s = n.to_string_lossy().to_lowercase();
-                            s.contains("hivework") || s.contains("agency")
+                            s.contains("hivework")
                         }).unwrap_or(false) {
                             push(candidate_for(&p, "userClone"), &mut candidates, &mut seen);
                         }
@@ -1123,7 +1110,7 @@ async fn detect_catalogs(scan: bool) -> CatalogDetection {
     CatalogDetection { git_available, scanned: scan, candidates }
 }
 
-/// Ensure `~/.agency-agents` holds a catalog, cloning (git) or unpacking the
+/// Ensure `~/.hivework` holds a catalog, cloning (git) or unpacking the
 /// snapshot (no git) as needed. Returns the managed root path. Idempotent: if
 /// it already looks like a catalog, this is a no-op (use pull to update).
 async fn provision_managed() -> Result<PathBuf, AppError> {
@@ -1366,13 +1353,13 @@ async fn rebuild_corpus(app: &AppHandle, state: &AppState) -> Result<CorpusMeta,
 }
 
 /// `catalog_detect(scan)` — discover candidate catalogs (always checks
-/// `~/.agency-agents`; `scan=true` also walks common dev roots).
+/// `~/.hivework`; `scan=true` also walks common dev roots).
 #[tauri::command]
 pub async fn catalog_detect(scan: bool) -> Result<CatalogDetection, AppError> {
     Ok(detect_catalogs(scan).await)
 }
 
-/// `catalog_provision_managed()` — clone/snapshot into `~/.agency-agents`, set
+/// `catalog_provision_managed()` — clone/snapshot into `~/.hivework`, set
 /// it as the managed source, and rebuild. The "set one up for me" path.
 #[tauri::command]
 pub async fn catalog_provision_managed(
@@ -1579,7 +1566,7 @@ pub async fn runbooks_list(app: AppHandle) -> Result<Vec<Runbook>, AppError> {
     Ok(file.runbooks)
 }
 
-/// Heuristic: does `root` hold an agency-agents catalog? True if it has the
+/// Heuristic: does `root` hold an hivework catalog? True if it has the
 /// repo tooling or at least one of the canonical category dirs with agents.
 fn looks_like_catalog(root: &Path) -> bool {
     if root.join("scripts").join("convert.sh").exists() {
@@ -1862,7 +1849,7 @@ mod tests {
     /// relative resource path resolves. Divisions come from the bundled floor
     /// (`agency-categories.json`, a mirror of the catalog's `divisions.json`), so
     /// `strategy/` (playbooks/runbooks) is NOT a division and `integrations/`
-    /// (convert.sh output) is NOT either. Counts are pinned to the agency-agents
+    /// (convert.sh output) is NOT either. Counts are pinned to the hivework
     /// snapshot — bump them on a corpus refresh.
     #[tokio::test]
     async fn real_bundled_baseline_parses_completely() {
@@ -1878,7 +1865,7 @@ mod tests {
 
         let corpus = build_from_dir(dir, "baseline-test", &categories).await.unwrap();
 
-        // The baseline is agency-agents main @ d3f71c4 (2026-10-01): every
+        // The baseline is hivework main @ d3f71c4 (2026-10-01): every
         // division's agents, flattened exactly as `corpus_refresh` extracts them.
         assert_eq!(corpus.count(), 296, "all bundled agent personas indexed");
 
@@ -1959,7 +1946,7 @@ echo done
         // No file yet → default Bundled.
         assert_eq!(load_catalog_source(app_data.path()).await, CatalogSource::Bundled);
 
-        let src = CatalogSource::Managed { path: "/Users/x/.agency-agents".into() };
+        let src = CatalogSource::Managed { path: "/Users/x/.hivework".into() };
         save_catalog_source(app_data.path(), &src).await.unwrap();
         assert_eq!(load_catalog_source(app_data.path()).await, src);
 
@@ -1977,8 +1964,8 @@ echo done
             corpus_dir(app_data)
         );
         assert_eq!(
-            catalog_root(app_data, &CatalogSource::Managed { path: "/home/x/.agency-agents".into() }),
-            PathBuf::from("/home/x/.agency-agents")
+            catalog_root(app_data, &CatalogSource::Managed { path: "/home/x/.hivework".into() }),
+            PathBuf::from("/home/x/.hivework")
         );
         assert_eq!(
             catalog_root(app_data, &CatalogSource::UserClone { path: "/src/aa".into(), manage: true }),

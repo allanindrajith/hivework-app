@@ -9,7 +9,7 @@
 #   npm run build:phase-c:full
 #
 # Useful overrides:
-#   AGENCY_AGENTS_PARITY_ROOT=/path/to/agency-agents npm run build:phase-c
+#   HIVEWORK_PARITY_ROOT=/path/to/hivework npm run build:phase-c
 #   PHASE_C_SKIP_MAC_BUILD=1 npm run build:phase-c
 #   PHASE_C_INCLUDE_VMS=1 PHASE_C_UBUNTU_VM=Scratch PHASE_C_WINDOWS_VM="Windows 11" npm run build:phase-c
 
@@ -23,7 +23,7 @@ SCREEN_DIR="$OUT_DIR/screenshots"
 REPORT_MD="$OUT_DIR/phase-c-report.md"
 REPORT_JSONL="$OUT_DIR/phase-c-results.jsonl"
 
-PARITY_ROOT="${AGENCY_AGENTS_PARITY_ROOT:-$ROOT/../Hivework}"
+PARITY_ROOT="${HIVEWORK_PARITY_ROOT:-$ROOT/../Hivework}"
 INCLUDE_VMS="${PHASE_C_INCLUDE_VMS:-0}"
 SKIP_MAC_BUILD="${PHASE_C_SKIP_MAC_BUILD:-0}"
 STRICT_TAURI="${PHASE_C_STRICT_TAURI:-0}"
@@ -117,7 +117,7 @@ run_local_phase_c() {
   run_step "phase c config validation" node tools/phase-c/validate-config.mjs
 
   if [[ -d "$PARITY_ROOT" && ( -x "$PARITY_ROOT/convert.sh" || -x "$PARITY_ROOT/scripts/convert.sh" ) ]]; then
-    run_step "renderer parity against active catalog" env AGENCY_AGENTS_PARITY_ROOT="$PARITY_ROOT" cargo test --manifest-path src-tauri/Cargo.toml --lib upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored --nocapture
+    run_step "renderer parity against active catalog" env HIVEWORK_PARITY_ROOT="$PARITY_ROOT" cargo test --manifest-path src-tauri/Cargo.toml --lib upstream_convert_sh_is_byte_identical_for_transform_tools -- --ignored --nocapture
   else
     skip_step "renderer parity against active catalog" "missing executable convert.sh at $PARITY_ROOT"
   fi
@@ -162,7 +162,7 @@ run_windows_vm() {
     return
   fi
 
-  local win_env='set "CARGO_HOME=C:\CargoSystem" & set "RUSTUP_HOME=C:\Windows\System32\config\systemprofile\.rustup" & set "PATH=C:\Users\michael\.nvm\versions\node\v24.11.1\bin;C:\BuildTools\VC\Tools\Llvm\bin;C:\Windows\System32\config\systemprofile\.cargo\bin;%PATH%"'
+  local win_env='set "CARGO_HOME=C:\CargoSystem" & set "RUSTUP_HOME=C:\Windows\System32\config\systemprofile\.rustup" & set "PATH=C:\Users\developer\.nvm\versions\node\v24.11.1\bin;C:\BuildTools\VC\Tools\Llvm\bin;C:\Windows\System32\config\systemprofile\.cargo\bin;%PATH%"'
 
   run_step "windows vm sync repo" prlctl exec "$WINDOWS_VM" cmd.exe /c 'robocopy \\Mac\hivework-app C:\HiveworkWinTest /MIR /XD .git node_modules .svelte-kit build .phase-c target src-tauri\target /XF .DS_Store Thumbs.db /NFL /NDL /NJH /NJS /NP & if %ERRORLEVEL% LEQ 7 exit /B 0 else exit /B %ERRORLEVEL%'
   run_step "windows vm rust target setup" prlctl exec "$WINDOWS_VM" cmd.exe /c "set \"PATH=C:\\Windows\\System32\\config\\systemprofile\\.cargo\\bin;%PATH%\" & rustup target add x86_64-pc-windows-msvc"
@@ -193,8 +193,8 @@ finish_report() {
 - The Tauri CLI no-bundle smoke is opt-in via \`PHASE_C_STRICT_TAURI=1\`.
 - The Ubuntu bundle command may log an updater-signing warning when VM signing keys are absent; the artifact check is the pass/fail gate for Linux packaging.
 - VM steps assume the prepared Parallels guests and paths used during Phase C:
-  - Ubuntu: \`$UBUNTU_VM\`, repo at \`/root/agency-agents-app\`
-  - Windows: \`$WINDOWS_VM\`, repo at \`C:\\AgencyAgentsWinTest\`
+  - Ubuntu: \`$UBUNTU_VM\`, repo at \`/root/hivework-app\`
+  - Windows: \`$WINDOWS_VM\`, repo at \`C:\\HiveworkWinTest\`
 - Reports are intentionally ignored by git under \`.phase-c/\`.
 EOF
 }

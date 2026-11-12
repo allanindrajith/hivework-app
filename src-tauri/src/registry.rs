@@ -1,7 +1,7 @@
 //! Tool registry — the single source of truth for supported tools.
 //!
 //! Loaded from the embedded `data/tools.json`, a bundled baseline of the
-//! canonical catalog the upstream `agency-agents` repo owns (alongside
+//! canonical catalog the upstream `hivework` repo owns (alongside
 //! `divisions.json`). It carries *upstream truth* — what the CLI converts +
 //! installs — and nothing app-specific. Whether THIS app can install a tool is
 //! derived, not stored: a tool is installable iff we ship a native renderer for

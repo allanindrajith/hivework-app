@@ -4,13 +4,13 @@
 Make tool knowledge a single source of truth (vs. scattered across Rust match arms +
 frontend maps), surface all recognized tools, wire Osaurus end-to-end, and add the
 in-app Playbook + Teams/Projects detail + a Projects-aware dashboard. Then consolidate
-to the upstream-owned canonical `tools.json` so the app and the `agency-agents` CLI
+to the upstream-owned canonical `tools.json` so the app and the `hivework` CLI
 share one contract.
 
 ## Outcome
 - ✅ `cargo test` 264/0 (byte-parity render tests intact), `svelte-check` 0, build clean.
 - ✅ Merged: **PR #18** (registry arc) + **PR #19** (single `tools.json`). `main` @ `1df932c`.
-- ✅ Upstream `agency-agents` (same machine, `AgentLand/`): Osaurus transformer + `tools.json`
+- ✅ Upstream `hivework` (same machine, `AgentLand/`): Osaurus transformer + `tools.json`
   + `check-tools.sh` + `check-tools.yml` landed (aa-side PRs #605/#606; `check-tools.yml` staged).
 
 ## What shipped
@@ -61,7 +61,7 @@ share one contract.
   InstallModal,DeployBrowser,CoverageDonuts,CatalogByDivision,AgencyDashboard,CommandPalette,TitlebarControls}.svelte`,
   `stores/{ui,install}.svelte.ts`, `types.ts` (Tool=string), `routes/+page.svelte`, `assets/tools/*.svg` (NEW).
 - Docs: `docs/USING-AGENTS.md` (NEW), `README.md`.
-- Upstream (`AgentLand/agency-agents`): `scripts/{convert,install}.sh`, `tools.json`, `scripts/check-tools.sh`,
+- Upstream (`AgentLand/hivework`): `scripts/{convert,install}.sh`, `tools.json`, `scripts/check-tools.sh`,
   `.github/workflows/check-tools.yml`.
 
 ## Artifacts
