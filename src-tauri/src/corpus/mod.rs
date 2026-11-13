@@ -218,9 +218,24 @@ impl Corpus {
     /// filename-based identity. Most upstream filenames include a division
     /// prefix while transformed installs use `slugify(frontmatter.name)`.
     pub fn get_by_conversion_slug(&self, slug: &str) -> Option<Agent> {
+        if let Some(a) = self.get(slug) {
+            return Some(a);
+        }
         self.agents
             .iter()
-            .find(|a| crate::render::slugify(&a.name) == slug)
+            .find(|a| {
+                let name_slug = crate::render::slugify(&a.name);
+                let stripped = a
+                    .slug
+                    .strip_prefix("hive-")
+                    .or_else(|| a.slug.strip_prefix("game-studio-"))
+                    .unwrap_or(&a.slug);
+                name_slug == slug
+                    || stripped == slug
+                    || format!("hive-{name_slug}") == slug
+                    || format!("{}-{stripped}", a.category) == slug
+                    || format!("{}-{name_slug}", a.category) == slug
+            })
             .cloned()
     }
 
@@ -463,27 +478,47 @@ pub(crate) fn catalog_root(app_data_dir: &Path, source: &CatalogSource) -> PathB
 /// with `count == 0` so the UI degrades to "no agents" rather than
 /// failing to launch.
 pub async fn resolve_active(app_data_dir: &Path, baseline_dir: &Path) -> Corpus {
-    let source = load_catalog_source(app_data_dir).await;
-    let dir = catalog_root(app_data_dir, &source);
+    let mut source = load_catalog_source(app_data_dir).await;
+    let mut dir = catalog_root(app_data_dir, &source);
 
-    // Only the Bundled source seeds from the baseline (into app data). Managed /
-    // UserClone roots are populated by provisioning (detect/clone/pull) — if one
-    // is empty here it just hasn't been provisioned yet, so we serve what's
-    // there (possibly empty) rather than stamping the baseline over a clone.
-    if matches!(source, CatalogSource::Bundled) && is_empty_dir(&dir) {
+    // Auto-recover from deleted/legacy Managed or UserClone paths (e.g. `.agency-agents`
+    // or a moved directory) so the app never boots into a 0-agent catalog.
+    if !matches!(source, CatalogSource::Bundled)
+        && (!dir.exists()
+            || is_empty_dir(&dir)
+            || !looks_like_catalog(&dir)
+            || dir.to_string_lossy().contains("agency-agents"))
+    {
+        tracing::warn!(
+            "corpus: configured source {:?} at {} is missing or invalid; falling back to Bundled",
+            source,
+            dir.display()
+        );
+        source = CatalogSource::Bundled;
+        let _ = save_catalog_source(app_data_dir, &source).await;
+        dir = catalog_root(app_data_dir, &source);
+    }
+
+    // Ensure the Bundled working copy has all baseline agents (including new divisions
+    // or subdirectories like `game-development/game-studio` added in app updates).
+    if matches!(source, CatalogSource::Bundled) {
         let seed_cats = discover_categories(baseline_dir);
-        if let Err(e) = seed_from_baseline(baseline_dir, &dir, &seed_cats).await {
-            tracing::warn!("corpus: seed from baseline failed: {e}");
+        let baseline_count = quick_agent_count_recursive(baseline_dir, &seed_cats);
+        let current_count = quick_agent_count_recursive(&dir, &seed_cats);
+        if is_empty_dir(&dir)
+            || current_count < baseline_count
+            || !dir.join("strategy").join("runbooks.json").exists()
+        {
+            if let Err(e) = seed_from_baseline(baseline_dir, &dir, &seed_cats).await {
+                tracing::warn!("corpus: seed from baseline failed: {e}");
+            }
         }
     }
 
     // Categories for indexing come from the ACTIVE root's tooling — after the
     // seed (or in a clone) `scripts/convert.sh` lives alongside the agents, so
     // the division set always reflects the catalog actually present.
-    let categories = discover_categories(&dir);
-
-    // Determine the version to stamp the index with: keep whatever a prior
-    // refresh recorded, else the baseline marker.
+    let mut categories = discover_categories(&dir);
     let version = match load_stored_meta(app_data_dir).await {
         Some(m) => m.version,
         None => BASELINE_VERSION.to_string(),
@@ -496,6 +531,19 @@ pub async fn resolve_active(app_data_dir: &Path, baseline_dir: &Path) -> Corpus 
             empty_corpus(&version, &categories)
         }
     };
+
+    // Final safety net: if a non-Bundled source built 0 agents, fall back to Bundled.
+    if corpus.count() == 0 && !matches!(source, CatalogSource::Bundled) {
+        source = CatalogSource::Bundled;
+        let _ = save_catalog_source(app_data_dir, &source).await;
+        dir = catalog_root(app_data_dir, &source);
+        let seed_cats = discover_categories(baseline_dir);
+        let _ = seed_from_baseline(baseline_dir, &dir, &seed_cats).await;
+        categories = discover_categories(&dir);
+        if let Ok(c) = build_from_dir(&dir, &version, &categories).await {
+            corpus = c;
+        }
+    }
 
     // Prefer the catalog's own divisions.json (PR #592) for division label /
     // icon / color, falling back to the bundled metadata for first-run users
@@ -649,10 +697,22 @@ fn is_empty_dir(dir: &Path) -> bool {
     }
 }
 
-/// Copy `<baseline>/<category>/*.md` into `<dest>/<category>/` for each
-/// `category`, plus the repo tooling (`scripts/convert.sh`) so the seeded
-/// working copy can discover its own divisions. Anything else in the baseline
-/// is ignored. Idempotent: re-seeding overwrites file-for-file.
+/// Recursive agent `.md` file count across `categories` under `root`.
+fn quick_agent_count_recursive(root: &Path, categories: &[String]) -> u32 {
+    let mut total = 0u32;
+    for cat in categories {
+        let cat_dir = root.join(cat);
+        if cat_dir.is_dir() {
+            total += collect_md_files(&cat_dir).len() as u32;
+        }
+    }
+    total
+}
+
+/// Copy `<baseline>/<category>/**/*.md` into `<dest>/<category>/` for each
+/// `category`, plus the repo tooling (`scripts/convert.sh`, `divisions.json`,
+/// `strategy/runbooks.json`) so the seeded working copy is self-contained.
+/// Idempotent: re-seeding overwrites file-for-file.
 async fn seed_from_baseline(baseline: &Path, dest: &Path, categories: &[String]) -> Result<(), AppError> {
     if !baseline.exists() {
         return Err(AppError::Io {
@@ -684,13 +744,19 @@ async fn seed_from_baseline(baseline: &Path, dest: &Path, categories: &[String])
 
     // Carry the tooling forward so the seeded copy is self-describing: the
     // category list is then read from the working tree, not just the baseline.
-    let src_script = baseline.join("scripts").join("convert.sh");
-    if let Ok(bytes) = read_capped(&src_script, MAX_AGENT_BYTES).await {
-        let dst_script = dest.join("scripts").join("convert.sh");
-        if let Some(parent) = dst_script.parent() {
-            let _ = tokio::fs::create_dir_all(parent).await;
+    for rel in &[
+        Path::new("scripts").join("convert.sh"),
+        PathBuf::from("divisions.json"),
+        Path::new("strategy").join("runbooks.json"),
+    ] {
+        let src_extra = baseline.join(rel);
+        if let Ok(bytes) = read_capped(&src_extra, MAX_AGENT_BYTES).await {
+            let dst_extra = dest.join(rel);
+            if let Some(parent) = dst_extra.parent() {
+                let _ = tokio::fs::create_dir_all(parent).await;
+            }
+            let _ = atomic_write(&dst_extra, &bytes).await;
         }
-        let _ = atomic_write(&dst_script, &bytes).await;
     }
 
     tracing::info!("corpus: seeded {seeded} agents from baseline");
@@ -1865,9 +1931,9 @@ mod tests {
 
         let corpus = build_from_dir(dir, "baseline-test", &categories).await.unwrap();
 
-        // The baseline is hivework main @ d3f71c4 (2026-10-01): every
-        // division's agents, flattened exactly as `corpus_refresh` extracts them.
-        assert_eq!(corpus.count(), 296, "all bundled agent personas indexed");
+        // The baseline contains all 345 agents across 18 divisions
+        // including nested game-development/game-studio agents.
+        assert_eq!(corpus.count(), 345, "all bundled agent personas indexed");
 
         // Every agent parsed real frontmatter: non-empty name + slug, real category.
         for a in &corpus.agents {
@@ -1888,9 +1954,9 @@ mod tests {
         let count_of = |slug: &str| cats.iter().find(|c| c.slug == slug).map(|c| c.count).unwrap_or(0);
         assert_eq!(count_of("engineering"), 66);
         assert_eq!(count_of("specialized"), 61);
-        // game-development nests agents in unity/, godot/, unreal-engine/ etc.
-        // upstream; a flat seeding would silently undercount these.
-        assert_eq!(count_of("game-development"), 22, "nested game-dev agents included");
+        // game-development nests agents in unity/, godot/, unreal-engine/, and game-studio/
+        // upstream (71 total agents); a flat seeding would silently undercount these.
+        assert_eq!(count_of("game-development"), 71, "nested game-dev agents included");
         // strategy is NOT a division (playbooks/runbooks, no agent frontmatter),
         // so it never appears as one — regardless of what's on disk.
         assert!(!cats.iter().any(|c| c.slug == "strategy"), "strategy is not a division");

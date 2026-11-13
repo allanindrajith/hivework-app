@@ -9,6 +9,7 @@
   import AgentsWorkspace from "$lib/components/AgentsWorkspace.svelte";
   import ToolsView from "$lib/components/ToolsView.svelte";
   import ActivityHistory from "$lib/components/ActivityHistory.svelte";
+  import EmployeesView from "$lib/components/EmployeesView.svelte";
   import Runbooks from "$lib/components/Runbooks.svelte";
   import CommandPalette from "$lib/components/CommandPalette.svelte";
   import Settings from "$lib/components/Settings.svelte";
@@ -31,6 +32,7 @@
   } from "$lib/stores/ui.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
+  import { corpus } from "$lib/stores/corpus.svelte";
   import { isMac, shortcut } from "$lib/util/platform";
   import type { SidebarSection, ThemePreference } from "$lib/types";
 
@@ -41,6 +43,7 @@
   function sectionTitle(s: SidebarSection): string {
     if (s === "dashboard") return i18n.t("nav.dashboard");
     if (s === "personas") return i18n.t("nav.agents");
+    if (s === "employees") return i18n.optional("nav.employees", "Employees");
     if (s === "tools") return i18n.t("nav.tools");
     if (s === "teams") return i18n.t("nav.teams");
     if (s === "projects") return i18n.t("nav.projects");
@@ -91,17 +94,18 @@
     if (meta && e.key === "[") { e.preventDefault(); ui.back(); return; }
     if (meta && e.key === "]") { e.preventDefault(); ui.forward(); return; }
 
-    // Cmd+0..6: agency section nav. Matches the sidebar.
-    if (meta && ["0","1","2","3","4","5","6"].includes(e.key)) {
+    // Cmd+0..7: agency section nav. Matches the sidebar.
+    if (meta && ["0","1","2","3","4","5","6","7"].includes(e.key)) {
       e.preventDefault();
       const map: Record<string, SidebarSection> = {
         "0": "dashboard",
         "1": "personas",
-        "2": "tools",
-        "3": "teams",
-        "4": "projects",
-        "5": "runbooks",
-        "6": "activity",
+        "2": "employees",
+        "3": "tools",
+        "4": "teams",
+        "5": "projects",
+        "6": "runbooks",
+        "7": "activity",
       };
       ui.setSection(map[e.key]);
       return;
@@ -133,6 +137,7 @@
   }
 
   onMount(() => {
+    corpus.ensureLoaded();
     window.addEventListener("keydown", onKeydown);
     window.addEventListener("mouseup", onMouseUp);
     return () => {
@@ -227,14 +232,16 @@
         <div class="section-pane">
           {#if ui.section === "dashboard"}
             <Dashboard />
+          {:else if ui.section === "personas"}
+            <AgentsWorkspace />
+          {:else if ui.section === "employees"}
+            <EmployeesView />
           {:else if ui.section === "tools"}
             <ToolsView />
           {:else if ui.section === "teams"}
             <Teams />
           {:else if ui.section === "projects"}
             <Projects />
-          {:else if ui.section === "personas"}
-            <AgentsWorkspace />
           {:else if ui.section === "runbooks"}
             <Runbooks />
           {:else if ui.section === "activity"}

@@ -19,4 +19,4 @@
 #   This fallback only applies to bare cargo runs (tests, `cargo check`, CI), where
 #   the private-API window features are never exercised.
 [env]
-TAURI_CONFIG = "{\"app\":{\"macOSPrivateApi\":false}}"
+TAURI_CONFIG = "{\"app\":{\"macOSPrivateApi\":true}}"

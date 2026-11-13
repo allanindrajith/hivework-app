@@ -16,6 +16,13 @@ import Code from "@lucide/svelte/icons/code";
 import TrendingUp from "@lucide/svelte/icons/trending-up";
 import Compass from "@lucide/svelte/icons/compass";
 import Sparkles from "@lucide/svelte/icons/sparkles";
+import ShieldAlert from "@lucide/svelte/icons/shield-alert";
+import Gamepad2 from "@lucide/svelte/icons/gamepad-2";
+import Target from "@lucide/svelte/icons/target";
+import Briefcase from "@lucide/svelte/icons/briefcase";
+import Palette from "@lucide/svelte/icons/palette";
+import Database from "@lucide/svelte/icons/database";
+import Crown from "@lucide/svelte/icons/crown";
 
 export interface PresetTeam {
   slug: string;
@@ -95,6 +102,104 @@ export const PRESET_TEAMS: PresetTeam[] = [
       "hive-prompt-engineer",
       "hive-data-engineer",
       "hive-backend-architect",
+    ],
+  },
+  {
+    slug: "security-red-team",
+    label: "Security Red Team",
+    description: "Penetrate defenses, find auth vulnerabilities, and enforce compliance.",
+    icon: ShieldAlert,
+    color: "#ef4444",
+    agents: [
+      "hive-penetration-tester",
+      "hive-adversarial-verifier",
+      "hive-client-side-auditor",
+      "hive-cloud-security-architect",
+      "hive-compliance-auditor",
+    ],
+  },
+  {
+    slug: "game-studio-core",
+    label: "Game Studio Core",
+    description: "Mechanics, technical art, game audio, and QA testing in one squad.",
+    icon: Gamepad2,
+    color: "#a855f7",
+    agents: [
+      "hive-game-studio-game-designer",
+      "hive-game-studio-gameplay-programmer",
+      "hive-game-studio-technical-artist",
+      "hive-game-studio-sound-designer",
+      "hive-game-studio-qa-tester",
+    ],
+  },
+  {
+    slug: "paid-acquisition-engine",
+    label: "Paid Acquisition Engine",
+    description: "High-ROAS advertising across PPC, paid social, and creative carousels.",
+    icon: Target,
+    color: "#eab308",
+    agents: [
+      "hive-ppc-strategist",
+      "hive-paid-social-strategist",
+      "hive-creative-strategist",
+      "hive-carousel-growth-engine",
+      "hive-tracking-specialist",
+    ],
+  },
+  {
+    slug: "b2b-revops-sales",
+    label: "B2B RevOps & Sales",
+    description: "Signal-based outbound outreach, discovery coaching, and CRM architecture.",
+    icon: Briefcase,
+    color: "#10b981",
+    agents: [
+      "hive-outbound-strategist",
+      "hive-sales-outreach",
+      "hive-deal-strategist",
+      "hive-discovery-coach",
+      "hive-salesforce-architect",
+    ],
+  },
+  {
+    slug: "design-systems-a11y",
+    label: "Design Systems & A11y",
+    description: "Pixel-perfect token architecture with strict WCAG 2.2 accessibility sign-off.",
+    icon: Palette,
+    color: "#d946ef",
+    agents: [
+      "hive-ux-architect",
+      "hive-ui-designer",
+      "hive-frontend-developer",
+      "hive-ui-finish-gate-reviewer",
+      "hive-accessibility-auditor",
+    ],
+  },
+  {
+    slug: "data-cloud-infra",
+    label: "Data & Cloud Infrastructure",
+    description: "Zero-downtime database optimization, real-time pipelines, and SRE reliability.",
+    icon: Database,
+    color: "#06b6d4",
+    agents: [
+      "hive-data-engineer",
+      "hive-database-optimizer",
+      "hive-devops-automator",
+      "hive-sre",
+      "hive-analytics-reporter",
+    ],
+  },
+  {
+    slug: "executive-war-room",
+    label: "Executive War Room",
+    description: "High-stakes strategic duels, senior project management, and ruthless reality checks.",
+    icon: Crown,
+    color: "#f59e0b",
+    agents: [
+      "hive-chief-of-staff",
+      "hive-advisor",
+      "hive-strategy-duel-agent",
+      "hive-project-manager-senior",
+      "hive-reality-checker",
     ],
   },
 ];

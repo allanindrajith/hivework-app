@@ -101,10 +101,12 @@
   }
 
   function presetLabel(slug: string): string {
-    return i18n.t(`preset.${slug}.label` as MessageKey);
+    const p = PRESET_TEAMS.find((x) => x.slug === slug);
+    return i18n.optional(`preset.${slug}.label`, p?.label ?? slug);
   }
   function presetDescription(slug: string): string {
-    return i18n.t(`preset.${slug}.description` as MessageKey);
+    const p = PRESET_TEAMS.find((x) => x.slug === slug);
+    return i18n.optional(`preset.${slug}.description`, p?.description ?? "");
   }
   function teamExamples(slug: string): string[] {
     const fallback = TEAM_EXAMPLES[slug] ?? [];
@@ -240,28 +242,28 @@
   // Connected tools summary
   const toolCards = $derived([
     {
-      id: "claude",
+      id: "claudeCode",
       label: "Claude Code",
-      detected: install.tools.find((t) => t.tool === "claude")?.detected ?? false,
-      count: install.installed.filter((i) => i.tool === "claude").length,
-    },
-    {
-      id: "cursor",
-      label: "Cursor",
-      detected: install.tools.find((t) => t.tool === "cursor")?.detected ?? false,
-      count: install.installed.filter((i) => i.tool === "cursor").length,
-    },
-    {
-      id: "windsurf",
-      label: "Windsurf",
-      detected: install.tools.find((t) => t.tool === "windsurf")?.detected ?? false,
-      count: install.installed.filter((i) => i.tool === "windsurf").length,
+      detected: install.tools.find((t) => t.tool === "claudeCode" || t.tool === "claude")?.detected ?? false,
+      count: install.installed.filter((i) => i.tool === "claudeCode" || i.tool === "claude").length,
     },
     {
       id: "codex",
       label: "Codex",
       detected: install.tools.find((t) => t.tool === "codex")?.detected ?? false,
       count: install.installed.filter((i) => i.tool === "codex").length,
+    },
+    {
+      id: "antigravity",
+      label: "Antigravity",
+      detected: install.tools.find((t) => t.tool === "antigravity")?.detected ?? false,
+      count: install.installed.filter((i) => i.tool === "antigravity").length,
+    },
+    {
+      id: "copilot",
+      label: "GitHub Copilot",
+      detected: install.tools.find((t) => t.tool === "copilot")?.detected ?? false,
+      count: install.installed.filter((i) => i.tool === "copilot").length,
     },
   ]);
 
