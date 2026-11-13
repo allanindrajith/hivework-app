@@ -647,9 +647,12 @@ async fn build_from_dir(dir: &Path, version: &str, categories: &[String]) -> Res
     // `categories` in tooling order and `collect_md_files` sorts by path.
     let mut agents = Vec::with_capacity(rows.len());
     let mut index = BTreeMap::new();
+    let mut seen_slugs = std::collections::HashSet::new();
     for (agent, entry) in rows {
-        index.insert(entry.slug.clone(), entry);
-        agents.push(agent);
+        if seen_slugs.insert(entry.slug.clone()) {
+            index.insert(entry.slug.clone(), entry);
+            agents.push(agent);
+        }
     }
 
     let count = index.len() as u32;
