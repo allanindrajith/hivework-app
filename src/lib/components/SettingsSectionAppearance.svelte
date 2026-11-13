@@ -11,7 +11,7 @@
   import Moon from "@lucide/svelte/icons/moon";
   import Monitor from "@lucide/svelte/icons/monitor";
 
-  import { ui, VIBRANCY_MATERIALS, type VibrancyMaterial } from "$lib/stores/ui.svelte";
+  import { ui } from "$lib/stores/ui.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
   import { LOCALES, localeLabels, type Locale } from "$lib/i18n/messages";
   import type { SidebarSection, ThemePreference } from "$lib/types";
@@ -37,10 +37,6 @@
   function onLocaleChange(e: Event) {
     const value = (e.currentTarget as HTMLSelectElement).value as Locale;
     i18n.setLocale(value);
-  }
-  function onVibrancyChange(e: Event) {
-    const value = (e.currentTarget as HTMLSelectElement).value as VibrancyMaterial;
-    ui.setVibrancyMaterial(value);
   }
   function pickTheme(t: ThemePreference) { ui.setTheme(t); }
 </script>
@@ -113,21 +109,6 @@
       {/each}
     </select>
     <p class="hint">{i18n.t("settings.appearance.languageHint")}</p>
-  </div>
-
-  <div class="field">
-    <label for="vibrancy-material">{i18n.t("settings.appearance.vibrancy")}</label>
-    <select
-      id="vibrancy-material"
-      class="select"
-      value={ui.vibrancyMaterial}
-      onchange={onVibrancyChange}
-    >
-      {#each VIBRANCY_MATERIALS as m (m)}
-        <option value={m}>{m}</option>
-      {/each}
-    </select>
-    <p class="hint">{i18n.t("settings.appearance.vibrancyHint")}</p>
   </div>
 
 </div>
