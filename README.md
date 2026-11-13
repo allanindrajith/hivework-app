@@ -2,7 +2,7 @@
 
 > A native app store for AI agents.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: Free for Personal Use](https://img.shields.io/badge/License-Free%20for%20Personal%20Use-blue.svg)](./LICENSE)
 [![Built with Tauri 2](https://img.shields.io/badge/Built%20with-Tauri%202-orange)](https://tauri.app)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-lightgrey)](https://www.apple.com/macos)
 [![Sponsor](https://img.shields.io/badge/♥-Sponsor-F59E0B?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/allanidrajith)
@@ -11,7 +11,7 @@
 
 Hivework is a small, native app for browsing, installing, and tracking the 296 `hive-*` agent personas from [`allanindrajith/hivework`](https://github.com/allanindrajith/hivework) ([hivework.online](https://hivework.online)) across the AI coding tools you actually use.
 
-It is full source, MIT-licensed, local-first, and does not run telemetry.
+It is free for personal use, source-available, local-first, zero-charge, and does not run telemetry. You can install personas using the native desktop app or grab CLI commands directly from the website without needing an app account or paid subscription.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="landing/screenshots/dashboard-dark.png">
@@ -191,7 +191,7 @@ The highest-value areas before 1.0 are:
 
 ## License
 
-[MIT](./LICENSE). Do whatever you want with this.
+Free for personal and non-commercial use ([LICENSE](./LICENSE)). Not open source: commercial redistribution, reselling, or commercial repackaging is strictly prohibited. Free to download, run, and use for individual agent development with zero hidden charges.
 
 ## Acknowledgments
 
