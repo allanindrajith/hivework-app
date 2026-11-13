@@ -1,29 +1,10 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import BookOpenIcon from "@lucide/svelte/icons/book-open";
   import GlobeIcon from "@lucide/svelte/icons/globe";
-  import GithubMarkIcon from "./GithubMarkIcon.svelte";
 
   import { ui } from "$lib/stores/ui.svelte";
-  import { github } from "$lib/stores/github.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
   import { safeOpenUrl } from "$lib/util/url";
-
-  /** GitHub connection status indicator state. */
-  type GithubChipState = "ok" | "scope-incomplete" | "hidden";
-  const githubChipState = $derived.by<GithubChipState>(() => {
-    const s = github.status;
-    if (!s || !s.signedIn) return "hidden";
-    return s.scopes.includes("public_repo") ? "ok" : "scope-incomplete";
-  });
-
-  function openGithubSettings() {
-    ui.openSettings("github");
-  }
-
-  onMount(() => {
-    void github.loadStatus();
-  });
 </script>
 
 <div class="cluster" data-tauri-drag-region="false" role="group" aria-label={i18n.t("titlebar.controls")}>
@@ -47,22 +28,6 @@
   >
     <span class="mono-label">itsallan.me</span>
   </button>
-
-  {#if githubChipState !== "hidden"}
-    <button
-      type="button"
-      class="ctrl github-chip"
-      class:ok={githubChipState === "ok"}
-      class:warn={githubChipState === "scope-incomplete"}
-      onclick={openGithubSettings}
-      title={githubChipState === "ok"
-        ? i18n.t("titlebar.githubConnected", { username: github.status?.username ?? "user" })
-        : i18n.t("titlebar.githubScopeIncomplete")}
-      aria-label={i18n.t("titlebar.githubStatus")}
-    >
-      <GithubMarkIcon size={14} />
-    </button>
-  {/if}
 
   <button
     type="button"
@@ -141,13 +106,4 @@
     font-weight: 500;
     color: inherit;
   }
-
-  /* GitHub connection-status chip */
-  .ctrl.github-chip {
-    padding: 0 4px;
-  }
-  .ctrl.github-chip.ok { color: #16a34a; }
-  .ctrl.github-chip.ok:hover { color: #15803d; }
-  .ctrl.github-chip.warn { color: #d97706; }
-  .ctrl.github-chip.warn:hover { color: #b45309; }
 </style>

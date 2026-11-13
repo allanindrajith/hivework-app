@@ -170,17 +170,6 @@
           <span class="hint">{i18n.t("catalog.githubRateLimit")}</span>
         {/if}
       </div>
-
-      <div class="gh-auth">
-        {#if github.status?.signedIn}
-          <span class="signed">{i18n.t("catalog.signedInAs", { username: github.status.username ?? "" })}</span>
-        {:else}
-          <button class="ghost" disabled={github.signinState.kind !== "idle"} onclick={() => github.signIn()}>
-            {i18n.t("catalog.signIn")}
-          </button>
-          <span class="hint">{i18n.t("catalog.signInHint")}</span>
-        {/if}
-      </div>
     </div>
   {/if}
 
@@ -266,8 +255,6 @@
   .gh-stats { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-body-sm); color: var(--color-text-secondary); }
   .gh-stats span { display: inline-flex; align-items: center; gap: 4px; }
   .gh-stats .rel { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--color-text-muted); }
-  .gh-auth { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-  .signed { font-size: var(--text-body-sm); color: var(--color-text-secondary); }
   .link { display: inline-flex; align-items: center; gap: 6px; color: var(--color-text-link); font-size: var(--text-body-sm); cursor: pointer; background: transparent; padding: 0; }
   .link:hover { text-decoration: underline; }
   .link code { font-family: var(--font-mono); font-size: var(--text-mono); color: inherit; }
