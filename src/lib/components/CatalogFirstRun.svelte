@@ -1,15 +1,13 @@
 <script lang="ts">
   /**
-   * CatalogFirstRun.svelte — first-launch catalog-source picker (#1).
+   * CatalogFirstRun.svelte — First-launch Welcome & Onboarding Wizard.
    *
-   * Shown once, before anything else, when the user hasn't chosen where the
-   * agent catalog lives (`catalog.configured === false`). Three paths:
-   *   1. Use my own clone  — detect/Find + folder picker (manage-with-permission)
-   *   2. Set one up for me  — provision ~/.hivework (git clone or snapshot)
-   *   3. Bundled snapshot   — the always-works default
+   * Shown once on fresh install when no catalog choice has been saved
+   * (`catalog.configured === false`).
    *
-   * Posture: nothing is written until the user picks. Choosing any option
-   * persists the choice (configured → true), which dismisses this modal.
+   * 1. Highlighted 1-Click Instant Setup (Bundled 345 Agents)
+   * 2. Automated ~/.hivework Managed Setup
+   * 3. Developer Custom Local Git Clone
    */
   import { errorText } from "$lib/types";
   import { onMount } from "svelte";
@@ -19,6 +17,10 @@
   import Package from "@lucide/svelte/icons/package";
   import Search from "@lucide/svelte/icons/search";
   import Check from "@lucide/svelte/icons/check";
+  import Zap from "@lucide/svelte/icons/zap";
+  import Bot from "@lucide/svelte/icons/bot";
+  import ShieldCheck from "@lucide/svelte/icons/shield-check";
+  import Layers from "@lucide/svelte/icons/layers";
 
   import { catalog } from "$lib/stores/catalog.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
@@ -52,20 +54,72 @@
 </script>
 
 <div class="scrim">
-  <div class="box" role="dialog" aria-modal="true" aria-label={i18n.t("firstRun.dialogAria")}>
+  <div class="box" role="dialog" aria-modal="true" aria-label="Welcome to Hivework Onboarding">
     <header>
-      <h1>{i18n.t("firstRun.title")}</h1>
-      <p class="lede">{i18n.t("firstRun.lede")}</p>
+      <div class="badge-row">
+        <span class="brand-pill"><Zap size={13} /> Welcome to Hivework</span>
+        <span class="version-tag">v0.4.0</span>
+      </div>
+      <h1>One Canonical AI Workforce</h1>
+      <p class="lede">
+        Deploy 345 specialized agents across Claude Code, Codex, GitHub Copilot, Antigravity, and 17 AI harnesses. Select your initial catalog source to begin.
+      </p>
+
+      <!-- Value Props Highlights -->
+      <div class="highlights">
+        <div class="hl"><Bot size={14} class="hl-icon" /> <span>345 Specialized Agents</span></div>
+        <div class="hl"><Layers size={14} class="hl-icon" /> <span>18 Divisions</span></div>
+        <div class="hl"><ShieldCheck size={14} class="hl-icon" /> <span>100% Local & Private</span></div>
+      </div>
     </header>
 
     <div class="cards">
-      <!-- 1. Use my own clone -->
-      <div class="card" class:open={expanded === "clone"}>
-        <button class="card-head" onclick={() => (expanded = expanded === "clone" ? null : "clone")}>
-          <FolderGit2 size={22} />
+      <!-- 1. Bundled Snapshot (RECOMMENDED) -->
+      <button
+        class="card primary-choice"
+        disabled={catalog.busy}
+        onclick={() => choose(() => catalog.useBundled(), i18n.t("catalog.usingBundled"))}
+      >
+        <div class="badge-rec">RECOMMENDED · 1-CLICK</div>
+        <div class="card-inner">
+          <div class="icon-wrap gold">
+            <Package size={24} />
+          </div>
           <div class="ct">
-            <span class="t">{i18n.t("firstRun.useClone")}</span>
-            <span class="d">{i18n.t("firstRun.useCloneDesc")}</span>
+            <div class="title-row">
+              <span class="t">Instant Setup (Bundled 345 Agents)</span>
+            </div>
+            <span class="d">Zero setup required. Launches immediately with all 345 production-tested agents pre-packaged offline.</span>
+          </div>
+        </div>
+      </button>
+
+      <!-- 2. Set one up for me (~/.hivework) -->
+      <button
+        class="card secondary-choice"
+        disabled={catalog.busy}
+        onclick={() => choose(() => catalog.provisionManaged(), i18n.t("catalog.setupManaged"))}
+      >
+        <div class="card-inner">
+          <div class="icon-wrap">
+            <Sparkles size={22} />
+          </div>
+          <div class="ct">
+            <span class="t">Managed Setup (~/.hivework)</span>
+            <span class="d">Initializes a local catalog in ~/.hivework synchronized with the latest upstream git repository.</span>
+          </div>
+        </div>
+      </button>
+
+      <!-- 3. Use my own clone -->
+      <div class="card tertiary-choice" class:open={expanded === "clone"}>
+        <button class="card-head" onclick={() => (expanded = expanded === "clone" ? null : "clone")}>
+          <div class="icon-wrap">
+            <FolderGit2 size={22} />
+          </div>
+          <div class="ct">
+            <span class="t">Connect Custom Git Clone</span>
+            <span class="d">Point to an existing hivework repository folder on your computer.</span>
           </div>
         </button>
 
@@ -105,25 +159,11 @@
           </div>
         {/if}
       </div>
-
-      <!-- 2. Set one up for me -->
-      <button class="card simple" disabled={catalog.busy} onclick={() => choose(() => catalog.provisionManaged(), i18n.t("catalog.setupManaged"))}>
-        <Sparkles size={22} />
-        <div class="ct">
-          <span class="t">{i18n.t("firstRun.setup")}</span>
-          <span class="d">{i18n.t("firstRun.setupDesc")}</span>
-        </div>
-      </button>
-
-      <!-- 3. Bundled snapshot -->
-      <button class="card simple" disabled={catalog.busy} onclick={() => choose(() => catalog.useBundled(), i18n.t("catalog.usingBundled"))}>
-        <Package size={22} />
-        <div class="ct">
-          <span class="t">{i18n.t("firstRun.bundled")}</span>
-          <span class="d">{i18n.t("firstRun.bundledDesc")}</span>
-        </div>
-      </button>
     </div>
+
+    <footer>
+      <p class="hint">You can change your catalog source anytime in <strong>Settings → Catalog</strong>.</p>
+    </footer>
 
     {#if catalog.error}<p class="err">{catalog.error}</p>{/if}
   </div>
@@ -131,60 +171,150 @@
 
 <style>
   .scrim {
-    position: fixed; inset: 36px 0 0 0; z-index: 90;
+    position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
-    background: color-mix(in srgb, var(--color-bg) 70%, transparent);
-    backdrop-filter: blur(6px);
+    background: rgba(10, 9, 8, 0.85);
+    backdrop-filter: blur(12px);
   }
   .box {
-    width: min(560px, 92vw); max-height: 86vh; overflow-y: auto;
-    background: var(--color-surface-raised);
-    border: 1px solid var(--color-border); border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg); padding: var(--space-6);
-    display: flex; flex-direction: column; gap: var(--space-5);
+    width: min(600px, 94vw); max-height: 90vh; overflow-y: auto;
+    background: #14120e;
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 28px;
+    display: flex; flex-direction: column; gap: 20px;
   }
-  header h1 { font-size: var(--text-h1); font-weight: var(--fw-semibold); color: var(--color-text-primary); }
-  .lede { margin-top: var(--space-2); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--lh-normal); }
-  .cards { display: flex; flex-direction: column; gap: var(--space-3); }
+  header {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .badge-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: #f59e0b; background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 999px; padding: 3px 10px;
+  }
+  .version-tag {
+    font-family: var(--font-mono, monospace); font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  header h1 {
+    font-size: 24px; font-weight: 700; color: #fff; margin: 4px 0 0 0;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: 13px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; margin: 0;
+  }
+  .highlights {
+    display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap;
+  }
+  .hl {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px; padding: 4px 10px;
+  }
+  :global(.hl-icon) {
+    color: #f59e0b;
+  }
+  .cards {
+    display: flex; flex-direction: column; gap: 12px;
+  }
   .card {
-    border: 1px solid var(--color-border); border-radius: var(--radius-md);
-    background: var(--color-surface); overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 10px;
+    background: #1a1713; overflow: hidden; position: relative; text-align: left;
+    transition: all 0.15s ease;
   }
-  .card.simple {
-    display: flex; align-items: flex-start; gap: var(--space-3);
-    padding: var(--space-4); text-align: left; cursor: pointer; color: inherit;
+  .card.primary-choice {
+    border-color: rgba(245, 158, 11, 0.5);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(26, 23, 19, 0.95) 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.08);
   }
-  .card.simple:hover:not(:disabled) { background: var(--color-surface-sunken); border-color: var(--color-brand); }
-  .card.simple:disabled { opacity: 0.5; cursor: default; }
+  .card.primary-choice:hover:not(:disabled) {
+    border-color: #f59e0b;
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(32, 28, 22, 0.98) 100%);
+    transform: translateY(-1px);
+  }
+  .badge-rec {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    color: #0d0c0a; background: #f59e0b;
+    border-radius: 4px; padding: 2px 7px;
+  }
+  .card.secondary-choice {
+    cursor: pointer;
+  }
+  .card.secondary-choice:hover:not(:disabled),
+  .card.tertiary-choice:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: #201c17;
+  }
+  .card:disabled { opacity: 0.5; cursor: default; }
+  .card-inner {
+    display: flex; align-items: flex-start; gap: 14px; padding: 16px;
+  }
   .card-head {
-    width: 100%; display: flex; align-items: flex-start; gap: var(--space-3);
-    padding: var(--space-4); background: transparent; cursor: pointer; text-align: left; color: inherit;
+    width: 100%; display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px; background: transparent; cursor: pointer; text-align: left; color: inherit;
+    border: none;
   }
-  .card-head:hover { background: var(--color-surface-sunken); }
-  .card.open { border-color: var(--color-brand); }
-  .ct { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .ct .t { font-weight: var(--fw-medium); color: var(--color-text-primary); }
-  .ct .d { font-size: var(--text-caption); color: var(--color-text-muted); line-height: var(--lh-normal); }
-  .card-body { padding: 0 var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
-  .cands { display: flex; flex-direction: column; gap: 4px; }
+  .icon-wrap {
+    width: 40px; height: 40px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.7);
+    flex-shrink: 0;
+  }
+  .icon-wrap.gold {
+    background: rgba(245, 158, 11, 0.18); color: #f59e0b;
+  }
+  .ct {
+    display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  }
+  .title-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ct .t {
+    font-size: 14px; font-weight: 600; color: #fff;
+  }
+  .ct .d {
+    font-size: 12px; color: rgba(255, 255, 255, 0.55); line-height: 1.4;
+  }
+  .card.open { border-color: #f59e0b; }
+  .card-body {
+    padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .cands { display: flex; flex-direction: column; gap: 6px; }
   .cand {
-    width: 100%; display: flex; align-items: center; gap: var(--space-2);
-    padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm); background: var(--color-surface-sunken); cursor: pointer; color: inherit;
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px; background: rgba(0, 0, 0, 0.3); cursor: pointer; color: inherit;
   }
-  .cand:hover:not(:disabled) { border-color: var(--color-brand); color: var(--color-brand); }
+  .cand:hover:not(:disabled) { border-color: #f59e0b; color: #f59e0b; }
   .cand-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: left; }
-  .cand-path { font-family: var(--font-mono); font-size: var(--text-mono); color: var(--color-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cand-meta { font-size: var(--text-caption); color: var(--color-text-muted); }
-  .empty { font-size: var(--text-body-sm); color: var(--color-text-muted); }
-  .manage { display: flex; align-items: center; gap: 8px; font-size: var(--text-caption); color: var(--color-text-secondary); }
-  .row-actions { display: flex; gap: var(--space-2); }
+  .cand-path { font-family: var(--font-mono, monospace); font-size: 11px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cand-meta { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+  .empty { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+  .manage { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
+  .row-actions { display: flex; gap: 8px; }
   .ghost {
-    display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 var(--space-3);
-    border: 1px solid var(--color-border); border-radius: var(--radius-md);
-    background: transparent; color: var(--color-text-secondary); font-size: var(--text-body-sm); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px;
+    background: transparent; color: rgba(255, 255, 255, 0.8); font-size: 12px; cursor: pointer;
   }
-  .ghost:hover:not(:disabled) { color: var(--color-text-primary); background: var(--color-surface-sunken); }
+  .ghost:hover:not(:disabled) { color: #fff; background: rgba(255, 255, 255, 0.08); }
   .ghost:disabled { opacity: 0.5; cursor: default; }
-  .err { font-size: var(--text-body-sm); color: var(--color-danger); }
+  footer {
+    display: flex; justify-content: center;
+  }
+  .hint {
+    font-size: 11px; color: rgba(255, 255, 255, 0.4); text-align: center; margin: 0;
+  }
+  .hint strong { color: rgba(255, 255, 255, 0.6); }
+  .err { font-size: 12px; color: var(--color-danger, #ef4444); text-align: center; margin: 0; }
 </style>
