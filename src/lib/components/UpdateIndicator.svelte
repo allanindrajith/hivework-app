@@ -53,7 +53,7 @@
   let visible = $derived(info !== null && settings.effective.paranoidMode === false);
 
   function onPillClick() {
-    ui.openSettings("network");
+    ui.openAppUpdateModal();
   }
 
   function onPillKeydown(e: KeyboardEvent) {

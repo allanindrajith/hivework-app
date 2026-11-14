@@ -91,6 +91,8 @@ class UiStore {
   settingsInitialSection: SettingsSection | null = $state(null);
   /** About modal — native menu "About Hivework" + sidebar footer link. */
   aboutOpen: boolean = $state(false);
+  /** App Update modal — prompted on startup when new version found or via manual check. */
+  appUpdateModalOpen: boolean = $state(false);
   /** Playbook modal — "how to get real work out of your agents" (title-bar ?). */
   playbookOpen: boolean = $state(false);
   theme: ThemePreference = $state("dark");
@@ -312,6 +314,9 @@ class UiStore {
 
   openAbout() { this.aboutOpen = true; }
   closeAbout() { this.aboutOpen = false; }
+
+  openAppUpdateModal() { this.appUpdateModalOpen = true; }
+  closeAppUpdateModal() { this.appUpdateModalOpen = false; }
 
   openPlaybook() { this.playbookOpen = true; }
   closePlaybook() { this.playbookOpen = false; }

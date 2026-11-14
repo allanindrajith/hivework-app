@@ -207,6 +207,7 @@ pub fn run() {
 
 const MENU_EVENT_ABOUT: &str = "hivework/menu/about";
 const MENU_EVENT_SETTINGS: &str = "hivework/menu/settings";
+const MENU_EVENT_UPDATES: &str = "hivework/menu/updates";
 
 fn build_app_menu<R: tauri::Runtime>(
     app: &tauri::AppHandle<R>,
@@ -223,6 +224,9 @@ fn build_app_menu<R: tauri::Runtime>(
     let about_item = MenuItemBuilder::new(format!("About {}", pkg.name))
         .id(MENU_EVENT_ABOUT)
         .build(app)?;
+    let updates_item = MenuItemBuilder::new("Check for Updates…")
+        .id(MENU_EVENT_UPDATES)
+        .build(app)?;
     let settings_item = MenuItemBuilder::new("Settings…")
         .id(MENU_EVENT_SETTINGS)
         .accelerator("CmdOrCtrl+,")
@@ -230,6 +234,7 @@ fn build_app_menu<R: tauri::Runtime>(
 
     let app_submenu = SubmenuBuilder::new(app, pkg.name.clone())
         .item(&about_item)
+        .item(&updates_item)
         .separator()
         .item(&settings_item)
         .separator()
@@ -274,6 +279,9 @@ fn handle_menu_event<R: tauri::Runtime>(
     match event.id().as_ref() {
         MENU_EVENT_ABOUT => {
             let _ = app.emit("menu:about", ());
+        }
+        MENU_EVENT_UPDATES => {
+            let _ = app.emit("menu:updates", ());
         }
         MENU_EVENT_SETTINGS => {
             let _ = app.emit("menu:settings", ());

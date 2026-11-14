@@ -120,10 +120,6 @@
   }
   const hasInstalled = $derived(tools.some((t) => toolPresent(t)));
   const visibleTools = $derived.by(() => {
-    if (toolLens === "installed") {
-      const match = tools.filter((t) => toolPresent(t));
-      return match.length > 0 ? match : tools;
-    }
     return tools.filter((t) => lensMatch(toolLens, t));
   });
 
@@ -636,7 +632,14 @@
     {:else}
       <div class="d-empty">
         <WrenchIcon size={40} />
-        <p>{i18n.t("tools.selectTool")}</p>
+        {#if toolLens === "installed" && !hasInstalled}
+          <p>{i18n.t("tools.emptyInstalled")}</p>
+          <button class="act" onclick={() => setToolLens("uninstalled")}>
+            {i18n.t("tools.lens.uninstalled")} →
+          </button>
+        {:else}
+          <p>{i18n.t("tools.selectTool")}</p>
+        {/if}
       </div>
     {/if}
   </div>

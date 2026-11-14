@@ -7,6 +7,7 @@
   import { activity } from "$lib/stores/activity.svelte";
   import { settings } from "$lib/stores/settings.svelte";
   import { catalog } from "$lib/stores/catalog.svelte";
+  import { updater } from "$lib/stores/updater.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
   import CatalogFirstRun from "$lib/components/CatalogFirstRun.svelte";
 
@@ -59,14 +60,32 @@
     // with the in-app shortcut already handled in `+page.svelte`.
     let unlistenAbout: UnlistenFn | undefined;
     let unlistenSettings: UnlistenFn | undefined;
+    let unlistenUpdates: UnlistenFn | undefined;
     void listen("menu:about", () => { ui.openAbout(); }).then((u) => { unlistenAbout = u; });
     void listen("menu:settings", () => { ui.openSettings(); }).then((u) => { unlistenSettings = u; });
+    void listen("menu:updates", () => {
+      void updater.checkNow();
+      ui.openAppUpdateModal();
+    }).then((u) => { unlistenUpdates = u; });
+
+    // Startup background check (delayed 3s so launch is instant)
+    const updateCheckTimer = setTimeout(() => {
+      if (!settings.effective.paranoidMode && settings.effective.updateAutoCheck !== false) {
+        void updater.checkNow().then(() => {
+          if (updater.available && !updater.available.skipped) {
+            ui.openAppUpdateModal();
+          }
+        });
+      }
+    }, 3000);
 
     const unwatch = watchSystemTheme(() => ui.theme);
     return () => {
+      clearTimeout(updateCheckTimer);
       unwatch();
       unlistenAbout?.();
       unlistenSettings?.();
+      unlistenUpdates?.();
     };
   });
 </script>

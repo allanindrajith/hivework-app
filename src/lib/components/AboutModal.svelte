@@ -6,6 +6,7 @@
   import Sparkles from "@lucide/svelte/icons/sparkles";
 
   import { ui } from "$lib/stores/ui.svelte";
+  import { updater } from "$lib/stores/updater.svelte";
   import { appVersion } from "$lib/api";
   import { safeOpenUrl } from "$lib/util/url";
   import { SPONSOR_URL } from "$lib/util/donate";
@@ -50,6 +51,12 @@
   function openRepo()           { void safeOpenUrl(REPO_URL); }
   function openLicense()        { void safeOpenUrl(LICENSE_URL); }
   function openWebsite()        { void safeOpenUrl(WEBSITE_URL); }
+
+  function checkForUpdates() {
+    ui.closeAbout();
+    void updater.checkNow();
+    ui.openAppUpdateModal();
+  }
 </script>
 
 {#if ui.aboutOpen}
@@ -74,7 +81,15 @@
       </div>
 
       <dl class="meta">
-        <div><dt>{i18n.t("about.version")}</dt><dd class="mono">{appVer ?? "…"}</dd></div>
+        <div>
+          <dt>{i18n.t("about.version")}</dt>
+          <dd class="mono ver-row">
+            <span>{appVer ?? "…"}</span>
+            <button class="check-btn" onclick={checkForUpdates}>
+              {i18n.t("updates.checkNow")}
+            </button>
+          </dd>
+        </div>
         <div><dt>{i18n.t("about.license")}</dt><dd><button class="link" onclick={openLicense}>MIT</button></dd></div>
         <div><dt>Web</dt><dd><button class="link" onclick={openWebsite}>hivework.online</button></dd></div>
         <div><dt>{i18n.t("about.repo")}</dt><dd><button class="link" onclick={openRepo}>github.com/allanindrajith/hivework-app</button></dd></div>
@@ -189,6 +204,28 @@
   dt { color: var(--color-text-muted); }
   dd { color: var(--color-text-primary); margin: 0; min-width: 0; overflow-wrap: anywhere; }
   .mono { font-family: var(--font-mono); }
+  .ver-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  .check-btn {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm, 4px);
+    background: color-mix(in srgb, var(--color-brand) 15%, transparent);
+    color: var(--color-brand);
+    border: 1px solid color-mix(in srgb, var(--color-brand) 30%, transparent);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .check-btn:hover {
+    background: var(--color-brand);
+    color: #000;
+  }
 
   .donate-cta {
     display: flex;

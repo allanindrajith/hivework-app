@@ -14,6 +14,7 @@
   import CommandPalette from "$lib/components/CommandPalette.svelte";
   import Settings from "$lib/components/Settings.svelte";
   import AboutModal from "$lib/components/AboutModal.svelte";
+  import AppUpdateModal from "$lib/components/AppUpdateModal.svelte";
   import PlaybookModal from "$lib/components/PlaybookModal.svelte";
   import DeviceFlowModal from "$lib/components/DeviceFlowModal.svelte";
   import Toast from "$lib/components/Toast.svelte";
@@ -253,6 +254,7 @@
   <CommandPalette />
   <Settings />
   <AboutModal />
+  <AppUpdateModal />
   <PlaybookModal />
   <DeviceFlowModal />
   <Toast />
