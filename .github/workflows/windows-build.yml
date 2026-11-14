@@ -48,28 +48,44 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      # x64 (native). Updater artifacts disabled (v0.1.0). shell: bash so the
-      # --config JSON survives quoting (Windows runners ship Git Bash).
+      # x64 (native). Builds NSIS installer and updater artifacts if TAURI_SIGNING_PRIVATE_KEY is present.
       - name: Build x64 installer
         shell: bash
-        run: npm run tauri build -- --target x86_64-pc-windows-msvc --config '{"bundle":{"createUpdaterArtifacts":false}}'
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            npm run tauri build -- --target x86_64-pc-windows-msvc
+          else
+            npm run tauri build -- --target x86_64-pc-windows-msvc --config '{"bundle":{"createUpdaterArtifacts":false}}'
+          fi
 
-      # arm64 (cross-compiled in-OS). The frontend is already built; this just
-      # recompiles the Rust binary for arm64 and bundles its NSIS installer.
+      # arm64 (cross-compiled in-OS).
       - name: Build arm64 installer
         shell: bash
-        run: npm run tauri build -- --target aarch64-pc-windows-msvc --config '{"bundle":{"createUpdaterArtifacts":false}}'
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            npm run tauri build -- --target aarch64-pc-windows-msvc
+          else
+            npm run tauri build -- --target aarch64-pc-windows-msvc --config '{"bundle":{"createUpdaterArtifacts":false}}'
+          fi
 
       - name: Upload x64 installer
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: hivework-windows-x64
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip*
           if-no-files-found: error
 
       - name: Upload arm64 installer
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: hivework-windows-arm64
-          path: src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+          path: |
+            src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+            src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip*
           if-no-files-found: error
