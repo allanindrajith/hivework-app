@@ -415,7 +415,7 @@
         <div class="step-content">
           <span class="step-num">Step 1</span>
           <span class="step-name">Connect AI Tools</span>
-          <span class="step-desc">Audit Claude Code, Cursor, Windsurf</span>
+          <span class="step-desc">Audit Claude, Cursor, Windsurf</span>
         </div>
         <ArrowRight size={14} class="step-arrow" />
       </button>
@@ -428,7 +428,7 @@
         <div class="step-content">
           <span class="step-num">Step 2</span>
           <span class="step-name">Link Workspace</span>
-          <span class="step-desc">Select or connect your code repositories</span>
+          <span class="step-desc">Connect code repositories</span>
         </div>
         <ArrowRight size={14} class="step-arrow" />
       </button>
@@ -441,7 +441,7 @@
         <div class="step-content">
           <span class="step-num gold">Step 3</span>
           <span class="step-name">Deploy First Agent</span>
-          <span class="step-desc">Pick from {available} specialized agents</span>
+          <span class="step-desc">Choose from {available} agents</span>
         </div>
         <ArrowRight size={14} class="step-arrow" />
       </button>
@@ -1169,13 +1169,15 @@
   .ac-tags {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     margin-top: 2px;
+    flex-wrap: wrap;
   }
   .ac-cat {
     font-size: 11px;
     font-weight: 600;
     text-transform: capitalize;
+    flex-shrink: 0;
   }
   .ac-slug {
     font-family: var(--font-mono);
@@ -1185,7 +1187,7 @@
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 1px 5px;
-    max-width: 150px;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
