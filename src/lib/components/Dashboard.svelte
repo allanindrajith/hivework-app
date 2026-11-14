@@ -59,7 +59,7 @@
     }
   }
 
-  const available = $derived(corpus.agents.length || 296);
+  const available = $derived(corpus.agents.length || 345);
   const managed = $derived(install.installed.filter((i) => i.state !== "foreign").length);
   const trackedByApp = $derived(install.installed.filter((i) => i.tracked && i.state !== "foreign").length);
   const fromOtherTools = $derived(managed - trackedByApp);
@@ -218,11 +218,11 @@
   // Detected tools summary
   const detectedToolCount = $derived(install.tools.filter(t => t.detected).length);
 
-  const HERO_COMMANDS = [
-    { id: "install", label: "Install All", command: "./scripts/install.sh", desc: "Detect installed tools & deploy all 296 hive-* agents" },
-    { id: "skills", label: "Install Skills", command: "./scripts/install.sh --skills", desc: "Install 21 superpowers workflow skills alongside agents" },
+  const HERO_COMMANDS = $derived([
+    { id: "install", label: "Install All", command: "./scripts/install.sh", desc: `Detect installed tools & deploy all ${available} hive-* agents` },
+    { id: "skills", label: "Install Skills", command: "./scripts/install.sh --skills", desc: "Install 24 superpowers workflow skills alongside agents" },
     { id: "convert", label: "Convert All", command: "./scripts/convert.sh --parallel", desc: "Regenerate 17 tool integrations in parallel" },
-  ] as const;
+  ]);
 
   let activeCmdIdx = $state(0);
   let cmdCopied = $state(false);
@@ -251,7 +251,7 @@
         The Unified AI Agent Workforce — <span class="hw-accent">{available} Specialized Agents</span>
       </h2>
       <p class="hw-sub">
-        18 divisions · 21 workflow skills · 17 AI coding harnesses · Every agent prefixed with <code>hive-*</code> for zero naming collisions.
+        18 divisions · 24 workflow skills · 17 AI coding harnesses · Every agent prefixed with <code>hive-*</code> for zero naming collisions.
       </p>
     </div>
 

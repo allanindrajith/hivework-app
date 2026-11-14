@@ -310,7 +310,7 @@
         <div class="hw-strip-left">
           <span class="hw-eyebrow">HIVEWORK · WORKFORCE DIVISIONS</span>
           <div class="hw-stat-pills">
-            <span class="hw-stat-pill"><strong>{corpus.agents.length || 296}</strong> Agents</span>
+            <span class="hw-stat-pill"><strong>{corpus.agents.length || 345}</strong> Agents</span>
             <span class="hw-stat-pill"><strong>{corpus.tiles.length || 18}</strong> Divisions</span>
             <span class="hw-stat-pill"><strong>17</strong> Harnesses</span>
             <span class="hw-stat-pill"><strong>21</strong> Skills</span>
