@@ -21,8 +21,10 @@
   import Bot from "@lucide/svelte/icons/bot";
   import ShieldCheck from "@lucide/svelte/icons/shield-check";
   import Layers from "@lucide/svelte/icons/layers";
+  import X from "@lucide/svelte/icons/x";
 
   import { catalog } from "$lib/stores/catalog.svelte";
+  import { ui } from "$lib/stores/ui.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import type { CatalogCandidate } from "$lib/types";
@@ -36,6 +38,7 @@
     try {
       await fn();
       toast.success(ok);
+      ui.completeOnboarding();
     } catch (e) {
       toast.error(i18n.t("firstRun.error"), errorText(e));
     }
@@ -55,10 +58,15 @@
 
 <div class="scrim" data-tauri-drag-region>
   <div class="box" role="dialog" aria-modal="true" aria-label="Welcome to Hivework Onboarding">
+    {#if catalog.configured === true || ui.onboardingOpen}
+      <button class="modal-close" aria-label="Close" onclick={() => ui.closeOnboarding()}>
+        <X size={16} />
+      </button>
+    {/if}
     <header>
       <div class="badge-row">
         <span class="brand-pill"><Zap size={13} /> Welcome to Hivework</span>
-        <span class="version-tag">v0.4.2</span>
+        <span class="version-tag">v1.0.0</span>
       </div>
       <h1>One Canonical AI Workforce</h1>
       <p class="lede">
@@ -176,6 +184,7 @@
     background: #0d0c0a;
   }
   .box {
+    position: relative;
     width: min(600px, 94vw); max-height: 90vh; overflow-y: auto;
     background: #14120e;
     border: 1px solid rgba(245, 158, 11, 0.28);
@@ -183,6 +192,16 @@
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
     padding: 28px;
     display: flex; flex-direction: column; gap: 20px;
+  }
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6); cursor: pointer; transition: all 0.15s ease;
+  }
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.12); color: #fff;
   }
   header {
     display: flex; flex-direction: column; gap: 8px;

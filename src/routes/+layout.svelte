@@ -24,6 +24,7 @@
     ui.loadSidebarCollapsedFromStorage();
     ui.loadSidebarWidthFromStorage();
     ui.loadDetailPaneWidthFromStorage();
+    ui.loadOnboardingFromStorage();
     // Seed back/forward history with the landing location (after the default
     // section has been resolved above), so the first entry is real.
     ui.initNav();
@@ -99,8 +100,9 @@
   events at the top of the window).
 -->
 
-{#if catalog.configured === false}
+{#if catalog.configured === false || ui.onboardingOpen}
   <CatalogFirstRun />
-{:else if catalog.configured === true}
+{/if}
+{#if catalog.configured === true}
   {@render children()}
 {/if}

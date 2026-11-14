@@ -21,8 +21,11 @@
   import GitFork from "@lucide/svelte/icons/git-fork";
   import CircleDot from "@lucide/svelte/icons/circle-dot";
   import ExternalLink from "@lucide/svelte/icons/external-link";
+  import Zap from "@lucide/svelte/icons/zap";
+  import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
 
   import { catalog } from "$lib/stores/catalog.svelte";
+  import { ui, ONBOARDING_SEEN_KEY } from "$lib/stores/ui.svelte";
   import { github, type RepoStatsOutcome } from "$lib/stores/github.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { safeOpenUrl } from "$lib/util/url";
@@ -217,6 +220,22 @@
       <Search size={14} /><span>{catalog.scanning ? i18n.t("common.searching") : i18n.t("catalog.find")}</span>
     </button>
     <button class="ghost" disabled={catalog.busy} onclick={pickFolder}>{i18n.t("catalog.chooseFolder")}</button>
+  </div>
+
+  <h3>Onboarding & First-Run</h3>
+  <div class="row-actions">
+    <button class="ghost" onclick={() => { ui.closeSettings(); ui.openOnboarding(); }}>
+      <Zap size={14} /><span>Launch Onboarding Wizard</span>
+    </button>
+    <button class="ghost" disabled={catalog.busy} onclick={async () => {
+      await catalog.reset();
+      try { localStorage.removeItem(ONBOARDING_SEEN_KEY); } catch { /* ignore */ }
+      ui.onboardingOpen = true;
+      ui.closeSettings();
+      toast.success("Catalog reset to first-run state");
+    }}>
+      <RotateCcw size={14} /><span>Reset First-Run Setup</span>
+    </button>
   </div>
 
   {#if catalog.error}<p class="err">{catalog.error}</p>{/if}

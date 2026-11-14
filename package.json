@@ -1,6 +1,6 @@
 {
   "name": "hivework-app",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "description": "Hivework — a native macOS control surface for AI agents. Browse, install, and track 296+ specialized hive-* agents across every AI coding tool.",
   "type": "module",
   "author": "Allan Indrajith <hello@itsallan.me> (https://hivework.online)",

@@ -42,6 +42,7 @@ const CONFIRM_DESTRUCTIVE_KEY = "hivework:confirm-destructive";
 const ACTIVITY_MAX_JOBS_KEY = "hivework:activity:max-jobs";
 const ACTIVITY_MAX_LINES_KEY = "hivework:activity:max-lines";
 const SIDEBAR_COLLAPSED_KEY = "hivework:sidebar-collapsed";
+export const ONBOARDING_SEEN_KEY = "hivework:onboarding:v0.4.2";
 
 /** Defaults for the Activity-retention settings (Phase 12b). */
 export const ACTIVITY_MAX_JOBS_DEFAULT = 50;
@@ -95,6 +96,8 @@ class UiStore {
   appUpdateModalOpen: boolean = $state(false);
   /** Playbook modal — "how to get real work out of your agents" (title-bar ?). */
   playbookOpen: boolean = $state(false);
+  /** Onboarding wizard modal — first-run or re-launched from Settings/Help. */
+  onboardingOpen: boolean = $state(false);
   theme: ThemePreference = $state("dark");
   /** Active category ("division") filter for the Agents workspace; null = all.
       Lifted into ui so division pills can deep-link to it and so back/forward
@@ -320,6 +323,29 @@ class UiStore {
 
   openPlaybook() { this.playbookOpen = true; }
   closePlaybook() { this.playbookOpen = false; }
+
+  openOnboarding() { this.onboardingOpen = true; }
+  closeOnboarding() { this.completeOnboarding(); }
+
+  loadOnboardingFromStorage() {
+    try {
+      const seen = localStorage.getItem(ONBOARDING_SEEN_KEY);
+      if (seen !== "1") {
+        this.onboardingOpen = true;
+      }
+    } catch {
+      this.onboardingOpen = true;
+    }
+  }
+
+  completeOnboarding() {
+    this.onboardingOpen = false;
+    try {
+      localStorage.setItem(ONBOARDING_SEEN_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  }
 
   // ---------------- Settings (Phase 12b) ----------------
 

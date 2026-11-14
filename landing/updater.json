@@ -1,6 +1,6 @@
 {
-  "version": "0.4.2",
-  "notes": "Hivework v0.4.2 — Guarantee first-run onboarding wizard on clean install, fix tool lens filtering, and prevent vibe pill card overflow.",
+  "version": "1.0.0",
+  "notes": "Hivework v1.0.0 — Canonical milestone release: full multi-harness agent catalog, onboarding flow, and live corpus sync.",
   "pub_date": "2026-11-14T12:20:00Z",
   "platforms": {
     "darwin-aarch64": {

@@ -162,6 +162,7 @@ pub fn run() {
             corpus::corpus_categories,
             corpus::catalog_source_get,
             corpus::catalog_configured,
+            corpus::catalog_reset,
             corpus::catalog_source_set,
             corpus::catalog_detect,
             corpus::catalog_provision_managed,

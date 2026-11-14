@@ -1374,6 +1374,20 @@ pub async fn catalog_configured(app: AppHandle) -> Result<bool, AppError> {
     Ok(catalog_source_path(&adir).exists())
 }
 
+/// `catalog_reset()` — delete `state/catalog.json` so the app returns to the
+/// unconfigured first-run state (prompting the onboarding wizard).
+#[tauri::command]
+pub async fn catalog_reset(app: AppHandle) -> Result<(), AppError> {
+    let adir = app_data_dir(&app)?;
+    let path = catalog_source_path(&adir);
+    if path.exists() {
+        tokio::fs::remove_file(&path).await.map_err(|e| AppError::Io {
+            message: format!("remove catalog.json: {e}"),
+        })?;
+    }
+    Ok(())
+}
+
 /// `catalog_source_set(source)` — switch where the catalog is read from, then
 /// rebuild + swap the in-memory corpus so every view reflects the new source.
 /// Validates that a `Managed`/`UserClone` path exists and looks like a catalog

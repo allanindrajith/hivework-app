@@ -73,7 +73,7 @@ class CatalogStore {
         remoteUrl: "https://github.com/allanindrajith/hivework",
         agentCount: corpus.agents.length || 345,
         isGit: false,
-        version: "0.4.2",
+        version: "1.0.0",
         fetchedAt: new Date().toISOString(),
         commit: "bundled",
         branch: null,
@@ -159,6 +159,22 @@ class CatalogStore {
   /** Use the bundled snapshot (the always-works default). */
   async useBundled(): Promise<void> {
     return this.setSource({ kind: "bundled" });
+  }
+
+  /** Reset catalog configuration back to unconfigured first-run state. */
+  async reset(): Promise<void> {
+    this.busy = true;
+    this.error = null;
+    try {
+      await invoke("catalog_reset");
+    } catch {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("hivework:catalog-configured");
+      }
+    } finally {
+      this.configured = false;
+      this.busy = false;
+    }
   }
 
   /** Adopt the user's own clone. `manage` = permission to pull it later. */

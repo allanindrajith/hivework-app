@@ -15,6 +15,7 @@
   import { appVersion } from "$lib/api";
   import { safeOpenUrl } from "$lib/util/url";
   import { i18n } from "$lib/stores/i18n.svelte";
+  import { ui } from "$lib/stores/ui.svelte";
 
   const REPO_URL = "https://github.com/allanindrajith/hivework-app";
   const CATALOG_URL = "https://github.com/allanindrajith/hivework";
@@ -27,7 +28,7 @@
     void appVersion()
       .then((v) => (version = v))
       .catch(() => {
-        version = "0.4.2";
+        version = "1.0.0";
       });
   });
 </script>
@@ -70,6 +71,14 @@
         <button class="link" type="button" onclick={() => void safeOpenUrl(CATALOG_URL)}>
           <code>github.com/allanindrajith/hivework</code>
           <ExternalLink size={12} />
+        </button>
+      </dd>
+    </div>
+    <div class="row">
+      <dt>Onboarding</dt>
+      <dd>
+        <button class="link" type="button" onclick={() => { ui.closeSettings(); ui.openOnboarding(); }}>
+          <code>Launch Welcome Wizard</code>
         </button>
       </dd>
     </div>
