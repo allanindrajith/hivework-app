@@ -44,8 +44,6 @@ const ja = {
   "settings.appearance.title": "外観",
   "settings.appearance.theme": "テーマ",
   "settings.appearance.themeHint": "システムに設定すると macOS のテーマに従います。",
-  "settings.appearance.defaultLanding": "起動時の画面",
-  "settings.appearance.defaultLandingHint": "Hivework の起動時に開くセクション。",
   "settings.appearance.language": "言語",
   "settings.appearance.languageHint": "アプリの外枠の言語を変更します。エージェントカタログの内容は上流の原文のままです。",
   "settings.appearance.vibrancy": "ウィンドウのビブランシー",

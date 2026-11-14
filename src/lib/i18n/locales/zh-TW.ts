@@ -44,8 +44,6 @@ const zhTW = {
   "settings.appearance.title": "外觀",
   "settings.appearance.theme": "主題",
   "settings.appearance.themeHint": "設定為「跟隨系統」時，會跟隨 macOS 主題。",
-  "settings.appearance.defaultLanding": "預設開啟頁面",
-  "settings.appearance.defaultLandingHint": "啟動 Hivework 時要開啟哪個區段。",
   "settings.appearance.language": "語言",
   "settings.appearance.languageHint": "變更應用程式外殼語言。智慧體目錄內容會保留上游原文。",
   "settings.appearance.vibrancy": "視窗磨砂效果",

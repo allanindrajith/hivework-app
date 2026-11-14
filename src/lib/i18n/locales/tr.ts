@@ -45,8 +45,6 @@ const tr = {
   "settings.appearance.title": "Görünüm",
   "settings.appearance.theme": "Tema",
   "settings.appearance.themeHint": "Sistem seçiliyken macOS temasını izler.",
-  "settings.appearance.defaultLanding": "Varsayılan açılış",
-  "settings.appearance.defaultLandingHint": "Hivework başlatıldığında hangi bölüm açılır.",
   "settings.appearance.language": "Dil",
   "settings.appearance.languageHint": "Uygulama arayüz dilini değiştirir. Ajan içeriği upstream'de yazıldığı gibi kalır; senaryo etiketleri uygulama tarafından yerelleştirilebilir.",
   "settings.appearance.vibrancy": "Pencere canlılığı",

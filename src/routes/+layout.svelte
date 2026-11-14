@@ -17,7 +17,6 @@
     ui.loadThemeFromStorage();
     // Settings (Phase 12b) — all read with enum/numeric validation so a
     // corrupt or hostile localStorage entry can't poison runtime state.
-    ui.loadDefaultSectionFromStorage();
     ui.loadVibrancyMaterialFromStorage();
     ui.loadConfirmDestructiveFromStorage();
     ui.loadActivitySettingsFromStorage();

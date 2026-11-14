@@ -44,8 +44,6 @@ const zhCN = {
   "settings.appearance.title": "外观",
   "settings.appearance.theme": "主题",
   "settings.appearance.themeHint": "设置为“跟随系统”时，会跟随 macOS 主题。",
-  "settings.appearance.defaultLanding": "默认打开页面",
-  "settings.appearance.defaultLandingHint": "启动 Hivework 时打开哪个分区。",
   "settings.appearance.language": "语言",
   "settings.appearance.languageHint": "更改应用外壳语言。智能体目录内容会保留上游原文。",
   "settings.appearance.vibrancy": "窗口磨砂效果",

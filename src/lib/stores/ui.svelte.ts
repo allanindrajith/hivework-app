@@ -37,7 +37,6 @@ export function clampSidebarWidth(w: number): number {
 }
 
 /** Storage keys for Settings-modal preferences (Phase 12b). */
-const DEFAULT_SECTION_KEY = "hivework:default-section";
 const VIBRANCY_MATERIAL_KEY = "hivework:vibrancy-material";
 const CONFIRM_DESTRUCTIVE_KEY = "hivework:confirm-destructive";
 const ACTIVITY_MAX_JOBS_KEY = "hivework:activity:max-jobs";
@@ -58,18 +57,6 @@ export const ACTIVITY_MAX_LINES_MAX = 10_000;
 export const VIBRANCY_MATERIALS = ["HudWindow", "Sidebar", "FullScreenUI", "Off"] as const;
 export type VibrancyMaterial = (typeof VIBRANCY_MATERIALS)[number];
 
-/** SidebarSection values we allow as "default landing" — keeps the validator
-    in one place. Mirrors the `SidebarSection` union in `types.ts`. */
-const DEFAULT_SECTION_VALUES = [
-  "dashboard",
-  "personas",
-  "employees",
-  "tools",
-  "teams",
-  "projects",
-  "runbooks",
-  "activity",
-] as const;
 
 function clampInt(v: number, lo: number, hi: number, fallback: number): number {
   if (!Number.isFinite(v)) return fallback;
@@ -87,19 +74,11 @@ export function clampDetailPaneWidth(w: number, windowWidth?: number): number {
   return Math.min(Math.max(Math.round(w), DETAIL_PANE_MIN_WIDTH), max);
 }
 
-/** The hardcoded first-launch section, before any saved default-landing or
-    navigation is applied. `loadDefaultSectionFromStorage` uses this as the
-    "untouched" sentinel: it only applies the saved default when `section` is
-    still this value (i.e. nothing else has routed yet). Keeping it in one
-    constant prevents the guard from drifting away from the initializer — the
-    exact bug where the home screen moved to `personas` but the guard still
-    checked for `dashboard`, silently disabling the default-landing setting. */
-const INITIAL_SECTION: SidebarSection = "personas";
+/** The first-launch section: Hivework always opens on the Dashboard. */
+const INITIAL_SECTION: SidebarSection = "dashboard";
 
 class UiStore {
-  /** First-launch landing. The Agents (personas) catalog is the home screen —
-      the agent catalog is the front door, not the Dashboard. Clicking the
-      sidebar brand returns here. */
+  /** First-launch landing: Dashboard is always the home screen. */
   section: SidebarSection = $state(INITIAL_SECTION);
 
   drawerOpen: boolean = $state(false);
@@ -150,11 +129,6 @@ class UiStore {
   /** width of the package detail pane in px; persisted to localStorage */
   detailPaneWidth: number = $state(DETAIL_PANE_DEFAULT_WIDTH);
 
-  /** Which section the app opens on at launch. `dashboard` by default; the
-      user can change this from Settings → Appearance. Persists to localStorage
-      and is applied by `loadDefaultSectionFromStorage` (called from layout
-      onMount) — only when the user hasn't already navigated. */
-  defaultSection: SidebarSection = $state("personas");
 
   /** Vibrancy material applied to the macOS window via NSVisualEffectView.
       Restart-required because Tauri 2 applies vibrancy in the setup hook.
@@ -343,34 +317,6 @@ class UiStore {
   closePlaybook() { this.playbookOpen = false; }
 
   // ---------------- Settings (Phase 12b) ----------------
-
-  /** Persist a new default landing section. Writes to localStorage; the
-      runtime application happens at next app launch via
-      `loadDefaultSectionFromStorage`. */
-  setDefaultSection(s: SidebarSection) {
-    this.defaultSection = s;
-    try { localStorage.setItem(DEFAULT_SECTION_KEY, s); } catch { /* ignore */ }
-  }
-
-  /** On first paint, read the saved default-landing and (if the user
-      hasn't already navigated) override `section`. We treat the hardcoded
-      `INITIAL_SECTION` as "untouched" — if some early code already routed
-      the user elsewhere we leave it alone. Validates against the known
-      enum on read per Phase 12 security review § 12b. */
-  loadDefaultSectionFromStorage() {
-    try {
-      const v = localStorage.getItem(DEFAULT_SECTION_KEY);
-      if (v !== null && (DEFAULT_SECTION_VALUES as readonly string[]).includes(v)) {
-        const validated = v as SidebarSection;
-        this.defaultSection = validated;
-        // Only override the initial section if it's still the hardcoded
-        // landing — anything else means something already routed.
-        if (this.section === INITIAL_SECTION) {
-          this.section = validated;
-        }
-      }
-    } catch { /* ignore */ }
-  }
 
   /** Persist a new vibrancy material. The active material does not change
       until the app is restarted (NSVisualEffectView is applied once in

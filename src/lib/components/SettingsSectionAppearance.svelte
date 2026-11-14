@@ -14,26 +14,8 @@
   import { ui } from "$lib/stores/ui.svelte";
   import { i18n } from "$lib/stores/i18n.svelte";
   import { LOCALES, localeLabels, type Locale } from "$lib/i18n/messages";
-  import type { SidebarSection, ThemePreference } from "$lib/types";
+  import type { ThemePreference } from "$lib/types";
 
-  /** Sections the user can pick as their default landing page. Mirrors the
-      sidebar nav order, plus Dashboard which lives in the brand button. */
-  const SECTIONS: SidebarSection[] = ["dashboard", "personas", "tools", "teams", "projects", "runbooks", "activity"];
-
-  function sectionLabel(value: SidebarSection): string {
-    if (value === "dashboard") return i18n.t("nav.dashboard");
-    if (value === "personas") return i18n.t("nav.agents");
-    if (value === "tools") return i18n.t("nav.tools");
-    if (value === "teams") return i18n.t("nav.teams");
-    if (value === "projects") return i18n.t("nav.projects");
-    if (value === "runbooks") return i18n.t("nav.runbooks");
-    return i18n.t("nav.activity");
-  }
-
-  function onSectionChange(e: Event) {
-    const value = (e.currentTarget as HTMLSelectElement).value as SidebarSection;
-    ui.setDefaultSection(value);
-  }
   function onLocaleChange(e: Event) {
     const value = (e.currentTarget as HTMLSelectElement).value as Locale;
     i18n.setLocale(value);
@@ -79,21 +61,6 @@
       </button>
     </div>
     <p class="hint">{i18n.t("settings.appearance.themeHint")}</p>
-  </div>
-
-  <div class="field">
-    <label for="default-section">{i18n.t("settings.appearance.defaultLanding")}</label>
-    <select
-      id="default-section"
-      class="select"
-      value={ui.defaultSection}
-      onchange={onSectionChange}
-    >
-      {#each SECTIONS as opt (opt)}
-        <option value={opt}>{sectionLabel(opt)}</option>
-      {/each}
-    </select>
-    <p class="hint">{i18n.t("settings.appearance.defaultLandingHint")}</p>
   </div>
 
   <div class="field">

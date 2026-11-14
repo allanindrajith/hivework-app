@@ -45,8 +45,6 @@ const fr = {
   "settings.appearance.title": "Apparence",
   "settings.appearance.theme": "Thème",
   "settings.appearance.themeHint": "Avec l’option Système, suit le thème de macOS.",
-  "settings.appearance.defaultLanding": "Écran au démarrage",
-  "settings.appearance.defaultLandingHint": "Section affichée au lancement d’Hivework.",
   "settings.appearance.language": "Langue",
   "settings.appearance.languageHint": "Change la langue de l’interface. Le contenu des personas d’agents reste tel qu’il a été rédigé dans le dépôt d’origine ; les libellés de scénarios peuvent être traduits par l’app.",
   "settings.appearance.vibrancy": "Effet de transparence de la fenêtre",

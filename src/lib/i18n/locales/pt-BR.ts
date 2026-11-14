@@ -44,8 +44,6 @@ const ptBR = {
   "settings.appearance.title": "Aparência",
   "settings.appearance.theme": "Tema",
   "settings.appearance.themeHint": "Segue o tema do macOS quando definido como Sistema.",
-  "settings.appearance.defaultLanding": "Tela inicial",
-  "settings.appearance.defaultLandingHint": "Qual seção abre ao iniciar o Hivework.",
   "settings.appearance.language": "Idioma",
   "settings.appearance.languageHint": "Altera o idioma da interface. O conteúdo do catálogo de agentes permanece como publicado upstream.",
   "settings.appearance.vibrancy": "Vibrancy da janela",

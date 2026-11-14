@@ -44,8 +44,6 @@ const ko = {
   "settings.appearance.title": "모양",
   "settings.appearance.theme": "테마",
   "settings.appearance.themeHint": "시스템으로 설정하면 macOS 테마를 따릅니다.",
-  "settings.appearance.defaultLanding": "기본 시작 화면",
-  "settings.appearance.defaultLandingHint": "Hivework를 실행할 때 열 섹션입니다.",
   "settings.appearance.language": "언어",
   "settings.appearance.languageHint": "앱 크롬 언어를 변경합니다. 에이전트 카탈로그 내용은 upstream 원문을 유지합니다.",
   "settings.appearance.vibrancy": "창 비브런시",

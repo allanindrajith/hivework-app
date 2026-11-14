@@ -45,8 +45,6 @@ const fa = {
   "settings.appearance.title": "ظاهر",
   "settings.appearance.theme": "پوسته",
   "settings.appearance.themeHint": "هنگام تنظیم روی «سیستم» از پوسته مک‌اواس پیروی می‌کند.",
-  "settings.appearance.defaultLanding": "صفحه پیش‌فرض",
-  "settings.appearance.defaultLandingHint": "هنگام راه‌اندازی Hivework کدام بخش باز شود.",
   "settings.appearance.language": "زبان",
   "settings.appearance.languageHint": "زبان ظاهر برنامه را تغییر می‌دهد. محتوای شخصیت عامل همانطور که در بالا نوشته شده باقی می‌ماند؛ برچسب‌های سناریو ممکن است توسط برنامه محلی‌سازی شوند.",
   "settings.appearance.vibrancy": "شفافیت پنجره",

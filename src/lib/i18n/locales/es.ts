@@ -44,8 +44,6 @@ const es = {
   "settings.appearance.title": "Apariencia",
   "settings.appearance.theme": "Tema",
   "settings.appearance.themeHint": "Sigue el tema de macOS cuando se configura como Sistema.",
-  "settings.appearance.defaultLanding": "Pantalla inicial",
-  "settings.appearance.defaultLandingHint": "Qué sección se abre al iniciar Hivework.",
   "settings.appearance.language": "Idioma",
   "settings.appearance.languageHint": "Cambia el idioma de la interfaz. El contenido del catálogo de agentes se mantiene como lo publica upstream.",
   "settings.appearance.vibrancy": "Vibrancy de la ventana",

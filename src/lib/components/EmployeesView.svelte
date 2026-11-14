@@ -48,7 +48,7 @@
         emp.role.toLowerCase().includes(q) ||
         emp.tagline.toLowerCase().includes(q) ||
         emp.highlights.some(h => h.toLowerCase().includes(q)) ||
-        emp.routines.some(r => r.id.toLowerCase().includes(r))
+        emp.routines.some(r => r.id.toLowerCase().includes(q))
       );
     });
   });

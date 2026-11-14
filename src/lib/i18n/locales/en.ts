@@ -43,8 +43,6 @@ const en = {
   "settings.appearance.title": "Appearance",
   "settings.appearance.theme": "Theme",
   "settings.appearance.themeHint": "Follows the macOS theme when set to System.",
-  "settings.appearance.defaultLanding": "Default landing",
-  "settings.appearance.defaultLandingHint": "Which section opens when you launch Hivework.",
   "settings.appearance.language": "Language",
   "settings.appearance.languageHint": "Changes the app chrome language. Agent persona content stays as authored upstream; scenario labels may be localized by the app.",
   "settings.appearance.vibrancy": "Window vibrancy",

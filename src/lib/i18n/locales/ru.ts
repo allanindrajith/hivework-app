@@ -45,8 +45,6 @@ const ru = {
   "settings.appearance.title": "Внешний вид",
   "settings.appearance.theme": "Тема",
   "settings.appearance.themeHint": "В режиме «Системная» приложение следует теме macOS.",
-  "settings.appearance.defaultLanding": "Стартовый раздел",
-  "settings.appearance.defaultLandingHint": "Какой раздел открывать при запуске Hivework.",
   "settings.appearance.language": "Язык",
   "settings.appearance.languageHint": "Изменяет язык интерфейса приложения. Содержимое персон агентов остаётся таким, каким оно задано в upstream; подписи сценариев могут локализоваться приложением.",
   "settings.appearance.vibrancy": "Прозрачность окна",
