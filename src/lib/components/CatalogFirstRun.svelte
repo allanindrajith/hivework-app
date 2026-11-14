@@ -58,7 +58,7 @@
     <header>
       <div class="badge-row">
         <span class="brand-pill"><Zap size={13} /> Welcome to Hivework</span>
-        <span class="version-tag">v0.4.0</span>
+        <span class="version-tag">v0.4.1</span>
       </div>
       <h1>One Canonical AI Workforce</h1>
       <p class="lede">

@@ -192,10 +192,8 @@
 
   // ── Selection (master-detail) ──
   let selectedTool = $state<Tool | null>(null);
-  let autoPicked = false;
   $effect(() => {
-    if (!autoPicked && visibleTools.length > 0) {
-      autoPicked = true;
+    if (visibleTools.length > 0 && (!selectedTool || !visibleTools.some((t) => t.tool === selectedTool))) {
       selectedTool = [...visibleTools].sort((a, b) => b.installedCount - a.installedCount)[0]?.tool ?? visibleTools[0].tool;
     }
   });
@@ -204,7 +202,6 @@
   $effect(() => {
     if (ui.toolsSelected) {
       selectedTool = ui.toolsSelected;
-      autoPicked = true;
     }
   });
   // Resolve against the VISIBLE (lens-filtered) list, so switching the lens to

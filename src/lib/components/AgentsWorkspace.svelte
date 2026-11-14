@@ -569,9 +569,11 @@
 
               <p class="ac-desc">{a.description || a.vibe || "Production-ready agent for local harnesses."}</p>
 
-              {#if a.vibe}
+              {#if a.vibe || rows.length > 0}
                 <div class="ac-pills">
-                  <span class="vibe-pill">{a.vibe}</span>
+                  {#if a.vibe}
+                    <span class="vibe-pill" title={a.vibe}>{a.vibe}</span>
+                  {/if}
                   {#if rows.length > 0}
                     <span class="installed-pill">Installed</span>
                   {/if}
@@ -1038,11 +1040,16 @@
     font-size: 10px; font-weight: 500; padding: 2px 8px;
     border-radius: var(--radius-full); background: var(--color-surface-sunken);
     color: var(--color-text-muted); border: 1px solid var(--color-border);
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .installed-pill {
     font-size: 10px; font-weight: 600; padding: 2px 8px;
     border-radius: var(--radius-full); background: rgba(34, 197, 94, 0.12);
     color: var(--color-success); border: 1px solid rgba(34, 197, 94, 0.3);
+    flex: none;
   }
 
   .ac-footer { display: flex; align-items: center; margin-top: auto; }

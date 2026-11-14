@@ -68,7 +68,7 @@ class CatalogStore {
         remoteUrl: "https://github.com/allanindrajith/hivework",
         agentCount: corpus.agents.length || 345,
         isGit: false,
-        version: "0.4.0",
+        version: "0.4.1",
         fetchedAt: new Date().toISOString(),
         commit: "bundled",
         branch: null,
