@@ -99,8 +99,8 @@
   events at the top of the window).
 -->
 
-{@render children()}
-
-{#if !catalog.configured}
+{#if catalog.configured === false}
   <CatalogFirstRun />
+{:else if catalog.configured === true}
+  {@render children()}
 {/if}

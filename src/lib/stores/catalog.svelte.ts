@@ -26,8 +26,8 @@ import { corpus } from "$lib/stores/corpus.svelte";
 class CatalogStore {
   /** The active catalog source (default bundled until loaded). */
   source: CatalogSource = $state({ kind: "bundled" });
-  /** Whether the user has made an explicit choice yet (drives first-run). */
-  configured: boolean = $state(true);
+  /** Whether the user has made an explicit choice yet (drives first-run). Null while checking. */
+  configured: boolean | null = $state(null);
   /** Live status of the active catalog (git commit/branch/freshness). */
   status: CatalogStatus | null = $state(null);
   /** Last upstream update-check result (behind/ahead + diffstat). */
@@ -53,7 +53,12 @@ class CatalogStore {
       this.source = source;
       this.configured = configured;
     } catch {
-      // leave defaults (bundled / configured) so the app still runs
+      if (typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window)) {
+        const stored = localStorage.getItem("hivework:catalog-configured");
+        this.configured = stored === "true";
+      } else {
+        this.configured = false;
+      }
     }
   }
 
@@ -68,7 +73,7 @@ class CatalogStore {
         remoteUrl: "https://github.com/allanindrajith/hivework",
         agentCount: corpus.agents.length || 345,
         isGit: false,
-        version: "0.4.1",
+        version: "0.4.2",
         fetchedAt: new Date().toISOString(),
         commit: "bundled",
         branch: null,

@@ -123,7 +123,7 @@
     <div class="status status-ready" title={i18n.t("nav.catalogStatus", { count: agentCount })}>
       <span class="dot" aria-hidden="true"></span>
       <span class="status-label">{i18n.t("nav.catalogStatus", { count: agentCount })}</span>
-      <span class="ver-pill">v0.4.1</span>
+      <span class="ver-pill">v0.4.2</span>
     </div>
   </footer>
 </aside>

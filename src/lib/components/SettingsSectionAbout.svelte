@@ -27,7 +27,7 @@
     void appVersion()
       .then((v) => (version = v))
       .catch(() => {
-        version = "0.4.1";
+        version = "0.4.2";
       });
   });
 </script>

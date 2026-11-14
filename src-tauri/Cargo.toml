@@ -1,6 +1,6 @@
 [package]
 name = "hivework-app"
-version = "0.4.1"
+version = "0.4.2"
 description = "Hivework — a native macOS control surface for AI agents."
 authors = ["Allan Indrajith <hello@itsallan.me>"]
 edition = "2021"

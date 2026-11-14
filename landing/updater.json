@@ -1,7 +1,7 @@
 {
-  "version": "0.4.1",
-  "notes": "Hivework v0.4.1 — Fix installed tools detection filter, auto-select tools across lens tabs, and clamp agent card vibe pills.",
-  "pub_date": "2026-11-14T11:42:00Z",
+  "version": "0.4.2",
+  "notes": "Hivework v0.4.2 — Guarantee first-run onboarding wizard on clean install, fix tool lens filtering, and prevent vibe pill card overflow.",
+  "pub_date": "2026-11-14T12:20:00Z",
   "platforms": {
     "darwin-aarch64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTM2Uwd1hVUTJxR2JhQ1U4OEJUbU1CdlJIUkFpOWRiUlM2aE8wdm9qVjd5YWJMK0h2ZWU1Zy9CRktQRjlzd3g1MEpRKzBoWWQ4NTk5Ni9mSTRDM3JadURadG1nZ1FvbFFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NTI2NDk4CWZpbGU6SGl2ZXdvcmsuYXBwLnRhci5negp2YzhONkRyMnJZbzRYMkFxRHlJM1VlSjZxUThsLzQrUW5ZVnBXYUlGUk1TR0Z3R2l0RDBvK0hEdHppekdya21rc3pUV285bkM3TXVGSGdJRFBPdmpEdz09Cg==",

@@ -53,12 +53,12 @@
   }
 </script>
 
-<div class="scrim">
+<div class="scrim" data-tauri-drag-region>
   <div class="box" role="dialog" aria-modal="true" aria-label="Welcome to Hivework Onboarding">
     <header>
       <div class="badge-row">
         <span class="brand-pill"><Zap size={13} /> Welcome to Hivework</span>
-        <span class="version-tag">v0.4.1</span>
+        <span class="version-tag">v0.4.2</span>
       </div>
       <h1>One Canonical AI Workforce</h1>
       <p class="lede">
@@ -173,8 +173,7 @@
   .scrim {
     position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(10, 9, 8, 0.85);
-    backdrop-filter: blur(12px);
+    background: #0d0c0a;
   }
   .box {
     width: min(600px, 94vw); max-height: 90vh; overflow-y: auto;
